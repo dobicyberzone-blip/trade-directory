@@ -118,7 +118,8 @@ export async function POST(request: NextRequest) {
           primaryContactLastName: validatedData.primaryContactLastName,
           primaryContactEmail: validatedData.primaryContactEmail,
           primaryContactPhone: validatedData.primaryContactPhone,
-          productCatalog: productServicesStr,
+          productCatalog: productServicesStr,   // legacy — keep for existing data
+          serviceOffering: productServicesStr,
           ownerId: user.id,
           verificationStatus: 'PENDING',
         },

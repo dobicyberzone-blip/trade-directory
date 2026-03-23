@@ -203,7 +203,7 @@ export default function BusinessProfilePage() {
             sector: business.sector,
             industry: business.industry || '',
             productHsCode: business.productHsCode || '',
-            serviceOffering: business.serviceOffering || '',
+            serviceOffering: business.serviceOffering || (business as any).productCatalog || '',
             businessUserOrganisation: business.businessUserOrganisation || '',
             // Documents
             registrationCertificateUrl: business.registrationCertificateUrl || '',
@@ -246,7 +246,7 @@ export default function BusinessProfilePage() {
             industry: business?.industry || (user as any)?.industry || '',
             registrationNumber: business?.registrationNumber || '',
             legalStructure: business?.legalStructure || '',
-            serviceOffering: business?.serviceOffering || '',
+            serviceOffering: business?.serviceOffering || (business as any)?.productCatalog || '',
             companyEmail: business?.companyEmail || user?.email || '',
             contactPhone: business?.contactPhone || user?.phoneNumber || '',
             town: business?.town || (user as any)?.businessLocation || '',
