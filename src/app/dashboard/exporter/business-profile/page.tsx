@@ -554,7 +554,10 @@ export default function BusinessProfilePage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => window.open(business.kenyanNationalIdUrl!, '_blank')}
+                    onClick={() => {
+                      const url = business.kenyanNationalIdUrl!;
+                      window.open(url.startsWith('/uploads/') ? `/api/files${url}` : url, '_blank');
+                    }}
                   >
                     <Eye className="w-3 h-3 mr-1" />
                     View

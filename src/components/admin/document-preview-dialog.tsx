@@ -25,20 +25,34 @@ const getFileExtension = (url: string): string => {
 // Helper function to convert relative URLs to absolute URLs
 const getAbsoluteUrl = (url: string): string => {
   if (!url) return '';
-  
-  // If it's already an absolute URL (http/https) or data URL, return as is
+
+  // Already absolute or data URL — return as-is
   if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
     return url;
   }
-  
-  // If it's a relative URL starting with /, convert to absolute
-  if (url.startsWith('/')) {
-    // Get the current origin (protocol + hostname + port)
+
+  // Rewrite legacy /uploads/ paths to go through the API file server
+  if (url.startsWith('/uploads/')) {
+    const apiUrl = `/api/files${url}`;
+    if (typeof window !== 'undefined') {
+      return `${window.location.origin}${apiUrl}`;
+    }
+    return apiUrl;
+  }
+
+  // Already using /api/files/ path
+  if (url.startsWith('/api/files/')) {
     if (typeof window !== 'undefined') {
       return `${window.location.origin}${url}`;
     }
+    return url;
   }
-  
+
+  // Other relative URLs
+  if (url.startsWith('/') && typeof window !== 'undefined') {
+    return `${window.location.origin}${url}`;
+  }
+
   return url;
 };
 

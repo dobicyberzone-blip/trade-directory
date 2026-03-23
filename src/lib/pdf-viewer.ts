@@ -3,7 +3,17 @@
  * Prevents blank page issues by showing a loading spinner while PDF loads
  */
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  // Rewrite legacy /uploads/ paths to go through the API file server
+  if (url.startsWith('/uploads/')) {
+    return `/api/files${url}`;
+  }
+  return url;
+}
+
 export function openPdfInNewWindow(url: string, title: string = 'Document') {
+  const resolvedUrl = resolveFileUrl(url);
   const newWindow = window.open('', '_blank');
   if (newWindow) {
     newWindow.document.write(`
@@ -56,7 +66,7 @@ export function openPdfInNewWindow(url: string, title: string = 'Document') {
             <div class="spinner"></div>
             <p>Loading PDF...</p>
           </div>
-          <iframe id="pdfFrame" src="${url}" onload="document.getElementById('loading').style.display='none'"></iframe>
+          <iframe id="pdfFrame" src="${resolvedUrl}" onload="document.getElementById('loading').style.display='none'"></iframe>
         </body>
       </html>
     `);

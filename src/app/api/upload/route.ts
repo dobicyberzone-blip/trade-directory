@@ -50,7 +50,7 @@ async function handleLocalUpload(buffer: Buffer, file: File): Promise<string> {
     const filename = `${timestamp}-${randomString}.${fileExtension}`;
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
-    return `/uploads/business-documents/${filename}`;
+    return `/api/files/uploads/business-documents/${filename}`;
   } catch (fsError) {
     // Fallback to base64
     const base64 = buffer.toString('base64');
