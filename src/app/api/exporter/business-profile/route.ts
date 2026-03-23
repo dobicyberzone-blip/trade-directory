@@ -254,23 +254,10 @@ export async function POST(request: NextRequest) {
   }
 }
 // Fields owned by the Exporter Registration flow — never updatable via business-profile API
+// Only business name and registration number are truly immutable
 const REGISTRATION_OWNED_FIELDS = [
   'name',
   'registrationNumber',
-  'dateOfIncorporation',
-  'legalStructure',
-  'industry',
-  'sector',
-  'serviceOffering',
-  'physicalAddress',
-  'county',
-  'town',
-  'companyEmail',
-  'contactPhone',
-  'primaryContactFirstName',
-  'primaryContactLastName',
-  'primaryContactEmail',
-  'primaryContactPhone',
 ] as const;
 
 export async function PUT(request: NextRequest) {

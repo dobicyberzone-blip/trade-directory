@@ -59,10 +59,10 @@ const businessFormSchema = z.object({
   kraPin: z.string().min(1, 'KRA PIN is required'),
   registrationNumber: z.string().optional(),    // read-only (from registration)
   exportLicense: z.string().optional(),
-  sector: z.string().optional(),                // read-only (from registration)
-  industry: z.string().optional(),              // read-only (from registration)
+  sector: z.string().optional(),
+  industry: z.string().optional(),
   productHsCode: z.string().optional(),
-  serviceOffering: z.string().optional(),       // read-only (from registration)
+  serviceOffering: z.string().optional(),
   businessUserOrganisation: z.string().optional(),
   
   // Documents
@@ -72,15 +72,15 @@ const businessFormSchema = z.object({
   incorporationCertificateUrl: z.string().optional(),
   exportLicenseUrl: z.string().optional(),
   
-  // Location & Contact — all read-only fields made optional
+  // Location & Contact
   licenceNumber: z.string().optional(),
-  town: z.string().optional(),                  // read-only (from registration)
-  county: z.string().optional(),                // read-only (from registration)
-  physicalAddress: z.string().optional(),       // read-only (from registration)
+  town: z.string().optional(),
+  county: z.string().optional(),
+  physicalAddress: z.string().optional(),
   website: z.string().optional(),
-  contactPhone: z.string().optional(),          // read-only (from registration)
+  contactPhone: z.string().optional(),
   mobileNumber: z.string().optional(),
-  companyEmail: z.string().optional(),          // read-only (from registration)
+  companyEmail: z.string().optional(),
   whatsappNumber: z.string().optional(),
   
   // Social Media
@@ -392,7 +392,7 @@ export function BusinessProfileForm({
     0: ['kenyanNationalId', 'logoUrl'],          // name is read-only
     1: ['numberOfEmployees', 'kraPin'],           // sector/typeOfBusiness are read-only
     2: ['registrationCertificateUrl', 'pinCertificateUrl'],
-    3: [],                                        // town/county/address/phone/email all read-only
+    3: [],                                        // editable — no hard required validation on nav
     4: [],
     5: [],
   };
@@ -598,8 +598,13 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Legal Structure</Label>
-                <FromRegField value={form.watch('legalStructure') || ''} />
+                <Label htmlFor="legalStructure">Legal Structure</Label>
+                <SearchableSelect
+                  options={['Sole Proprietorship', 'Partnership', 'Limited Company', 'Public Limited Company', 'NGO', 'Cooperative', 'Other']}
+                  value={form.watch('legalStructure') || ''}
+                  onChange={(value) => form.setValue('legalStructure', value, { shouldDirty: true })}
+                  placeholder="Select legal structure"
+                />
               </div>
 
               <div>
@@ -659,20 +664,35 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Industry</Label>
-                <FromRegField value={form.watch('industry') || ''} />
+                <Label htmlFor="industry">Industry</Label>
+                <SearchableSelect
+                  options={INDUSTRIES}
+                  value={form.watch('industry') || ''}
+                  onChange={(value) => form.setValue('industry', value, { shouldDirty: true })}
+                  placeholder="Select industry"
+                />
               </div>
 
               <div>
-                <Label>Business Sector</Label>
-                <FromRegField value={form.watch('sector') || ''} />
+                <Label htmlFor="sector">Business Sector</Label>
+                <Input
+                  id="sector"
+                  {...form.register('sector')}
+                  placeholder="e.g., Agriculture, Manufacturing"
+                  className="mt-1"
+                />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Products/Services</Label>
-                <FromRegField value={form.watch('serviceOffering') || ''} />
+                <Label htmlFor="serviceOffering">Products/Services</Label>
+                <Input
+                  id="serviceOffering"
+                  {...form.register('serviceOffering')}
+                  placeholder="e.g., Fresh Produce, Coffee, Logistics"
+                  className="mt-1"
+                />
               </div>
 
               <div>
@@ -864,25 +884,46 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>City/Town *</Label>
-                <FromRegField value={form.watch('town') || ''} />
+                <Label htmlFor="town">City/Town *</Label>
+                <Input
+                  id="town"
+                  {...form.register('town')}
+                  placeholder="e.g., Nairobi"
+                  className="mt-1"
+                />
               </div>
 
               <div>
-                <Label>County *</Label>
-                <FromRegField value={form.watch('county') || ''} />
+                <Label htmlFor="county">County *</Label>
+                <SearchableSelect
+                  options={KENYAN_COUNTIES}
+                  value={form.watch('county') || ''}
+                  onChange={(value) => form.setValue('county', value, { shouldDirty: true })}
+                  placeholder="Select county"
+                />
               </div>
             </div>
 
             <div>
-              <Label>Physical Address *</Label>
-              <FromRegField value={form.watch('physicalAddress') || ''} />
+              <Label htmlFor="physicalAddress">Physical Address *</Label>
+              <Input
+                id="physicalAddress"
+                {...form.register('physicalAddress')}
+                placeholder="P.O. Box 12345, Street Address"
+                className="mt-1"
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Company Phone *</Label>
-                <FromRegField value={form.watch('contactPhone') || ''} />
+                <Label htmlFor="contactPhone">Company Phone *</Label>
+                <Input
+                  id="contactPhone"
+                  {...form.register('contactPhone')}
+                  placeholder="+254 700 000 000"
+                  type="tel"
+                  className="mt-1"
+                />
               </div>
 
               <div>
@@ -898,28 +939,56 @@ export function BusinessProfileForm({
             </div>
 
             <div>
-              <Label>Company Email *</Label>
-              <FromRegField value={form.watch('companyEmail') || ''} />
+              <Label htmlFor="companyEmail">Company Email *</Label>
+              <Input
+                id="companyEmail"
+                {...form.register('companyEmail')}
+                placeholder="company@example.com"
+                type="email"
+                className="mt-1"
+              />
             </div>
 
             <div className="border-t pt-4">
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Primary Contact</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label>First Name</Label>
-                  <FromRegField value={form.watch('primaryContactFirstName') || ''} />
+                  <Label htmlFor="primaryContactFirstName">First Name</Label>
+                  <Input
+                    id="primaryContactFirstName"
+                    {...form.register('primaryContactFirstName')}
+                    placeholder="First name"
+                    className="mt-1"
+                  />
                 </div>
                 <div>
-                  <Label>Last Name</Label>
-                  <FromRegField value={form.watch('primaryContactLastName') || ''} />
+                  <Label htmlFor="primaryContactLastName">Last Name</Label>
+                  <Input
+                    id="primaryContactLastName"
+                    {...form.register('primaryContactLastName')}
+                    placeholder="Last name"
+                    className="mt-1"
+                  />
                 </div>
                 <div>
-                  <Label>Email</Label>
-                  <FromRegField value={form.watch('primaryContactEmail') || ''} />
+                  <Label htmlFor="primaryContactEmail">Email</Label>
+                  <Input
+                    id="primaryContactEmail"
+                    {...form.register('primaryContactEmail')}
+                    placeholder="contact@example.com"
+                    type="email"
+                    className="mt-1"
+                  />
                 </div>
                 <div>
-                  <Label>Phone</Label>
-                  <FromRegField value={form.watch('primaryContactPhone') || ''} />
+                  <Label htmlFor="primaryContactPhone">Phone</Label>
+                  <Input
+                    id="primaryContactPhone"
+                    {...form.register('primaryContactPhone')}
+                    placeholder="+254 700 000 000"
+                    type="tel"
+                    className="mt-1"
+                  />
                 </div>
               </div>
             </div>
