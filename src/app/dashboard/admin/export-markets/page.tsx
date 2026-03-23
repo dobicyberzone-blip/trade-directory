@@ -98,7 +98,9 @@ export default function ExportMarketsManagementPage() {
       const params = new URLSearchParams();
       if (searchQuery) params.append('search', searchQuery);
       
-      const response = await fetch(`/api/admin/export-markets?${params}`);
+      const response = await fetch(`/api/admin/export-markets?${params}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
+      });
       const data = await response.json();
 
       if (response.ok) {
@@ -176,7 +178,7 @@ export default function ExportMarketsManagementPage() {
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
         body: JSON.stringify(formData),
       });
 
@@ -216,6 +218,7 @@ export default function ExportMarketsManagementPage() {
     try {
       const response = await fetch(`/api/admin/export-markets/${id}`, {
         method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       });
 
       const data = await response.json();

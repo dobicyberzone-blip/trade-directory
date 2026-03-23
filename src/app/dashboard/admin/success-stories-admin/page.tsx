@@ -95,6 +95,8 @@ export default function SuccessStoriesPage() {
     },
   ];
 
+  const authHeader = () => ({ Authorization: `Bearer ${localStorage.getItem('auth_token')}` });
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -106,11 +108,14 @@ export default function SuccessStoriesPage() {
         search: searchQuery,
       });
 
-      const response = await fetch(`/api/admin/success-stories-admin?${params}`);
+      const response = await fetch(`/api/admin/success-stories-admin?${params}`, {
+        headers: authHeader(),
+      });
+      if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
       const result = await response.json();
       setData(result);
     } catch (error) {
-
+      console.error('Failed to load success stories:', error);
     } finally {
       setLoading(false);
     }
@@ -122,42 +127,54 @@ export default function SuccessStoriesPage() {
 
   const handleApprove = async (id: string) => {
     try {
-      await fetch('/api/admin/success-stories-admin', {
+      const response = await fetch('/api/admin/success-stories-admin', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
         body: JSON.stringify({ id, isApproved: true }),
       });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || `Failed: ${response.status}`);
+      }
       fetchData();
     } catch (error) {
-
+      console.error('Approve failed:', error);
     }
   };
 
   const handleToggleFeature = async (id: string, currentStatus: boolean) => {
     try {
-      await fetch('/api/admin/success-stories-admin', {
+      const response = await fetch('/api/admin/success-stories-admin', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
         body: JSON.stringify({ id, isFeatured: !currentStatus }),
       });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || `Failed: ${response.status}`);
+      }
       fetchData();
     } catch (error) {
-
+      console.error('Toggle feature failed:', error);
     }
   };
 
   const handleBulkApprove = async () => {
     const ids = selectedRows;
     try {
-      await fetch('/api/admin/success-stories-admin/bulk', {
+      const response = await fetch('/api/admin/success-stories-admin/bulk', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
         body: JSON.stringify({ action: 'approve', ids }),
       });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || `Failed: ${response.status}`);
+      }
       setSelectedRows([]);
       fetchData();
     } catch (error) {
-
+      console.error('Bulk approve failed:', error);
     }
   };
 
