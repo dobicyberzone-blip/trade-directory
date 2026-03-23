@@ -1,0 +1,690 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model User {
+  id                       String            @id @default(cuid())
+  email                    String            @unique
+  password                 String
+  firstName                String
+  lastName                 String
+  role                     String            @default("BUYER")
+  partnerType              String?
+  avatar                   String?
+  isVerified               Boolean           @default(false)
+  otpCode                  String?
+  otpExpiry                DateTime?
+  phoneNumber              String?
+  phone                    String?
+  phoneVerified            Boolean           @default(false)
+  totpSecret               String?
+  totpEnabled              Boolean           @default(false)
+  totpBackupCodes          String?
+  preferredOtpMethod       String            @default("EMAIL")
+  emailVerified            Boolean           @default(false)
+  location                 String?
+  bio                      String?
+  company                  String?
+  position                 String?
+  website                  String?
+  linkedIn                 String?
+  twitter                  String?
+  profileImage             String?
+  googleRefreshToken       String?
+  googleAccessToken        String?
+  googleIntegrationEnabled Boolean           @default(false)
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
+  resetToken               String?
+  resetTokenExpiry         DateTime?
+  suspended                Boolean           @default(false)
+  suspendedAt              DateTime?
+  suspendedReason          String?
+  suspendedBy              String?
+  deleted                  Boolean           @default(false)
+  deletedAt                DateTime?
+  deletedBy                String?
+  restoredAt               DateTime?
+  restoredBy               String?
+  country                  String?
+  isSuperAdmin            Boolean           @default(false)
+  adminPermissions         String?           // JSON string of custom permissions
+  lastLoginAt             DateTime?
+  lastLoginIp             String?
+  failedLoginAttempts     Int               @default(0)
+  lockedUntil              DateTime?
+  twoFactorEnabled         Boolean           @default(false)
+  backupCodes             String?
+  preferredLanguage        String            @default("en")
+  timezone                String            @default("Africa/Nairobi")
+  passwordChangedAt       DateTime?
+  passwordExpiresAt       DateTime?
+  mustChangePassword      Boolean           @default(false)
+  graceLoginUsed          Int               @default(0) // Grace login attempts used
+  graceLoginAllowed       Boolean           @default(true) // Whether grace login is allowed
+  expiredPasswordCount    Int               @default(0) // Consecutive times password expired
+  lastPasswordExpiry     DateTime?
+  
+  // RBAC - Profile visibility settings
+  profileVisible          Boolean           @default(true) // Toggle profile visibility
+  visibleToRoles          String?           // JSON array of roles that can see this profile
+  
+  business                 Business?
+  chatMessages             ChatMessage[]
+  chatParticipants         ChatParticipant[]
+  favorites                Favorite[]
+  productFavorites         ProductFavorite[]
+  inquiries                Inquiry[]
+  notifications            Notification[]
+  products                 Product[]
+  ratings                  Rating[]
+  successStories           SuccessStory[]
+  activities               UserActivity[]
+  sessions                 UserSession[]
+  profileViews             ProfileView[]
+  searches                 Search[]
+  adminAuditLogs           AuditLog[]          @relation("AdminAuditLogs")
+  passwordHistory         PasswordHistory[]
+  passwordChangeAudits    PasswordChangeAudit[]
+
+  @@index([role])
+  @@index([partnerType])
+  @@index([isVerified])
+  @@index([createdAt])
+  @@index([phoneNumber])
+  @@index([role, isVerified, createdAt(sort: Desc)], map: "idx_users_role_verified_created")
+  @@index([suspended])
+  @@index([deleted])
+  @@index([updatedAt])
+  @@map("users")
+}
+
+model Business {
+  id                         String                  @id @default(cuid())
+  name                       String
+  description                String?
+  location                   String
+  county                     String?
+  town                       String?
+  city                       String?
+  country                    String                  @default("Kenya")
+  coordinates                String?
+  sector                     String
+  contactEmail               String
+  contactPhone               String?
+  companyEmail               String?
+  website                    String?
+  physicalAddress            String?
+  typeOfBusiness             String?
+  businessUserOrganisation   String?
+  companySize                String?
+  numberOfEmployees          String?
+  registrationNumber         String?
+  kraPin                     String?
+  taxId                      String?
+  exportLicense              String?
+  currentExportMarkets       String?
+  companyStory               String?
+  logoUrl                    String?
+  verificationStatus         String                  @default("PENDING")
+  profileComplete            Boolean                 @default(false)
+  rating                     Float?
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
+  ownerId                    String                  @unique
+  featured                   Boolean                 @default(false)
+  featuredAt                 DateTime?
+  featuredBy                 String?
+  published                  Boolean                 @default(true)
+  needsVerification          Boolean                 @default(false)
+  documentsUploadedAt        DateTime?
+  exportLicenseUrl           String?
+  exportVolumePast3Years     String?
+  instagramUrl               String?
+  kenyanNationalId           String?
+  kenyanNationalIdUrl        String?
+  incorporationCertificateUrl String?
+  licenceNumber              String?
+  mobileNumber               String?
+  pinCertificateUrl          String?
+  productionCapacityPast3    String?
+  registrationCertificateUrl String?
+  taxCertificateUrl          String?
+  twitterUrl                 String?
+  verificationDocuments      String?
+  verificationNotes          String?
+  whatsappNumber             String?
+  businessPurpose            String?
+  dateOfIncorporation        String?
+  industry                   String?
+  productCatalog             String?
+  productHsCode              String?
+  serviceOffering            String?
+  legalStructure             String?
+  shareholders               String?
+  managementTeam             String?
+  primaryContactFirstName    String?
+  primaryContactLastName     String?
+  primaryContactEmail        String?
+  primaryContactPhone        String?
+  certifications             BusinessCertification[]
+  owner                      User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  favorites                  Favorite[]
+  inquiries                  Inquiry[]
+  products                   Product[]
+  ratings                    Rating[]
+  profileViews               ProfileView[]
+
+  @@index([sector])
+  @@index([county])
+  @@index([industry])
+  @@index([verificationStatus])
+  @@index([featured, featuredAt])
+  @@index([createdAt])
+  @@index([ownerId])
+  @@index([name])
+  @@index([description])
+  @@index([location])
+  @@index([town])
+  @@index([createdAt(sort: Desc), id], map: "idx_business_created_desc")
+  @@index([county, sector, verificationStatus], map: "idx_business_location_sector")
+  @@index([name, id], map: "idx_business_name_asc")
+  @@index([verificationStatus, createdAt(sort: Desc)], map: "idx_business_verification_created")
+  @@index([verificationStatus, featured, createdAt(sort: Desc)], map: "idx_business_status_featured_created")
+  @@index([sector, verificationStatus], map: "idx_business_sector_status")
+  @@index([profileComplete])
+  @@index([location], map: "idx_businesses_location")
+  @@index([ownerId], map: "idx_businesses_owner")
+  @@index([sector], map: "idx_businesses_sector")
+  @@index([verificationStatus], map: "idx_businesses_verification")
+  @@map("businesses")
+}
+
+model Product {
+  id                String            @id @default(cuid())
+  name              String
+  description       String?
+  category          String
+  imageUrl          String?
+  price             Float?
+  unit              String?
+  minOrder          Int?
+  availability      Boolean           @default(true)
+  verified          Boolean           @default(false)
+  published         Boolean           @default(true)
+  verificationNotes String?
+  views             Int               @default(0)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  businessId        String
+  userId            String
+  inquiries         Inquiry[]
+  productFavorites  ProductFavorite[]
+  business          Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([category])
+  @@index([userId])
+  @@index([verified])
+  @@index([availability])
+  @@index([createdAt])
+  @@index([name])
+  @@index([description])
+  @@index([businessId, category, availability], map: "idx_products_business_category_available")
+  @@index([category, verified, createdAt(sort: Desc)], map: "idx_products_category_verified_created")
+  @@index([createdAt(sort: Desc), id], map: "idx_products_created_desc")
+  @@index([businessId, verified, availability], map: "idx_products_business_verified_available")
+  @@index([views(sort: Desc)])
+  @@index([availability], map: "idx_products_availability")
+  @@index([category], map: "idx_products_category")
+  @@map("products")
+}
+
+model Inquiry {
+  id            String             @id @default(cuid())
+  message       String
+  quantity      Int?
+  targetPrice   Float?
+  status        String             @default("PENDING")
+  response      String?
+  respondedAt   DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  productId     String
+  buyerId       String
+  businessId    String
+  conversations ChatConversation[]
+  buyer         User               @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  product       Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  business      Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([buyerId])
+  @@index([businessId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([productId, status], map: "idx_inquiries_product_status")
+  @@index([businessId, status, createdAt(sort: Desc)], map: "idx_inquiries_business_status_created")
+  @@index([status], map: "idx_inquiries_status")
+  @@map("inquiries")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String
+  link      String?
+  urgency   String   @default("LOW")
+  read      Boolean  @default(false)
+  metadata  String?  // JSON string for additional data
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([type])
+  @@index([createdAt])
+  @@index([userId, read, createdAt(sort: Desc)], map: "idx_notifications_user_read_created")
+  @@map("notifications")
+}
+
+model Certification {
+  id                     String                  @id @default(cuid())
+  name                   String                  @unique
+  description            String?
+  logoUrl                String?
+  isActive               Boolean                 @default(true)
+  sortOrder              Int                     @default(0)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  businessCertifications BusinessCertification[]
+
+  @@index([name])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@map("certifications")
+}
+
+model BusinessCertification {
+  id              String         @id @default(cuid())
+  name            String
+  issuer          String
+  imageUrl        String?
+  validUntil      DateTime?
+  createdAt       DateTime       @default(now())
+  businessId      String
+  certificationId String?
+  logoUrl         String?
+  business        Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  certification   Certification? @relation(fields: [certificationId], references: [id])
+
+  @@index([businessId])
+  @@index([certificationId])
+  @@index([validUntil])
+  @@map("business_certifications")
+}
+
+model OtpCode {
+  id          String   @id @default(cuid())
+  email       String
+  phoneNumber String?
+  code        String
+  type        String   @default("LOGIN")
+  method      String   @default("EMAIL")
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([email])
+  @@index([phoneNumber])
+  @@index([expiresAt])
+  @@index([used])
+  @@map("otp_codes")
+}
+
+model NewsletterSubscriber {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  subscribedDate DateTime @default(now())
+  active         Boolean  @default(true)
+
+  @@map("newsletter_subscribers")
+}
+
+model SiteSettings {
+  id           String   @id @default(cuid())
+  settingKey   String   @unique
+  settingValue String
+  description  String?
+  category     String   @default("general")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  userId     String
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([userId])
+  @@index([businessId])
+  @@map("favorites")
+}
+
+model ProductFavorite {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  userId     String
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+  @@map("product_favorites")
+}
+
+model Rating {
+  id         String   @id @default(cuid())
+  rating     Int
+  review     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([businessId])
+  @@index([rating])
+  @@index([createdAt])
+  @@map("ratings")
+}
+
+model SuccessStory {
+  id                String   @id @default(cuid())
+  title             String
+  story             String
+  companyName       String
+  buyerName         String
+  buyerTitle        String?
+  exporterName      String
+  productCategory   String
+  exportValue       String?
+  exportDestination String
+  imageUrl          String?
+  isApproved        Boolean  @default(false)
+  isFeatured        Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String?
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("success_stories")
+}
+
+model UserSession {
+  id           String         @id @default(cuid())
+  userId       String
+  sessionToken String         @unique
+  deviceInfo   String?
+  ipAddress    String?
+  userAgent    String?
+  location     String?
+  isActive     Boolean        @default(true)
+  lastActivity DateTime       @default(now())
+  expiresAt    DateTime
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  activities   UserActivity[]
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@index([lastActivity])
+  @@map("user_sessions")
+}
+
+model UserActivity {
+  id          String       @id @default(cuid())
+  userId      String
+  sessionId   String?
+  action      String
+  description String?
+  ipAddress   String?
+  userAgent   String?
+  location    String?
+  metadata    String?
+  createdAt   DateTime     @default(now())
+  session     UserSession? @relation(fields: [sessionId], references: [id])
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([action, createdAt(sort: Desc)], map: "idx_user_activities_action_created")
+  @@map("user_activities")
+}
+
+model ChatConversation {
+  id            String            @id @default(cuid())
+  inquiryId     String?
+  subject       String?
+  status        String            @default("ACTIVE")
+  lastMessageAt DateTime          @default(now())
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  inquiry       Inquiry?          @relation(fields: [inquiryId], references: [id])
+  messages      ChatMessage[]
+  participants  ChatParticipant[]
+
+  @@index([inquiryId])
+  @@index([status])
+  @@index([lastMessageAt])
+  @@map("chat_conversations")
+}
+
+model ChatParticipant {
+  id             String           @id @default(cuid())
+  conversationId String
+  userId         String
+  role           String
+  unreadCount    Int              @default(0)
+  lastReadAt     DateTime?
+  joinedAt       DateTime         @default(now())
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+  @@map("chat_participants")
+}
+
+model ChatMessage {
+  id             String           @id @default(cuid())
+  conversationId String
+  senderId       String
+  message        String
+  messageType    String           @default("TEXT")
+  attachmentUrl  String?
+  isRead         Boolean          @default(false)
+  isEdited       Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User             @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+model ExportMarket {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  region      String
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([region])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@map("export_markets")
+}
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  actorUserId    String?
+  entityType     String
+  entityId       String
+  action         String
+  beforeSnapshot String?
+  afterSnapshot  String?
+  ipAddress      String?
+  userAgent      String?
+  timestamp      DateTime @default(now())
+
+  // Relation to admin user who performed the action
+  adminUser      User?    @relation("AdminAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([action])
+  @@index([timestamp])
+  @@index([action, timestamp(sort: Desc)], map: "idx_audit_logs_action_timestamp")
+  @@map("audit_logs")
+}
+
+model ProfileView {
+  id              String    @id @default(cuid())
+  businessId      String
+  viewerId        String?
+  viewerIp        String?
+  viewerUserAgent String?
+  source          String    @default("directory") // directory, search, direct, referral
+  viewedAt        DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  
+  business        Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  viewer          User?     @relation(fields: [viewerId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@index([viewerId])
+  @@index([viewedAt])
+  @@index([createdAt])
+  @@index([source])
+  @@index([businessId, viewedAt(sort: Desc)], map: "idx_profile_views_business_viewed")
+  @@map("profile_views")
+}
+
+
+model Search {
+  id           String   @id @default(cuid())
+  userId       String
+  query        String?
+  filters      String?
+  resultsCount Int?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@map("searches")
+}
+
+// Password Expiry Management Models
+
+/// Password policy configuration per role
+model PasswordPolicy {
+  id                   String   @id @default(cuid())
+  role                 String   @unique // ADMIN, EXPORTER, BUYER, etc.
+  maxAgeDays           Int      @default(90) // Password expiry in days
+  minAgeDays           Int      @default(1) // Minimum days before password can be changed
+  minLength            Int      @default(8)
+  requireUppercase     Boolean  @default(true)
+  requireLowercase     Boolean  @default(true)
+  requireNumbers       Boolean  @default(true)
+  requireSpecialChars  Boolean  @default(true)
+  historyCount         Int      @default(5) // Number of passwords to remember
+  warnDays             Int      @default(7) // Days before expiry to warn user
+  lockoutMinutes       Int      @default(30) // Lockout duration after failed attempts
+  maxFailedAttempts    Int      @default(5) // Max failed attempts before lockout
+  
+  // Grace login settings
+  graceLoginEnabled    Boolean  @default(true) // Allow login after password expires
+  graceLoginDays       Int      @default(3) // Days of grace after expiration
+  graceLoginAttempts   Int      @default(2) // Limited attempts during grace period
+  
+  // Notification settings
+  notifyBeforeExpiry   Boolean  @default(true) // Send notification before expiry
+  notifyOnExpiry       Boolean  @default(true) // Send notification on expiry day
+  notifyOnGraceExpiry  Boolean  @default(true) // Send notification when grace period ends
+  
+  // Password enforcement
+  enforceOnLogin       Boolean  @default(false) // Force password change on next login
+  maxConsecutiveExpired Int     @default(3) // Max times password can expire before lockout
+  
+  isActive             Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("password_policies")
+}
+
+/// Password history to prevent reuse
+model PasswordHistory {
+  id            String   @id @default(cuid())
+  userId        String
+  passwordHash  String
+  changedAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([changedAt])
+  @@map("password_history")
+}
+
+/// Audit log for password changes
+model PasswordChangeAudit {
+  id            String   @id @default(cuid())
+  userId        String
+  action        String   // PASSWORD_CHANGED, PASSWORD_EXPIRED, PASSWORD_RESET, FORCE_CHANGE
+  ipAddress     String?
+  userAgent     String?
+  reason        String?
+  changedAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([changedAt])
+  @@index([action])
+  @@map("password_change_audits")
+}

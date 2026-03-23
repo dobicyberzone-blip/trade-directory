@@ -1,0 +1,452 @@
+{
+  "entities": {
+    "Business": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Business",
+      "type": "object",
+      "description": "Represents a business registered on the Kenya Trade Hub.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Business entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the business."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the business."
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Business). The user who owns/manages this business."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date the business was registered.",
+          "format": "date-time"
+        },
+        "verificationStatus": {
+          "type": "string",
+          "description": "The verification status of the business (e.g., pending, approved, rejected)."
+        },
+        "sector": {
+          "type": "string",
+          "description": "The sector the business operates in."
+        },
+        "location": {
+          "type": "string",
+          "description": "The location of the business."
+        },
+        "latitude": {
+            "type": "number",
+            "description": "The latitude of the business location."
+        },
+        "longitude": {
+            "type": "number",
+            "description": "The longitude of the business location."
+        },
+        "contactEmail": {
+          "type": "string",
+          "description": "The contact email address for the business.",
+          "format": "email"
+        },
+        "contactPhone": {
+          "type": "string",
+          "description": "The contact phone number for the business."
+        },
+        "websiteUrl": {
+          "type": "string",
+          "description": "The website URL for the business.",
+          "format": "uri"
+        },
+        "profileComplete": {
+            "type": "boolean",
+            "description": "Whether the detailed business profile has been completed."
+        },
+        "companyLogoUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "typeOfBusiness": {
+            "type": "string"
+        },
+        "yearOfEstablishment": {
+            "type": "number"
+        },
+        "numberOfEmployees": {
+            "type": "string"
+        },
+        "kraPin": {
+            "type": "string"
+        },
+        "registrationCertificateUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "pinCertificateUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "county": {
+            "type": "string"
+        },
+        "town": {
+            "type": "string"
+        },
+        "physicalAddress": {
+            "type": "string"
+        },
+        "companyStory": {
+            "type": "string"
+        },
+        "whatsappNumber": {
+            "type": "string"
+        },
+        "facebookUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "instagramUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "linkedinUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "twitterUrl": {
+            "type": "string",
+            "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "ownerId",
+        "registrationDate",
+        "verificationStatus",
+        "sector",
+        "location",
+        "contactEmail",
+        "contactPhone"
+      ]
+    },
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a product listed on the Kenya Trade Hub.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Product entity."
+        },
+        "businessId": {
+          "type": "string",
+          "description": "Reference to Business. (Relationship: Business 1:N Product). The business that owns/lists this product."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the product."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the product."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the product."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of an image of the product",
+          "format": "uri"
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the product."
+        },
+        "currency": {
+          "type": "string",
+          "description": "The currency of the product price."
+        },
+        "approvalStatus": {
+          "type": "string",
+          "description": "The approval status of the product (e.g., pending, approved, rejected)."
+        },
+        "availableUnits": {
+          "type": "number",
+          "description": "The amount of available product"
+        },
+        "hsCode": {
+          "type": "string",
+          "description": "The Harmonized System (HS) code for the product."
+        }
+      },
+      "required": [
+        "id",
+        "businessId",
+        "name",
+        "description",
+        "category",
+        "imageUrl",
+        "price",
+        "currency",
+        "approvalStatus"
+      ]
+    },
+    "Inquiry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Inquiry",
+      "type": "object",
+      "description": "Represents an inquiry sent by a buyer regarding a product.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Inquiry entity."
+        },
+        "buyerId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Inquiry). The user who sent the inquiry."
+        },
+        "buyerEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "The email of the user who sent the inquiry. Denormalized for easy access by the exporter."
+        },
+        "businessId": {
+          "type": "string",
+          "description": "Reference to Business. The business that will receive the inquiry. Denormalized for rule-based queries."
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to Product. (Relationship: Product 1:N Inquiry). The product the inquiry is about."
+        },
+        "message": {
+          "type": "string",
+          "description": "The content of the inquiry message."
+        },
+        "sentDate": {
+          "type": "string",
+          "description": "The date the inquiry was sent.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the inquiry (e.g., sent, received, responded)."
+        }
+      },
+      "required": [
+        "id",
+        "buyerId",
+        "businessId",
+        "productId",
+        "message",
+        "sentDate",
+        "status"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Kenya Trade Hub.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the user (e.g., buyer, exporter, admin)."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date the user registered.",
+          "format": "date-time"
+        },
+        "languagePreference": {
+          "type": "string",
+          "description": "The user's preferred language."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "firstName",
+        "lastName",
+        "role",
+        "registrationDate"
+      ]
+    },
+    "Notification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Notification",
+      "type": "object",
+      "description": "Represents a notification sent to a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Notification entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Notification). The user who received the notification."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of notification (e.g., account registration, inquiry received)."
+        },
+        "message": {
+          "type": "string",
+          "description": "The content of the notification."
+        },
+        "sentDate": {
+          "type": "string",
+          "description": "The date the notification was sent.",
+          "format": "date-time"
+        },
+        "isRead": {
+          "type": "boolean",
+          "description": "Whether the notification has been read by the user."
+        },
+        "emailSent": {
+          "type": "boolean",
+          "description": "Whether an email notification has been sent"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "type",
+        "message",
+        "sentDate",
+        "isRead"
+      ]
+    },
+    "ChatMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatMessage",
+      "type": "object",
+      "description": "Represents a chat message between users.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ChatMessage entity."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to User. The user who sent the message."
+        },
+        "recipientId": {
+          "type": "string",
+          "description": "Reference to User. The user who received the message."
+        },
+        "message": {
+          "type": "string",
+          "description": "The content of the chat message."
+        },
+        "sentDate": {
+          "type": "string",
+          "description": "The date the message was sent.",
+          "format": "date-time"
+        },
+        "inquiryId": {
+          "type": "string",
+          "description": "Reference to Inquiry. Optional reference to the related inquiry."
+        }
+      },
+      "required": [
+        "id",
+        "senderId",
+        "recipientId",
+        "message",
+        "sentDate"
+      ]
+    },
+    "NewsletterSubscriber": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "NewsletterSubscriber",
+      "type": "object",
+      "description": "Represents a user who has subscribed to the newsletter.",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The email address of the subscriber."
+        },
+        "subscribedDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time when the user subscribed."
+        }
+      },
+      "required": ["email", "subscribedDate"]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "Stores user profiles. Path-based ownership ensures only the user can access their own profile."
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": {
+        "$ref": "#/entities/Notification"
+      },
+      "description": "Stores notifications for each user. Path-based ownership ensures only the user can access their notifications."
+    },
+    "/businesses/{businessId}": {
+      "schema": {
+        "$ref": "#/entities/Business"
+      },
+      "description": "Stores business profiles. Includes 'ownerId' for identifying the business owner."
+    },
+    "/businesses/{businessId}/products/{productId}": {
+      "schema": {
+        "$ref": "#/entities/Product"
+      },
+      "description": "Stores products listed by a business. Inherits authorization from the business via the 'businessId'."
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": {
+        "$ref": "#/entities/Inquiry"
+      },
+      "description": "Stores inquiries sent by buyers regarding a product. Links buyer and product via 'buyerId' and 'productId'."
+    },
+    "/chat_messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/ChatMessage"
+      },
+      "description": "Stores chat messages between users. Links sender, recipient and optionally, an inquiry."
+    },
+    "/newsletter_subscribers/{subscriberId}": {
+        "schema": {
+            "$ref": "#/entities/NewsletterSubscriber"
+        },
+        "description": "Stores email addresses of users who subscribed to the newsletter."
+    }
+  }
+}

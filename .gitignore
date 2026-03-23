@@ -1,0 +1,71 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# test files
+test-*.js
+check-*.js
+
+.genkit/*
+.env*
+env
+
+# firebase
+firebase-debug.log
+firestore-debug.log
+
+# uploads - ignore uploaded files but keep directory structure
+/public/uploads/chat/*
+!/public/uploads/chat/.gitkeep
+
+# logs
+/logs
+*.log
+
+# IDE and editor files
+.kilocode/
+.kiro/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+Thumbs.db
+.DS_Store

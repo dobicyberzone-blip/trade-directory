@@ -1,0 +1,155 @@
+/**
+ * Authentication utilities for token management
+ */
+
+export const clearAuthData = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+
+  }
+};
+
+export const setUserData = (user: unknown) => {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('user', JSON.stringify(user));
+
+    } catch (error) {
+
+    }
+  }
+};
+
+export const getUserData = (): unknown | null => {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    return JSON.parse(userStr);
+  } catch (error) {
+
+    return null;
+  }
+};
+
+export const hasValidToken = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  const token = localStorage.getItem('auth_token');
+  if (!token) return false;
+  
+  try {
+    // Basic JWT structure check (header.payload.signature)
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+
+      clearAuthData();
+      return false;
+    }
+    
+    // Decode payload to check expiration
+    const payload = JSON.parse(atob(parts[1]));
+    const now = Math.floor(Date.now() / 1000);
+    
+    if (payload.exp && payload.exp < now) {
+
+      clearAuthData();
+      return false;
+    }
+    
+    // Check if token is about to expire (within 1 hour)
+    if (payload.exp && (payload.exp - now) < 3600) {
+
+    }
+    
+    return true;
+  } catch (error) {
+
+    clearAuthData();
+    return false;
+  }
+};
+
+export const getTokenInfo = () => {
+  if (typeof window === 'undefined') return null;
+  
+  const token = localStorage.getItem('auth_token');
+  if (!token) return null;
+  
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    
+    const payload = JSON.parse(atob(parts[1]));
+    return {
+      userId: payload.userId,
+      exp: payload.exp,
+      iat: payload.iat,
+      isExpired: payload.exp ? payload.exp < Math.floor(Date.now() / 1000) : false
+    };
+  } catch {
+    return null;
+  }
+};
+
+// Server-side token verification
+import { NextRequest } from 'next/server';
+import jwt from 'jsonwebtoken';
+
+export interface TokenPayload {
+  userId: string;
+  email: string;
+  role: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN';
+  isSuperAdmin?: boolean;
+  iat?: number;
+  exp?: number;
+}
+
+export async function verifyToken(request: NextRequest): Promise<TokenPayload | null> {
+  try {
+    const authHeader = request.headers.get('authorization');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+      return null;
+    }
+
+    const token = authHeader.substring(7);
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+
+      return null;
+    }
+
+    // Check if JWT_SECRET is still the placeholder value
+    if (jwtSecret.includes('change-this') || jwtSecret === 'your-super-secret-jwt-key-change-this-in-production') {
+
+      return null;
+    }
+
+    const decoded = jwt.verify(token, jwtSecret) as TokenPayload;
+
+    // Normalize SUPER_ADMIN role to ADMIN with isSuperAdmin flag
+    if (decoded.role === 'SUPER_ADMIN') {
+      return {
+        ...decoded,
+        role: 'ADMIN',
+        isSuperAdmin: true,
+      };
+    }
+
+    return decoded;
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+
+    } else if (error instanceof jwt.TokenExpiredError) {
+
+    } else {
+
+    }
+    return null;
+  }
+}

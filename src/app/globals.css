@@ -1,0 +1,658 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================
+   CUSTOM SCROLLBAR - Conversation List
+========================= */
+.conversation-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.conversation-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 3px;
+}
+.conversation-scroll::-webkit-scrollbar-thumb {
+  background-color: #22c55e;
+  border-radius: 3px;
+}
+.conversation-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #16a34a;
+}
+
+/* =========================
+   STICKY FOOTER UTILITIES
+   Flexbox-based sticky footer solution
+   that works with fixed header
+========================= */
+@layer utilities {
+  /* Flex container for sticky footer - apply to the wrapper div */
+  .sticky-footer-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Main content that grows to fill available space */
+  .sticky-footer-main {
+    flex-grow: 1;
+    flex-shrink: 0;
+  }
+
+  /* Footer that stays at bottom but flows naturally when content is long */
+  .sticky-footer {
+    flex-shrink: 0;
+  }
+}
+
+/* =========================
+   BASE THEME VARIABLES
+========================= */
+@layer base {
+  :root {
+    --background: 120 60% 97%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 120 61% 34%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 45 100% 51%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 120 61% 34%;
+    --radius: 0.5rem;
+    --footer: 220 12% 20%;
+    --footer-foreground: 210 20% 90%;
+  }
+
+  .dark {
+    --background: 0 0% 7%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 120 39% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 69%;
+    --accent: 45 100% 51%;
+    --accent-foreground: 0 0% 7%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 120 39% 55%;
+    --footer: 0 0% 10%;
+    --footer-foreground: 0 0% 80%;
+  }
+
+  /* Mobile-first fluid typography base */
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (max-width: 480px) {
+    html {
+      font-size: 14px;
+    }
+  }
+}
+
+/* =========================
+   GLOBAL BASE STYLES
+========================= */
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    @apply antialiased;
+    overflow-x: hidden;
+    max-width: 100vw;
+    height: 100%;
+  }
+
+  html {
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    top: 0 !important;
+    padding-top: 0 !important;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Main content area should grow to fill available space for sticky footer */
+  main {
+    flex: 1 0 auto;
+  }
+
+  /* Footer should shrink to fit its content */
+  footer {
+    flex-shrink: 0;
+  }
+
+  /* Prevent horizontal scroll on all elements */
+  * {
+    max-width: 100%;
+  }
+
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Table responsiveness */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* Proper scrollbar for dashboard */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  .siderbar-nav-item-active {
+    @apply bg-accent text-white;
+  }
+}
+
+/* =========================
+   ARC GIS POPUPS
+========================= */
+.arcgis-popup-content {
+  font-family: inherit;
+}
+
+.arcgis-popup-content img {
+  border-radius: 0.5rem;
+}
+
+.arcgis-popup-content button {
+  transition: all 0.2s ease-in-out;
+}
+
+.arcgis-popup-content button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* =========================
+   MOBILE RESPONSIVE UTILITIES
+========================= */
+
+/* Extra small screens (under 480px) */
+@media (max-width: 480px) {
+  /* Touch-friendly spacing */
+  .touch-spacing {
+    padding: 12px !important;
+  }
+  
+  /* Larger touch targets */
+  .touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  /* Prevent text overflow */
+  .no-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Mobile card styles */
+  .mobile-card {
+    padding: 12px !important;
+    margin: 8px 0 !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Hide on mobile */
+  .hidden-xs {
+    display: none !important;
+  }
+}
+
+/* Small screens and up (640px+) */
+@media (min-width: 640px) {
+  .sm\:touch-target {
+    min-height: 40px !important;
+    min-width: 40px !important;
+  }
+}
+
+/* =========================
+   RESPONSIVE TABLE TO CARD TRANSFORMATION
+========================= */
+
+/* Mobile table - hide original table */
+@media (max-width: 768px) {
+  .responsive-table-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .responsive-table-container table,
+  .responsive-table-container thead,
+  .responsive-table-container tbody,
+  .responsive-table-container th,
+  .responsive-table-container td,
+  .responsive-table-container tr {
+    display: block;
+    width: 100%;
+  }
+  
+  .responsive-table-container thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  .responsive-table-container tr {
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: hsl(var(--card));
+    padding: 12px;
+  }
+  
+  .responsive-table-container td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: left;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .responsive-table-container td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  
+  .responsive-table-container td::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+/* =========================
+   DASHBOARD MOBILE FIXES
+========================= */
+
+/* Dashboard content overflow fix */
+.dashboard-content {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ensure grid items don't overflow */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .dashboard-grid {
+    gap: 12px;
+  }
+}
+
+/* Mobile sidebar overlay fix */
+@media (max-width: 768px) {
+  .MuiDrawer-root .MuiDrawer-paper {
+    z-index: 1300 !important;
+  }
+  
+  .MuiModal-root .MuiBackdrop-root {
+    z-index: 1200 !important;
+  }
+  
+  /* Fix for MUI table overflow on mobile */
+  .MuiTableContainer-root {
+    overflow-x: auto !important;
+    max-width: 100%;
+  }
+  
+  /* Ensure cards don't overflow */
+  .MuiCard-root {
+    overflow: hidden;
+    max-width: 100%;
+  }
+  
+  /* Fix for dialogs on mobile */
+  .MuiDialog-paper {
+    margin: 16px !important;
+    max-width: calc(100% - 32px) !important;
+    width: 100% !important;
+  }
+  
+  /* Ensure form elements are full width on mobile */
+  .MuiTextField-root,
+  .MuiFormControl-root {
+    width: 100% !important;
+  }
+}
+
+/* =========================
+   FORM ELEMENTS MOBILE
+========================= */
+
+/* Mobile-friendly form inputs */
+@media (max-width: 480px) {
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  .mobile-input {
+    padding: 12px 16px !important;
+    min-height: 44px !important;
+  }
+  
+  .mobile-button {
+    padding: 12px 20px !important;
+    min-height: 44px !important;
+    font-size: 1rem !important;
+  }
+}
+
+/* =========================
+   NAVIGATION MENU
+========================= */
+.navigation-menu-list {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+}
+
+.navigation-menu-list > * {
+  flex-shrink: 0 !important;
+}
+
+
+
+
+/* Header stays fixed at top */
+header {
+  top: 0 !important;
+  z-index: 50 !important;
+  position: fixed;
+  width: 100%;
+  overflow: visible !important;
+}
+
+/* Ensure header content doesn't clip */
+header > div {
+  overflow: visible !important;
+}
+
+/* User avatar button - ensure it's always visible */
+header button[data-avatar-button],
+header [role="button"] {
+  overflow: visible !important;
+}
+
+/* Remove focus rings and borders from avatar button */
+header button:has([data-radix-avatar-root]),
+header button:focus:has([data-radix-avatar-root]),
+header button:focus-visible:has([data-radix-avatar-root]) {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  ring: none !important;
+}
+
+/* Avatar component - ensure proper sizing */
+header [data-radix-avatar-root] {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  flex-shrink: 0 !important;
+}
+
+header [data-radix-avatar-fallback] {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+/* Dropdown menu positioning - ensure dropdowns are above everything except modals */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}
+
+/* Ensure dropdown content is clickable and above all other elements */
+[role="menu"],
+[role="listbox"] {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+/* Mobile menu overlay */
+[data-sheet-overlay] {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+/* Mobile menu content */
+[data-sheet-content] {
+  height: 100vh;
+  overflow-y: auto;
+  background: hsl(var(--card));
+}
+
+/* Google Translate bar fixed at very top */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 40px !important;
+  z-index: 99999 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure body doesn't get pushed down by Google Translate */
+body {
+  top: 0 !important;
+  position: relative !important;
+}
+
+/* When Google Translate is active, ensure consistent spacing */
+body.translated-ltr,
+body.translated-rtl {
+  top: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Allow the translate dropdown menu to be visible */
+.goog-te-menu-frame {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
+/* Google Translate Popup Panel */
+.goog-te-menu-frame {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 0.5rem !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+}
+
+.goog-te-menu2 {
+  border: none !important;
+  padding: 0.5rem !important;
+}
+
+.goog-te-menu2-item {
+  padding: 0.5rem 1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.goog-te-menu2-item:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+
+/* =========================
+   CAROUSEL ZOOM FIX
+========================= */
+/* Prevent carousel from clipping content on zoom */
+[data-carousel-container] {
+  overflow: visible !important;
+}
+
+/* Allow carousel content to be visible */
+.embla,
+.embla__viewport {
+  overflow: visible !important;
+}
+
+/* Ensure hero section content is visible on zoom */
+section.relative {
+  overflow: visible;
+}
+
+/* Only hide overflow for images, not the whole section */
+section.relative > div:first-child {
+  overflow: hidden;
+}
+
+/* Make sure buttons and text are always visible */
+.relative.z-10 {
+  overflow: visible !important;
+}
+
+/* =========================
+   HIDE VERCEL TOOLBAR
+========================= */
+/* Hide Vercel Speed Insights and Toolbar */
+#vercel-live-feedback-button,
+[data-vercel-toolbar],
+[data-vercel-speed-insights],
+.__vercel_toolbar,
+.__vercel_speed_insights {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* =========================
+   HERO CAROUSEL ANIMATIONS
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+/* Smooth image transitions */
+.hero-image-transition {
+  transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+}
+
+/* =========================
+   CHART TEXT VISIBILITY
+========================= */
+/* Ensure chart text is always visible */
+.recharts-text,
+.recharts-cartesian-axis-tick-value,
+.recharts-label,
+.recharts-legend-item-text {
+  fill: currentColor !important;
+  color: inherit !important;
+}
+
+/* Chart container text color */
+.recharts-wrapper {
+  color: inherit;
+}
+
+/* SVG text elements */
+svg text {
+  fill: currentColor;
+}
