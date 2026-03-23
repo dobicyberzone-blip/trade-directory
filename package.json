@@ -130,5 +130,8 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "overrides": {
+    "date-fns-jalali": "4.1.0-0"
   }
 }
