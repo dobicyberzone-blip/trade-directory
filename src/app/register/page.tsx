@@ -710,8 +710,9 @@ function RegisterPageContent({
                                   <Input 
                                     placeholder="e.g., CPR/2020/123456" 
                                     {...field} 
-                                    className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
+                                    className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
                                   />
+                                  {/* TODO: BRS integration — uncomment when Business Registration Services API is ready
                                   <button
                                     type="button"
                                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-blue-600 hover:text-blue-800"
@@ -719,6 +720,7 @@ function RegisterPageContent({
                                   >
                                     Verify
                                   </button>
+                                  */}
                                 </div>
                               </FormControl>
                               <FormMessage />
