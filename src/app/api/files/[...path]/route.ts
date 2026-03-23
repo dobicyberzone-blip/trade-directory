@@ -18,8 +18,9 @@ export async function GET(
 ) {
   try {
     const { path } = await params;
-    // Only allow serving from uploads directory
-    const relativePath = path.join('/');
+    // path may start with 'uploads/' (from legacy /uploads/ rewrites) — strip it
+    const segments = path[0] === 'uploads' ? path.slice(1) : path;
+    const relativePath = segments.join('/');
     const filePath = join(process.cwd(), 'public', 'uploads', relativePath);
 
     // Security: prevent path traversal
@@ -29,7 +30,8 @@ export async function GET(
     }
 
     if (!existsSync(filePath)) {
-      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+      console.error(`[files] Not found: ${filePath}`);
+      return NextResponse.json({ error: 'File not found', path: filePath }, { status: 404 });
     }
 
     const fileBuffer = readFileSync(filePath);
