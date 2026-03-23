@@ -431,10 +431,12 @@ export default function BusinessVerificationPage() {
         params.append('published', advancedFilters.published);
       }
 
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/admin/business-verification-v2?${params}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache',
+          'Authorization': `Bearer ${token}`,
         },
       });
       
@@ -662,7 +664,12 @@ export default function BusinessVerificationPage() {
       if (advancedFilters.rating) params.append('minRating', advancedFilters.rating);
       if (advancedFilters.published !== '') params.append('published', advancedFilters.published);
 
-      const response = await fetch(`/api/admin/business-verification-v2?${params}`);
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`/api/admin/business-verification-v2?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       if (!response.ok) throw new Error('Failed to fetch data for export');
       
       const result = await response.json();
