@@ -454,31 +454,6 @@ export function ExporterGridCard({ business, onViewProfileClick, hideActions }: 
             )}
           </div>
 
-          {/* Rating - only shown here if no company type */}
-          {!business.typeOfBusiness && business.rating && (
-            <div className="flex items-center gap-1 flex-wrap mb-3">
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={cn(
-                      'h-3 w-3',
-                      i < Math.floor(business.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                    )}
-                  />
-                ))}
-              </div>
-              <span className="text-xs font-medium text-gray-700">
-                {(business.rating || 0).toFixed(1)}
-              </span>
-              {business.totalRatings && business.totalRatings > 0 && (
-                <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                  ({business.totalRatings})
-                </span>
-              )}
-            </div>
-          )}
-
           {/* Company Story */}
           {business.companyStory && (
             <p className="text-xs text-muted-foreground mb-4 line-clamp-3">{business.companyStory}</p>
