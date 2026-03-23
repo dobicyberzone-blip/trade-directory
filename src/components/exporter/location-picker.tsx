@@ -217,10 +217,11 @@ export function LocationPicker({
                     Update Location
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent aria-describedby="location-dialog-desc">
                   <DialogHeader>
                     <DialogTitle>Update Business Location</DialogTitle>
                   </DialogHeader>
+                  <p id="location-dialog-desc" className="sr-only">Set your business GPS coordinates using your device location or by entering them manually.</p>
                   <LocationPickerContent
                     manualLat={manualLat}
                     manualLng={manualLng}
@@ -246,10 +247,11 @@ export function LocationPicker({
                     Set Location
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent aria-describedby="location-set-dialog-desc">
                   <DialogHeader>
                     <DialogTitle>Set Business Location</DialogTitle>
                   </DialogHeader>
+                  <p id="location-set-dialog-desc" className="sr-only">Set your business GPS coordinates using your device location or by entering them manually.</p>
                   <LocationPickerContent
                     manualLat={manualLat}
                     manualLng={manualLng}

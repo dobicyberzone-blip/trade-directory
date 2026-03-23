@@ -312,7 +312,6 @@ export async function PUT(request: NextRequest) {
       'kenyanNationalId', 'logoUrl',
       'numberOfEmployees', 'kraPin',
       'registrationCertificateUrl', 'pinCertificateUrl', 'exportLicense',
-      'coordinates',
     ];
     const regOwnedRequired = ['name', 'sector', 'town', 'county', 'physicalAddress', 'contactPhone', 'companyEmail'];
     const editableComplete = editableRequiredFields.filter(f => businessData[f] ?? existingBusiness[f as keyof typeof existingBusiness]).length;

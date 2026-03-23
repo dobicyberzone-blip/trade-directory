@@ -94,7 +94,7 @@ const businessFormSchema = z.object({
   primaryContactPhone: z.string().optional(),
   
   // Location GPS
-  coordinates: z.string().min(1, 'GPS coordinates are required'),
+  coordinates: z.string().optional(),
   
   // Company Capacity
   exportVolumePast3Years: z.string().optional(),
@@ -307,7 +307,7 @@ export function BusinessProfileForm({
       'kenyanNationalId', 'name', 'logoUrl',
       'numberOfEmployees', 'kraPin', 'sector',
       'registrationCertificateUrl', 'pinCertificateUrl', 'exportLicense',
-      'town', 'county', 'physicalAddress', 'contactPhone', 'companyEmail', 'coordinates'
+      'town', 'county', 'physicalAddress', 'contactPhone', 'companyEmail'
     ];
     
     const optionalFields = [
@@ -393,7 +393,7 @@ export function BusinessProfileForm({
     1: ['numberOfEmployees', 'kraPin'],           // sector/typeOfBusiness are read-only
     2: ['registrationCertificateUrl', 'pinCertificateUrl'],
     3: [],                                        // town/county/address/phone/email all read-only
-    4: ['coordinates'],
+    4: [],
     5: [],
   };
 
@@ -954,10 +954,13 @@ export function BusinessProfileForm({
             </div>
 
             <LocationPicker
-              label="Precise Location (GPS) *"
+              label="Precise Location (GPS)"
               description="Click 'Update Location' to set your business location on the map"
               value={form.watch('coordinates')}
-              onChange={(coordinates) => form.setValue('coordinates', coordinates)}
+              onChange={(coordinates) => {
+                form.setValue('coordinates', coordinates, { shouldDirty: true, shouldValidate: true });
+                silentAutoSave();
+              }}
             />
             {form.formState.errors.coordinates && (
               <p className="text-sm text-red-600 mt-1">
