@@ -441,7 +441,15 @@ export default function BusinessVerificationPage() {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to fetch businesses');
+        const errBody = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+          // Token expired or invalid — redirect to login
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          return;
+        }
+        throw new Error(errBody.error || `Server error ${response.status}`);
       }
       
       const result = await response.json();
@@ -451,7 +459,7 @@ export default function BusinessVerificationPage() {
 
       toast({
         title: 'Error',
-        description: 'Failed to load businesses',
+        description: error instanceof Error ? error.message : 'Failed to load businesses',
         variant: 'destructive',
       });
     } finally {
@@ -465,10 +473,12 @@ export default function BusinessVerificationPage() {
 
   const handleApprove = async (id: string, note?: string) => {
     try {
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/admin/business-verification-v2`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ 
           id,
@@ -510,10 +520,12 @@ export default function BusinessVerificationPage() {
 
   const handleReject = async (id: string, reason?: string) => {
     try {
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/admin/business-verification-v2`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ 
           id,
