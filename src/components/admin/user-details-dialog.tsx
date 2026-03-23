@@ -21,7 +21,8 @@ import {
   Save,
   X,
   Shield,
-  MapPin
+  MapPin,
+  Trash2
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -30,11 +31,14 @@ interface UserDetailsDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onUserUpdated: () => void;
+  isSuperAdmin?: boolean;
+  onDeleteUser?: (userId: string) => void;
 }
 
-export function UserDetailsDialog({ user, isOpen, onClose, onUserUpdated }: UserDetailsDialogProps) {
+export function UserDetailsDialog({ user, isOpen, onClose, onUserUpdated, isSuperAdmin, onDeleteUser }: UserDetailsDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -111,6 +115,7 @@ export function UserDetailsDialog({ user, isOpen, onClose, onUserUpdated }: User
   };
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full p-4 sm:p-6">
         <DialogHeader>
@@ -163,6 +168,16 @@ export function UserDetailsDialog({ user, isOpen, onClose, onUserUpdated }: User
                     Save
                   </Button>
                 </>
+              )}
+              {isSuperAdmin && !isEditing && (
+                <Button
+                  variant="outline"
+                  onClick={() => setDeleteConfirmOpen(true)}
+                  className="flex-1 sm:flex-none text-sm text-red-600 border-red-200 hover:bg-red-50 hover:border-red-400"
+                >
+                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Delete
+                </Button>
               )}
             </div>
           </div>
@@ -345,5 +360,37 @@ export function UserDetailsDialog({ user, isOpen, onClose, onUserUpdated }: User
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* Delete Confirmation */}
+    {isSuperAdmin && (
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Delete User</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600 py-2">
+            Are you sure you want to permanently delete <strong>{user?.firstName} {user?.lastName}</strong>? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => {
+                if (user && onDeleteUser) {
+                  onDeleteUser(user.id);
+                  setDeleteConfirmOpen(false);
+                  onClose();
+                }
+              }}
+            >
+              Delete Permanently
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )}
+  </>
   );
 }

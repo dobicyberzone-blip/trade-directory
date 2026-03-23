@@ -408,11 +408,12 @@ export default function UserManagementPage() {
     setIsDetailsDialogOpen(true);
   };
 
-  const handleDeleteUser = async () => {
-    if (!userToDelete) return;
+  const handleDeleteUser = async (directId?: string) => {
+    const id = directId || userToDelete;
+    if (!id) return;
 
     try {
-      await apiClient.deleteUser(userToDelete);
+      await apiClient.deleteUser(id);
       toast({
         title: 'Success',
         description: 'User deleted successfully'
@@ -421,10 +422,9 @@ export default function UserManagementPage() {
       setUserToDelete(null);
       fetchData();
     } catch (error) {
-
       toast({
         title: 'Error',
-        description: 'Failed to delete user',
+        description: error instanceof Error ? error.message : 'Failed to delete user',
         variant: 'destructive'
       });
     }
@@ -776,6 +776,13 @@ export default function UserManagementPage() {
           setSelectedUser(null);
         }}
         onUserUpdated={fetchData}
+        isSuperAdmin={isSuperAdmin}
+        onDeleteUser={(userId) => {
+          setUserToDelete(userId);
+          setIsDetailsDialogOpen(false);
+          setSelectedUser(null);
+          handleDeleteUser(userId);
+        }}
       />
 
       {/* Create User Dialog */}
@@ -830,7 +837,7 @@ export default function UserManagementPage() {
             Cancel
           </Button>
           <Button 
-            onClick={handleDeleteUser}
+            onClick={() => handleDeleteUser()}
             color="error"
             variant="contained"
           >
