@@ -78,8 +78,8 @@ export function requirePermission(
 
       const userRole = tokenPayload.role as UserRole;
 
-      // Check if user has the required permission
-      if (!hasPermission(userRole, permission)) {
+      // Super admins bypass all permission checks
+      if (!tokenPayload.isSuperAdmin && !hasPermission(userRole, permission)) {
         return NextResponse.json(
           { error: `Forbidden - Required permission: ${permission}` },
           { status: 403 }
@@ -137,17 +137,19 @@ export function withRBAC(
 
       const userRole = tokenPayload.role as UserRole;
 
-      // Check permissions
+      // Check permissions — super admins bypass all checks
       const permissions = Array.isArray(requiredPermissions) 
         ? requiredPermissions 
         : [requiredPermissions];
 
-      for (const permission of permissions) {
-        if (!hasPermission(userRole, permission)) {
-          return NextResponse.json(
-            { error: `Forbidden - Required permission: ${permission}` },
-            { status: 403 }
-          );
+      if (!tokenPayload.isSuperAdmin) {
+        for (const permission of permissions) {
+          if (!hasPermission(userRole, permission)) {
+            return NextResponse.json(
+              { error: `Forbidden - Required permission: ${permission}` },
+              { status: 403 }
+            );
+          }
         }
       }
 

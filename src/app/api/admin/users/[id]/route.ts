@@ -34,7 +34,7 @@ const updateUserSchema = z.object({
 // GET /api/admin/users/[id] - Get user details
 export const GET = requirePermission(
   Permission.USER_VIEW,
-  async (request, user) => {
+  async (request, _context) => {
     try {
       const userId = request.url.split('/').pop();
       
@@ -93,7 +93,7 @@ export const GET = requirePermission(
       }
 
       await logAuditAction({
-        userId: user.userId,
+        userId: request.user?.userId || 'unknown',
         action: 'USER_VIEWED',
         resourceType: 'USER',
         resourceId: userId,
@@ -114,7 +114,7 @@ export const GET = requirePermission(
 // PUT /api/admin/users/[id] - Update user
 export const PUT = requirePermission(
   Permission.USER_EDIT,
-  async (request, user) => {
+  async (request, _context) => {
     try {
       const userId = request.url.split('/').pop();
       
@@ -186,7 +186,7 @@ export const PUT = requirePermission(
       });
 
       await logAuditAction({
-        userId: user.userId,
+        userId: request.user?.userId || 'unknown',
         action: 'USER_UPDATED',
         resourceType: 'USER',
         resourceId: userId,
@@ -218,7 +218,7 @@ export const PUT = requirePermission(
 // PATCH /api/admin/users/[id] - Update user (alias for PUT)
 export const PATCH = requirePermission(
   Permission.USER_EDIT,
-  async (request, user) => {
+  async (request, _context) => {
     try {
       const userId = request.url.split('/').pop();
       
@@ -290,7 +290,7 @@ export const PATCH = requirePermission(
       });
 
       await logAuditAction({
-        userId: user.userId,
+        userId: request.user?.userId || 'unknown',
         action: 'USER_UPDATED',
         resourceType: 'USER',
         resourceId: userId,
@@ -322,7 +322,7 @@ export const PATCH = requirePermission(
 // DELETE /api/admin/users/[id] - Delete user
 export const DELETE = requirePermission(
   Permission.USER_DELETE,
-  async (request, user) => {
+  async (request, _context) => {
     try {
       const userId = request.url.split('/').pop();
       
@@ -351,7 +351,7 @@ export const DELETE = requirePermission(
       }
 
       // Prevent deleting yourself
-      if (userId === user.userId) {
+      if (userId === request.user?.userId) {
         return NextResponse.json(
           { error: 'Cannot delete your own account' },
           { status: 400, headers: corsHeaders }
@@ -364,7 +364,7 @@ export const DELETE = requirePermission(
       });
 
       await logAuditAction({
-        userId: user.userId,
+        userId: request.user?.userId || 'unknown',
         action: 'USER_DELETED',
         resourceType: 'USER',
         resourceId: userId,
