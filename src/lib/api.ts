@@ -342,7 +342,10 @@ class ApiClient {
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(this.token && { Authorization: `Bearer ${this.token}` }),
+        ...(this.token && { 
+          Authorization: `Bearer ${this.token}`,
+          'x-auth-token': this.token,
+        }),
         ...options.headers,
       },
       ...options,
@@ -449,6 +452,8 @@ class ApiClient {
     this.token = token;
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth_token', token);
+      // Also set as cookie so it survives nginx Authorization header stripping
+      document.cookie = `auth_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
     }
   }
 
@@ -456,6 +461,8 @@ class ApiClient {
     this.token = null;
     if (typeof window !== 'undefined') {
       localStorage.removeItem('auth_token');
+      // Clear cookie too
+      document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Lax';
     }
   }
 

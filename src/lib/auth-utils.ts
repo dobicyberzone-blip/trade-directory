@@ -109,14 +109,28 @@ export interface TokenPayload {
 
 export async function verifyToken(request: NextRequest): Promise<TokenPayload | null> {
   try {
+    // Try Authorization header first (standard)
+    let token: string | null = null;
     const authHeader = request.headers.get('authorization');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-
-      return null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
     }
 
-    const token = authHeader.substring(7);
+    // Fallback: x-auth-token header (in case nginx strips Authorization)
+    if (!token) {
+      const xAuthToken = request.headers.get('x-auth-token');
+      if (xAuthToken) token = xAuthToken;
+    }
+
+    // Fallback: cookie (for SSR or when headers are stripped)
+    if (!token) {
+      const cookieToken = request.cookies.get('auth_token')?.value;
+      if (cookieToken) token = cookieToken;
+    }
+
+    if (!token) {
+      return null;
+    }
     const jwtSecret = process.env.JWT_SECRET;
 
     if (!jwtSecret) {
