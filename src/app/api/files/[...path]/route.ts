@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 
 const MIME_TYPES: Record<string, string> = {
@@ -12,6 +12,24 @@ const MIME_TYPES: Record<string, string> = {
   jfif: 'image/jpeg',
 };
 
+// Resolve the uploads directory — persistent location outside public/ so builds don't wipe it
+function resolveUploadsDir(): string {
+  if (process.env.UPLOAD_DIR) {
+    // UPLOAD_DIR points to business-documents directly, go one level up
+    return resolve(join(process.env.UPLOAD_DIR, '..'));
+  }
+  const candidates = [
+    join(process.cwd(), 'uploads'),           // new persistent location
+    join(process.cwd(), 'public', 'uploads'), // legacy location
+    '/app/uploads',
+    '/app/public/uploads',
+  ];
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate;
+  }
+  return join(process.cwd(), 'uploads');
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -21,17 +39,21 @@ export async function GET(
     // path may start with 'uploads/' (from legacy /uploads/ rewrites) — strip it
     const segments = path[0] === 'uploads' ? path.slice(1) : path;
     const relativePath = segments.join('/');
-    const filePath = join(process.cwd(), 'public', 'uploads', relativePath);
+
+    const uploadsDir = resolveUploadsDir();
+    const filePath = resolve(join(uploadsDir, relativePath));
 
     // Security: prevent path traversal
-    const uploadsRoot = join(process.cwd(), 'public', 'uploads');
-    if (!filePath.startsWith(uploadsRoot)) {
+    if (!filePath.startsWith(resolve(uploadsDir))) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     if (!existsSync(filePath)) {
-      console.error(`[files] Not found: ${filePath}`);
-      return NextResponse.json({ error: 'File not found', path: filePath }, { status: 404 });
+      console.error(`[files] Not found: ${filePath} (cwd: ${process.cwd()}, uploadsDir: ${uploadsDir})`);
+      return NextResponse.json(
+        { error: 'File not found', path: filePath, cwd: process.cwd(), uploadsDir },
+        { status: 404 }
+      );
     }
 
     const fileBuffer = readFileSync(filePath);
@@ -43,7 +65,7 @@ export async function GET(
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
-        'Content-Disposition': contentType === 'application/pdf' ? 'inline' : 'inline',
+        'Content-Disposition': 'inline',
       },
     });
   } catch (error) {

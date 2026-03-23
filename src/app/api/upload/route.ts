@@ -40,7 +40,8 @@ async function uploadToCloudinary(buffer: Buffer, filename: string, mimeType: st
 // Helper function to handle local upload (filesystem or base64)
 async function handleLocalUpload(buffer: Buffer, file: File): Promise<string> {
   try {
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'business-documents');
+    // Store uploads OUTSIDE public/ so npm run build never wipes them
+    const uploadDir = process.env.UPLOAD_DIR || join(process.cwd(), 'uploads', 'business-documents');
     if (!existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
     }
@@ -50,7 +51,7 @@ async function handleLocalUpload(buffer: Buffer, file: File): Promise<string> {
     const filename = `${timestamp}-${randomString}.${fileExtension}`;
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
-    return `/api/files/uploads/business-documents/${filename}`;
+    return `/api/files/business-documents/${filename}`;
   } catch (fsError) {
     // Fallback to base64
     const base64 = buffer.toString('base64');
@@ -177,7 +178,10 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const filepath = join(process.cwd(), 'public', 'uploads', 'business-documents', filename);
+    const filepath = join(
+      process.env.UPLOAD_DIR || join(process.cwd(), 'uploads', 'business-documents'),
+      filename
+    );
     if (existsSync(filepath)) {
       const { unlink } = await import('fs/promises');
       await unlink(filepath);
