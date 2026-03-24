@@ -370,136 +370,115 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
         className="relative bg-white w-full max-w-6xl mx-auto rounded-lg shadow-lg"
       >
         {/* HEADER */}
-        <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             {/* Left: Logo and Company Info */}
             <div className="flex items-start gap-2 sm:gap-4 md:gap-5 flex-1 min-w-0 w-full">
               <div className="relative flex-shrink-0 mt-1 sm:mt-0">
-                <div className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-xl sm:rounded-2xl border-2 sm:border-3 border-gray-200 shadow-xl bg-gray-100 overflow-hidden flex items-center justify-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-gray-200 shadow-md bg-gray-100 overflow-hidden flex items-center justify-center">
                   {business.logoUrl ? (
                     <img 
                       src={business.logoUrl} 
                       alt={`${business.name} logo`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        // Fallback to letter if image fails to load
                         e.currentTarget.style.display = 'none';
                         const parent = e.currentTarget.parentElement;
                         if (parent) {
                           const fallback = document.createElement('span');
-                          fallback.className = 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-600';
+                          fallback.className = 'text-2xl font-black text-gray-600';
                           fallback.textContent = business.name.charAt(0).toUpperCase();
                           parent.appendChild(fallback);
                         }
                       }}
                     />
                   ) : (
-                    <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-600">
+                    <span className="text-2xl font-black text-gray-600">
                       {business.name.charAt(0).toUpperCase()}
                     </span>
                   )}
                 </div>
               </div>
               
-              <div className="flex-1 min-w-0 mt-1 sm:mt-0 pt-0 sm:pt-2">
-                {/* Company name and metadata */}
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                  <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight flex items-center gap-2 sm:gap-3 whitespace-nowrap sm:whitespace-normal">
+              <div className="flex-1 min-w-0 mt-1 sm:mt-0 pt-0 sm:pt-1">
+                {/* Company name */}
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                  <h1 className="text-lg sm:text-2xl font-black text-gray-900 leading-tight flex items-center gap-2 whitespace-nowrap sm:whitespace-normal">
                     {business.name}
                     <img 
                       src="/Kenya_flag animated.gif" 
                       alt="Kenya Flag" 
-                      className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 object-contain flex-shrink-0 hover:scale-110 transition-transform duration-300"
+                      className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
                       title="Made in Kenya"
-                      style={{ 
-                        mixBlendMode: 'multiply',
-                        filter: 'brightness(1.1) contrast(1.2)',
-                        backgroundColor: 'transparent'
-                      }}
+                      style={{ mixBlendMode: 'multiply', filter: 'brightness(1.1) contrast(1.2)', backgroundColor: 'transparent' }}
                     />
                   </h1>
                 </div>
                  
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm sm:text-base text-gray-700">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-green-600 flex-shrink-0" />
-                    <span className="text-sm sm:text-base text-gray-700 font-medium">
-                      {business.location || 'Nairobi'}{business.county && business.county !== business.location ? `` : ''}, Kenya
+                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-700 font-medium">
+                      {business.location || 'Nairobi'}, Kenya
                     </span>
                   </div>
-                  {businessRating && (
-                    <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 fill-current flex-shrink-0" />
-                    <span className="font-bold text-gray-700 text-base sm:text-lg">{businessRating.toFixed(1)}</span>
-                  </div>
+                  {/* Sector badge */}
+                  <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                    {business.sector || 'Agriculture'}
+                  </span>
+                  {/* Product categories */}
+                  {Array.isArray(products) && products.length > 0 && (
+                    <>
+                      {[...new Set(products.map((p) => p.category).filter((c) => Boolean(c)))].slice(0, 3).map((cat, idx) => (
+                        <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                          {cat}
+                        </span>
+                      ))}
+                    </>
                   )}
-                  {/* Category and Subcategory */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center px-4 py-1.5 rounded-lg text-sm font-bold bg-gray-100 text-gray-700 border border-gray-200">
-                      {business.sector || 'Agriculture'}
-                    </span>
-                    {/* Product categories from exporter's products */}
-                    {Array.isArray(products) && products.length > 0 && (
-                      <>
-                        {[...new Set(products.map((p) => p.category).filter((c) => Boolean(c)))].slice(0, 4).map((cat, idx) => (
-                          <span key={idx} className="inline-flex items-center px-3 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            {cat}
-                          </span>
-                        ))}
-                      </>
-                    )}
-                    {business.subCategory && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-gray-50 text-gray-600 border border-gray-200">
-                        {business.subCategory}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-base text-gray-500 font-medium">
-                    {dateOfIncorporation ? `Inc. ${dateOfIncorporation}` : ''}
-                  </div>
+                  {/* Rating inline */}
+                  {businessRating && (
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3.5 w-3.5 text-yellow-400 fill-current" />
+                      <span className="font-bold text-gray-700 text-sm">{businessRating.toFixed(1)}</span>
+                    </div>
+                  )}
+                  {/* Est. date */}
+                  {dateOfIncorporation && (
+                    <span className="text-sm text-gray-500">Est. {dateOfIncorporation}</span>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Right: Actions - Desktop: inline, Mobile: below */}
+            {/* Right: Favorite + Verified */}
             <div 
-              className={`flex items-center gap-3 sm:gap-4 flex-shrink-0 justify-end w-full sm:w-auto ${hideBadgeOnMobile ? 'hidden md:flex' : 'flex'}`}
+              className={`flex items-center gap-3 flex-shrink-0 justify-end w-full sm:w-auto ${hideBadgeOnMobile ? 'hidden md:flex' : 'flex'}`}
               data-export-ignore
             >
-              {/* Favorite Button - Hidden for exporters */}
               {user?.role !== 'EXPORTER' && (
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleFavoriteToggle();
-                  }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleFavoriteToggle(); }}
                   disabled={isLoadingFavorite}
                   className={cn(
-                    "p-2.5 sm:p-3 rounded-full transition-all hover:scale-105 active:scale-95 flex-shrink-0 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center",
-                    isFavorited 
-                      ? "bg-red-50 text-red-500" 
-                      : "bg-gray-50 text-gray-400 hover:text-red-500 active:text-red-500",
+                    "p-2 rounded-full transition-all hover:scale-105 flex-shrink-0 touch-manipulation min-h-[40px] min-w-[40px] flex items-center justify-center",
+                    isFavorited ? "bg-red-50 text-red-500" : "bg-gray-50 text-gray-400 hover:text-red-500",
                     isLoadingFavorite && "opacity-50 cursor-not-allowed"
                   )}
                   aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
                 >
-                  <Heart className={cn("h-5 w-5 sm:h-6 sm:w-6", isFavorited && "fill-current")} />
+                  <Heart className={cn("h-5 w-5", isFavorited && "fill-current")} />
                 </button>
               )}
-              
               {business.verificationStatus === 'VERIFIED' ? (
-                <div className="flex items-center gap-2 px-6 py-3 rounded-full text-base font-bold bg-emerald-600 text-white border-2 border-emerald-400 shadow-lg flex-shrink-0">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg">
+                <div className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold bg-emerald-600 text-white border border-emerald-400 shadow-md flex-shrink-0">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7l-3.61.81.34 3.7L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/>
                   </svg>
                   <span>Verified</span>
                 </div>
               ) : (
-                <div className={cn(
-                  "px-5 py-3 rounded-full text-base font-semibold flex-shrink-0",
-                  'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                )}>
+                <div className="px-4 py-2 rounded-full text-sm font-semibold flex-shrink-0 bg-yellow-50 text-yellow-700 border border-yellow-200">
                   Pending
                 </div>
               )}
@@ -507,21 +486,17 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+        <div className="px-4 sm:px-6 py-3 sm:py-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             
-            {/* LEFT COLUMN: ARCGIS MINI MAP & BUSINESS INFO */}
+            {/* LEFT COLUMN: MAP & QUICK INFO */}
             <div className="lg:col-span-4 space-y-3">
-              <div className="aspect-[4/3] rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-slate-50 relative">
+              <div className="aspect-[16/9] md:aspect-[4/3] rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-slate-50 relative">
                 <MiniMap
                   latitude={latitude}
                   longitude={longitude}
                   businessName={business.name}
-                  onMapClick={() => {
-                    if (onPinClick) {
-                      onPinClick();
-                    }
-                  }}
+                  onMapClick={() => { if (onPinClick) onPinClick(); }}
                 />
                 <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md border border-slate-200 shadow-sm">
                   <div className="flex items-center gap-1">
@@ -532,140 +507,84 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
-                <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
                   <div>
-                    <p className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                      Legal Status
-                    </p>
-                    <p className="text-slate-800 font-bold text-xs sm:text-sm">{business.typeOfBusiness || 'Limited Company'}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Legal Status</p>
+                    <p className="text-slate-800 font-bold text-xs">{business.typeOfBusiness || 'Limited Company'}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                      Date of Incorporation
-                    </p>
-                    <p className="text-slate-800 font-bold text-xs sm:text-sm">
-                      {dateOfIncorporation || 'N/A'}
-                    </p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Established</p>
+                    <p className="text-slate-800 font-bold text-xs">{dateOfIncorporation || 'N/A'}</p>
                   </div>
-                </div>
-                
-                {businessRating && (
-                  <div className="pt-2 border-t border-slate-200/50">
-                    <p className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1">
-                      Customer Rating
-                    </p>
-                    {renderStars(businessRating)}
+                  {businessRating && (
+                    <div className="col-span-2 pt-2 border-t border-slate-200/50">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Customer Rating</p>
+                      {renderStars(businessRating)}
+                    </div>
+                  )}
+                  <div className="col-span-2 pt-2 border-t border-slate-200/50">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Reg. No.</p>
+                    <p className="text-slate-800 font-mono text-xs font-bold">{business.kraPin || 'N/A'}</p>
                   </div>
-                )}
-                
-                <div className="pt-2 border-t border-slate-200/50">
-                  <p className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                    KRA PIN:
-                  </p>
-                  <p className="text-slate-800 font-mono text-xs sm:text-sm font-bold tracking-tight">{business.kraPin || 'N/A'}</p>
                 </div>
               </div>
             </div>
 
-            {/* RIGHT COLUMN: PRODUCTS & CONTACT */}
-            <div className="lg:col-span-8 flex flex-col justify-between">
+            {/* RIGHT COLUMN */}
+            <div className="lg:col-span-8 flex flex-col gap-3">
                
-              {/* Products Showcase */}
-              <div className="mb-4">
-                <h3 className="font-bold text-lg text-gray-900 border-b-2 border-gray-200 pb-2 mb-3">
-                  Products & Services
-                </h3>
-                
-                {Array.isArray(products) && products.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+              {/* Products — names only */}
+              {Array.isArray(products) && products.length > 0 && (
+                <div>
+                  <h3 className="font-bold text-sm text-gray-900 border-b border-gray-200 pb-1.5 mb-2">Products & Services</h3>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1">
                     {[...products].reverse().map((product: ProductProfile, index: number) => (
-                      <div key={index} className="text-sm">
-                        <span className="font-bold text-gray-800">{product.name}</span>
-                        {product.description && (
-                          <span className="text-slate-600"> - {product.description}</span>
-                        )}
-                      </div>
+                      <span key={index} className="text-sm font-semibold text-gray-800">{product.name}</span>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-slate-600 font-medium">{business.companyStory || 'Premium quality products for export markets'}</p>
-                )}
-              </div>
+                </div>
+              )}
 
-              {/* Contact Information and Business Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="space-y-3">
-                  <h3 className="font-bold text-lg text-gray-900 border-b-2 border-gray-200 pb-2">Contact Information</h3>
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">Email Address:</label>
-                      <p className="text-[#007a46] font-bold text-sm break-all underline decoration-emerald-100 underline-offset-4">
-                        {business.contactEmail || (business as any).email || ''}
-                      </p>
-                    </div>
-                    {business.companyEmail && business.companyEmail !== business.contactEmail && (
+              {/* Contact + Business Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-bold text-sm text-gray-900 border-b border-gray-200 pb-1.5 mb-2">Contact Information</h3>
+                  <div className="space-y-1.5">
+                    {(business.contactEmail || (business as any).email) && (
                       <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">Company Email:</label>
-                        <p className="text-[#007a46] font-bold text-sm break-all underline decoration-emerald-100 underline-offset-4">
-                          {business.companyEmail}
-                        </p>
+                        <label className="text-[10px] font-black text-slate-400 uppercase block">Email Address:</label>
+                        <p className="text-[#007a46] font-bold text-xs break-all">{business.contactEmail || (business as any).email}</p>
                       </div>
                     )}
                     {business.contactPhone && (
                       <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1 flex items-center gap-1">
-                          <Phone className="h-3 w-3" />
-                          Phone Number:
-                        </label>
-                        <p className="text-slate-800 font-bold text-sm">{business.contactPhone}</p>
+                        <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1"><Phone className="h-2.5 w-2.5" />Phone Number:</label>
+                        <p className="text-slate-800 font-bold text-xs">{business.contactPhone}</p>
                       </div>
                     )}
                     {(business.website || (business as any).websiteUrl) && (
                       <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1 flex items-center gap-1">
-                          <Globe className="h-3 w-3" />
-                          Website:
-                        </label>
-                        <p className="text-[#007a46] font-bold text-sm break-all underline decoration-emerald-100 underline-offset-4">
-                          {business.website || (business as any).websiteUrl}
-                        </p>
+                        <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1"><Globe className="h-2.5 w-2.5" />Website:</label>
+                        <p className="text-[#007a46] font-bold text-xs break-all">{business.website || (business as any).websiteUrl}</p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <h3 className="font-bold text-lg text-gray-900 border-b-2 border-gray-200 pb-2">Business Details</h3>
-                  <div className="space-y-2">
+                <div>
+                  <h3 className="font-bold text-sm text-gray-900 border-b border-gray-200 pb-1.5 mb-2">Business Details</h3>
+                  <div className="space-y-1.5">
                     {business.sector && (
                       <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">Sector:</label>
-                        <p className="text-slate-800 font-bold text-sm">{business.sector}</p>
-                      </div>
-                    )}
-                    {business.industry && (
-                      <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">Industry:</label>
-                        <p className="text-slate-800 font-bold text-sm">{business.industry}</p>
-                      </div>
-                    )}
-                    {business.serviceOffering && (
-                      <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">Products / Services:</label>
-                        <p className="text-slate-800 font-medium text-sm">{business.serviceOffering}</p>
-                      </div>
-                    )}
-                    {business.productHsCode && (
-                      <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">HS Code:</label>
-                        <p className="text-slate-800 font-mono font-bold text-sm">{business.productHsCode}</p>
+                        <label className="text-[10px] font-black text-slate-400 uppercase block">Sector:</label>
+                        <p className="text-slate-800 font-bold text-xs">{business.sector}</p>
                       </div>
                     )}
                     {business.currentExportMarkets && (
                       <div>
-                        <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">Export Markets:</label>
-                        <p className="text-slate-800 font-medium text-sm">
+                        <label className="text-[10px] font-black text-slate-400 uppercase block">Export Markets:</label>
+                        <p className="text-slate-800 font-medium text-xs line-clamp-2">
                           {business.currentExportMarkets.split(',').map((m: string) => m.trim()).join(', ')}
                         </p>
                       </div>
@@ -675,88 +594,63 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
               </div>
 
               {/* TRUST SIGNALS */}
-              <div className="relative">
-                <p className="absolute -top-3 left-6 px-3 bg-white text-xs font-black text-emerald-800/50 uppercase tracking-widest z-10">Trust Signals</p>
-                <div className={`p-4 rounded-2xl border-2 shadow-md space-y-2 ${business.verificationStatus === 'VERIFIED' ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <VerifiedScallop className={`h-8 sm:h-10 w-10 sm:w-12 ${business.verificationStatus === 'VERIFIED' ? 'text-[#059669]' : 'text-gray-400'}`} />
-                      <div>
-                        <span className={`text-lg sm:text-2xl font-black tracking-tight leading-none ${business.verificationStatus === 'VERIFIED' ? 'text-[#064e3b]' : 'text-gray-600'}`}>
-                          {business.verificationStatus === 'VERIFIED' ? 'Verified Badge' : business.verificationStatus === 'PENDING' ? 'Verification Pending' : 'Unverified Business'}
-                        </span>
-                      </div>
+              <div className="relative mt-auto">
+                <p className="absolute -top-2.5 left-5 px-2 bg-white text-[10px] font-black text-emerald-800/50 uppercase tracking-widest z-10">Trust Signals</p>
+                <div className={`p-3 rounded-xl border-2 ${business.verificationStatus === 'VERIFIED' ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <VerifiedScallop className={`h-8 w-8 ${business.verificationStatus === 'VERIFIED' ? 'text-[#059669]' : 'text-gray-400'}`} />
+                      <span className={`text-base font-black tracking-tight ${business.verificationStatus === 'VERIFIED' ? 'text-[#064e3b]' : 'text-gray-600'}`}>
+                        {business.verificationStatus === 'VERIFIED' ? 'Verified Badge' : business.verificationStatus === 'PENDING' ? 'Verification Pending' : 'Unverified Business'}
+                      </span>
                     </div>
-                    
-                    <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
+                    <div className="flex items-center gap-2">
                       {[
                         { name: 'GlobalGAP', logo: '/GlobalGAP.png' },
                         { name: 'FairTrade', logo: '/FairTrade.png' },
                         { name: 'ISO', logo: '/ISO.png' }
                       ].map((cert, i) => (
-                        <div key={i} className="h-10 sm:h-12 w-16 sm:w-20 rounded-xl bg-white border border-green-100 flex items-center justify-center p-1.5 sm:p-2 opacity-70 hover:opacity-100 transition-opacity">
-                          <img 
-                            src={cert.logo} 
-                            alt={cert.name}
-                            className="w-full h-full object-contain"
-                          />
+                        <div key={i} className="h-9 w-14 rounded-lg bg-white border border-green-100 flex items-center justify-center p-1 opacity-70 hover:opacity-100 transition-opacity">
+                          <img src={cert.logo} alt={cert.name} className="w-full h-full object-contain" />
                         </div>
                       ))}
                     </div>
                   </div>
-                  
-                  <div className="pt-2 border-t border-emerald-200/50 text-right">
-                    <p className="text-[9px] sm:text-[10px] font-bold text-emerald-800/60" suppressHydrationWarning>Last Profile Update: {lastUpdate}</p>
+                  <div className="pt-1.5 border-t border-emerald-200/50 text-right mt-1.5">
+                    <p className="text-[9px] font-bold text-emerald-800/60" suppressHydrationWarning>Last Profile Update: {lastUpdate}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* BUTTONS AREA (HIDDEN IN JPEG) */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 mt-4 sm:mt-6 px-2 sm:px-0" data-export-ignore>
-            {/* Hide Send Inquiry button for exporters */}
+          {/* ACTION BUTTONS */}
+          <div className="flex flex-col sm:flex-row gap-2 mt-4" data-export-ignore>
             {user?.role !== 'EXPORTER' && (
               <Button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setInquiryOpen(true);
-                }} 
-                className="w-full sm:flex-1 bg-transparent border-2 border-[#007a46] text-[#007a46] hover:bg-[#005c35] hover:text-white active:bg-[#005c35] active:text-white h-12 sm:h-14 rounded-2xl text-sm sm:text-base font-black shadow-xl touch-manipulation"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setInquiryOpen(true); }} 
+                className="w-full sm:flex-1 bg-transparent border-2 border-[#007a46] text-[#007a46] hover:bg-[#005c35] hover:text-white h-10 rounded-xl text-sm font-black shadow-md touch-manipulation"
               >
-                <Send className="mr-2 h-4 sm:h-5 w-4 sm:w-5" /> 
-                <span className="hidden xs:inline">Send Official Inquiry</span>
-                <span className="xs:hidden">Send Inquiry</span>
+                <Send className="mr-2 h-4 w-4" />Send Official Inquiry
               </Button>
             )}
-            {/* Hide Rate Business button for exporters */}
             {user?.role !== 'EXPORTER' && (
               <Button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setRatingOpen(true);
-                }} 
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setRatingOpen(true); }} 
                 variant="outline"
-                className="w-full sm:flex-1 bg-transparent border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50 hover:text-black active:bg-yellow-50 active:text-black h-12 sm:h-14 rounded-2xl text-sm sm:text-base font-black shadow-lg touch-manipulation"
+                className="w-full sm:flex-1 bg-transparent border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50 h-10 rounded-xl text-sm font-black shadow-md touch-manipulation"
               >
-                <Star className="mr-2 h-4 sm:h-5 w-4 sm:w-5 group-hover:text-black" /> 
-                <span>Rate Business</span>
+                <Star className="mr-2 h-4 w-4" />Rate Business
               </Button>
             )}
             <Button 
               ref={downloadButtonRef}
               disabled={isExportingPDF}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleExportPDF();
-              }}
-              className="w-full sm:flex-1 bg-red-600 hover:bg-red-700 active:bg-red-700 text-white border-2 border-red-600 h-12 sm:h-14 rounded-2xl text-sm sm:text-base font-black shadow-lg disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExportPDF(); }}
+              className="w-full sm:flex-1 bg-red-600 hover:bg-red-700 text-white border-2 border-red-600 h-10 rounded-xl text-sm font-black shadow-md disabled:opacity-50 touch-manipulation"
             >
-              <Download className="mr-2 h-4 sm:h-5 w-4 sm:w-5 flex-shrink-0" /> 
-              <span className="truncate">{isExportingPDF ? 'Generating...' : 'Download Profile'}</span>
+              <Download className="mr-2 h-4 w-4 flex-shrink-0" />
+              {isExportingPDF ? 'Generating...' : 'Download Profile'}
             </Button>
           </div>
         </div>
