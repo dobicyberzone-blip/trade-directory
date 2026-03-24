@@ -1003,8 +1003,8 @@ function DirectoryPageContentClient() {
             {/* Desktop */}
             <div className="hidden md:block">
               <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setModalBusiness(null)} />
-              <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 md:p-8">
-                <div ref={modalRef} className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-6xl w-full my-8" onClick={e => e.stopPropagation()}>
+              <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-6 lg:p-10">
+                <div ref={modalRef} className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-4xl w-full max-h-[88vh] overflow-y-auto my-auto" onClick={e => e.stopPropagation()}>
                   <button
                     onClick={() => setModalBusiness(null)}
                     className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"

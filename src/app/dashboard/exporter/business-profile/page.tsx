@@ -15,7 +15,21 @@ import {
   Eye,
   Edit,
   Loader2,
-  Award
+  Award,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  MessageCircle,
+  Twitter,
+  Instagram,
+  Users,
+  Package,
+  TrendingUp,
+  FileText,
+  Hash,
+  Calendar,
+  Briefcase,
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { openPdfInNewWindow } from '@/lib/pdf-viewer';
@@ -398,67 +412,201 @@ export default function BusinessProfilePage() {
 
       {/* Business Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        {/* LEFT: main info */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* Business Information */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2">
                 <Building2 className="w-5 h-5" />
-                <span>Business Information</span>
+                Business Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Business Name</p>
-                  <p className="font-medium">{business.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Business Name</p>
+                  <p className="font-semibold">{business.name}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Type of Business</p>
-                  <p className="font-medium">{business.typeOfBusiness || 'Not specified'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Type of Business</p>
+                  <p className="font-semibold">{business.typeOfBusiness || business.legalStructure || 'Not specified'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Sector</p>
-                  <p className="font-medium">{business.sector}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Legal Structure</p>
+                  <p className="font-semibold">{business.legalStructure || 'Not specified'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Date of Incorporation</p>
-                  <p className="font-medium">{business.dateOfIncorporation || 'Not specified'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Sector</p>
+                  <p className="font-semibold">{business.sector || 'Not specified'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Number of Employees</p>
-                  <p className="font-medium">{business.numberOfEmployees || 'Not specified'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Industry</p>
+                  <p className="font-semibold">{business.industry || 'Not specified'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">KRA PIN</p>
-                  <p className="font-medium font-mono">{business.kraPin || 'Not provided'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Date of Incorporation</p>
+                  <p className="font-semibold">{business.dateOfIncorporation || 'Not specified'}</p>
                 </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Number of Employees</p>
+                  <p className="font-semibold">{business.numberOfEmployees || 'Not specified'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Company Size</p>
+                  <p className="font-semibold">{business.companySize || 'Not specified'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">KRA PIN</p>
+                  <p className="font-semibold font-mono">{business.kraPin || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Registration No.</p>
+                  <p className="font-semibold font-mono">{business.registrationNumber || 'Not provided'}</p>
+                </div>
+                {business.exportLicense && (
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Export License No.</p>
+                    <p className="font-semibold font-mono">{business.exportLicense}</p>
+                  </div>
+                )}
+                {(business as any).productHsCode && (
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">HS Code</p>
+                    <p className="font-semibold font-mono">{(business as any).productHsCode}</p>
+                  </div>
+                )}
+                {business.businessUserOrganisation && (
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Business Organisation</p>
+                    <p className="font-semibold">{business.businessUserOrganisation}</p>
+                  </div>
+                )}
               </div>
+
+              {business.serviceOffering && (
+                <>
+                  <Separator />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Products / Services</p>
+                    <p className="text-sm leading-relaxed">{business.serviceOffering}</p>
+                  </div>
+                </>
+              )}
 
               <Separator />
 
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Location</p>
-                <p className="font-medium">
-                  {business.physicalAddress}
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> Location
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {business.town}, {business.county}
-                </p>
+                <p className="font-semibold">{business.physicalAddress}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{business.town}, {business.county}</p>
+                {business.coordinates && (
+                  <a
+                    href={`https://www.google.com/maps?q=${business.coordinates}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:underline mt-1 inline-block"
+                  >
+                    View on Google Maps
+                  </a>
+                )}
               </div>
 
               {business.companyStory && (
                 <>
                   <Separator />
                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Company Story</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Company Story</p>
                     <p className="text-sm leading-relaxed">{business.companyStory}</p>
                   </div>
                 </>
               )}
             </CardContent>
           </Card>
+
+          {/* Export Capacity */}
+          {(business.exportVolumePast3Years || business.productionCapacityPast3 || business.currentExportMarkets) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Export Capacity
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {business.exportVolumePast3Years && (
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Export Volume (3 yrs)</p>
+                      <p className="font-semibold">{business.exportVolumePast3Years}</p>
+                    </div>
+                  )}
+                  {business.productionCapacityPast3 && (
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Production Capacity (3 yrs)</p>
+                      <p className="font-semibold">{business.productionCapacityPast3}</p>
+                    </div>
+                  )}
+                </div>
+                {business.currentExportMarkets && (
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Export Markets</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(typeof business.currentExportMarkets === 'string'
+                        ? business.currentExportMarkets.split(',')
+                        : business.currentExportMarkets
+                      ).map((m: string, i: number) => (
+                        <Badge key={i} variant="secondary" className="text-xs">{m.trim()}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Management Team */}
+          {(business as any).managementTeam && (() => {
+            try {
+              const team = JSON.parse((business as any).managementTeam);
+              if (Array.isArray(team) && team.length > 0) {
+                return (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="w-5 h-5" />
+                        Management Team
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {team.map((member: { name: string; role: string }, i: number) => (
+                          <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center flex-shrink-0">
+                              <span className="text-sm font-bold text-green-700 dark:text-green-300">
+                                {member.name?.charAt(0) || '?'}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{member.name}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{member.role}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              }
+            } catch { /* ignore */ }
+            return null;
+          })()}
         </div>
 
+        {/* RIGHT column */}
         <div className="space-y-6">
           {/* Company Logo */}
           {business.logoUrl && (
@@ -482,120 +630,128 @@ export default function BusinessProfilePage() {
               <CardTitle>Contact Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Email</p>
-                <p className="font-medium">{business.companyEmail || business.contactEmail}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Phone</p>
-                <p className="font-medium">{business.contactPhone || 'Not provided'}</p>
-              </div>
+              {(business.companyEmail || business.contactEmail) && (
+                <div className="flex items-start gap-2">
+                  <Mail className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Email</p>
+                    <p className="text-sm font-medium break-all">{business.companyEmail || business.contactEmail}</p>
+                  </div>
+                </div>
+              )}
+              {business.contactPhone && (
+                <div className="flex items-start gap-2">
+                  <Phone className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Phone</p>
+                    <p className="text-sm font-medium">{business.contactPhone}</p>
+                  </div>
+                </div>
+              )}
+              {business.mobileNumber && (
+                <div className="flex items-start gap-2">
+                  <Phone className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Mobile</p>
+                    <p className="text-sm font-medium">{business.mobileNumber}</p>
+                  </div>
+                </div>
+              )}
               {business.whatsappNumber && (
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">WhatsApp</p>
-                  <p className="font-medium">{business.whatsappNumber}</p>
+                <div className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">WhatsApp</p>
+                    <p className="text-sm font-medium">{business.whatsappNumber}</p>
+                  </div>
                 </div>
               )}
               {business.website && (
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Website</p>
-                  <a
-                    href={business.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {business.website}
-                  </a>
+                <div className="flex items-start gap-2">
+                  <Globe className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Website</p>
+                    <a href={business.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                      {business.website}
+                    </a>
+                  </div>
+                </div>
+              )}
+              {business.twitterUrl && (
+                <div className="flex items-start gap-2">
+                  <Twitter className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Twitter / X</p>
+                    <a href={business.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                      {business.twitterUrl}
+                    </a>
+                  </div>
+                </div>
+              )}
+              {business.instagramUrl && (
+                <div className="flex items-start gap-2">
+                  <Instagram className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Instagram</p>
+                    <a href={business.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                      {business.instagramUrl}
+                    </a>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
+          {/* Primary Contact */}
+          {(business.primaryContactFirstName || business.primaryContactEmail) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Primary Contact
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {(business.primaryContactFirstName || business.primaryContactLastName) && (
+                  <p className="font-medium">{business.primaryContactFirstName} {business.primaryContactLastName}</p>
+                )}
+                {business.primaryContactEmail && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{business.primaryContactEmail}</p>
+                )}
+                {business.primaryContactPhone && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{business.primaryContactPhone}</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Documents */}
           <Card>
             <CardHeader>
-              <CardTitle>Documents</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Documents
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Registration Certificate</span>
-                {business.registrationCertificateUrl ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => business.registrationCertificateUrl && openPdfInNewWindow(business.registrationCertificateUrl, 'Registration Certificate')}
-                  >
-                    <Eye className="w-3 h-3 mr-1" />
-                    View
-                  </Button>
-                ) : (
-                  <Badge variant="secondary">Not uploaded</Badge>
-                )}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">PIN Certificate</span>
-                {business.pinCertificateUrl ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => business.pinCertificateUrl && openPdfInNewWindow(business.pinCertificateUrl, 'PIN Certificate')}
-                  >
-                    <Eye className="w-3 h-3 mr-1" />
-                    View
-                  </Button>
-                ) : (
-                  <Badge variant="secondary">Not uploaded</Badge>
-                )}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Kenyan National ID</span>
-                {business.kenyanNationalIdUrl ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      const url = business.kenyanNationalIdUrl!;
-                      window.open(url.startsWith('/uploads/') ? `/api/files${url}` : url, '_blank');
-                    }}
-                  >
-                    <Eye className="w-3 h-3 mr-1" />
-                    View
-                  </Button>
-                ) : (
-                  <Badge variant="secondary">Not uploaded</Badge>
-                )}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Kenya Certificate of Incorporation</span>
-                {(business as any).incorporationCertificateUrl ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openPdfInNewWindow((business as any).incorporationCertificateUrl, 'Kenya Certificate of Incorporation')}
-                  >
-                    <Eye className="w-3 h-3 mr-1" />
-                    View
-                  </Button>
-                ) : (
-                  <Badge variant="secondary">Not uploaded</Badge>
-                )}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Export License</span>
-                {business.exportLicenseUrl ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => business.exportLicenseUrl && openPdfInNewWindow(business.exportLicenseUrl, 'Export License')}
-                  >
-                    <Eye className="w-3 h-3 mr-1" />
-                    View
-                  </Button>
-                ) : (
-                  <Badge variant="secondary">Not uploaded</Badge>
-                )}
-              </div>
+              {[
+                { label: 'Registration Certificate', url: business.registrationCertificateUrl },
+                { label: 'PIN Certificate', url: business.pinCertificateUrl },
+                { label: 'Kenyan National ID', url: business.kenyanNationalIdUrl },
+                { label: 'Certificate of Incorporation', url: (business as any).incorporationCertificateUrl },
+                { label: 'Export License', url: business.exportLicenseUrl },
+              ].map(({ label, url }) => (
+                <div key={label} className="flex items-center justify-between">
+                  <span className="text-sm">{label}</span>
+                  {url ? (
+                    <Button size="sm" variant="outline" onClick={() => openPdfInNewWindow(url, label)}>
+                      <Eye className="w-3 h-3 mr-1" /> View
+                    </Button>
+                  ) : (
+                    <Badge variant="secondary" className="text-xs">Not uploaded</Badge>
+                  )}
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>
