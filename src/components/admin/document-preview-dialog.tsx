@@ -198,7 +198,7 @@ export function DocumentPreviewDialog({
     industry: business?.industry || null,
     productHsCode: business?.productHsCode || null,
     serviceOffering: business?.serviceOffering || null,
-    typeOfBusiness: business?.typeOfBusiness || 'N/A',
+    typeOfBusiness: business?.typeOfBusiness || business?.legalStructure || 'N/A',
   };
 
   return (

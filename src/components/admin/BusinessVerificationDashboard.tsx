@@ -57,7 +57,6 @@ import {
   StarBorder,
   MoreVert,
   CloudDownload,
-  Email,
   Print,
   History,
   Flag,

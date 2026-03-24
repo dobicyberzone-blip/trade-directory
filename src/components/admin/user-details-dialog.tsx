@@ -14,7 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ActivityList } from '@/components/activity/activity-list';
 import { 
   User as UserIcon, 
-  Mail, 
   Calendar, 
   Building, 
   Edit,
@@ -230,8 +229,7 @@ export function UserDetailsDialog({ user, isOpen, onClose, onUserUpdated, isSupe
                   
                   <div>
                     <Label>Email Address</Label>
-                    <p className="text-sm text-gray-900 mt-1 flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
+                    <p className="text-sm text-gray-900 mt-1">
                       {user.email}
                     </p>
                   </div>

@@ -16,6 +16,14 @@ import {
 import { apiClient } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
+// Resolve relative /uploads/ or /api/files/ paths to absolute URLs
+function resolveDocUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 interface Business {
   id: string;
   name: string;
@@ -268,7 +276,8 @@ export function BusinessVerificationTab() {
                       <InfoRow label="Business Reg. No." value={business.registrationNumber} fromReg />
                       <InfoRow label="KRA PIN" value={business.kraPin} fromReg />
                       <InfoRow label="Date of Incorporation" value={business.dateOfIncorporation} fromReg />
-                      <InfoRow label="Legal Structure" value={business.legalStructure} fromReg />
+                      <InfoRow label="Legal Structure" value={business.legalStructure || business.typeOfBusiness} fromReg />
+                      <InfoRow label="Type of Business" value={business.typeOfBusiness || business.legalStructure} />
                       <InfoRow label="Kenyan National ID" value={business.kenyanNationalId} />
                     </Box>
                   </CardContent>
@@ -479,7 +488,7 @@ export function BusinessVerificationTab() {
                         <FileTextIcon size={18} style={{ color: '#3b82f6' }} />
                         <Typography variant="subtitle2">{label}</Typography>
                       </Box>
-                      <Button size="small" startIcon={<DownloadIcon size={14} />} href={url} target="_blank" rel="noopener noreferrer">
+                      <Button size="small" startIcon={<DownloadIcon size={14} />} href={resolveDocUrl(url)} target="_blank" rel="noopener noreferrer">
                         View / Download
                       </Button>
                     </CardContent>

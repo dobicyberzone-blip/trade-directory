@@ -340,7 +340,8 @@ export async function PUT(request: NextRequest) {
         logoUrl: businessData.logoUrl,
         
         // Business Details (editable only)
-        typeOfBusiness: businessData.typeOfBusiness,
+        typeOfBusiness: businessData.typeOfBusiness || businessData.legalStructure,
+        legalStructure: businessData.legalStructure || businessData.typeOfBusiness,
         numberOfEmployees: businessData.numberOfEmployees,
         companySize: businessData.companySize,
         kraPin: businessData.kraPin,
