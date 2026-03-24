@@ -370,12 +370,12 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
         className="relative bg-white w-full max-w-6xl mx-auto rounded-lg shadow-lg"
       >
         {/* HEADER */}
-        <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
             {/* Left: Logo and Company Info */}
-            <div className="flex items-start gap-2 sm:gap-4 md:gap-5 flex-1 min-w-0 w-full">
+            <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0 w-full">
               <div className="relative flex-shrink-0 mt-1 sm:mt-0">
-                <div className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-xl sm:rounded-2xl border-2 sm:border-3 border-gray-200 shadow-xl bg-gray-100 overflow-hidden flex items-center justify-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl border-2 border-gray-200 shadow-md bg-gray-100 overflow-hidden flex items-center justify-center">
                   {business.logoUrl ? (
                     <img 
                       src={business.logoUrl} 
@@ -394,7 +394,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                       }}
                     />
                   ) : (
-                    <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-600">
+                    <span className="text-xl sm:text-2xl md:text-3xl font-black text-gray-600">
                       {business.name.charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -404,12 +404,12 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
               <div className="flex-1 min-w-0 mt-1 sm:mt-0 pt-0 sm:pt-2">
                 {/* Company name and metadata */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                  <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight flex items-center gap-2 sm:gap-3 whitespace-nowrap sm:whitespace-normal">
+                  <h1 className="text-base sm:text-xl md:text-2xl font-black text-gray-900 leading-tight flex items-center gap-2 whitespace-nowrap sm:whitespace-normal">
                     {business.name}
                     <img 
                       src="/Kenya_flag animated.gif" 
                       alt="Kenya Flag" 
-                      className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 object-contain flex-shrink-0 hover:scale-110 transition-transform duration-300"
+                      className="w-6 h-6 sm:w-8 sm:h-8 object-contain flex-shrink-0 hover:scale-110 transition-transform duration-300"
                       title="Made in Kenya"
                       style={{ 
                         mixBlendMode: 'multiply',
@@ -507,12 +507,12 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+        <div className="px-4 sm:px-6 py-3 sm:py-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
             
             {/* LEFT COLUMN: ARCGIS MINI MAP & BUSINESS INFO */}
             <div className="lg:col-span-4 space-y-3">
-              <div className="aspect-[4/3] rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-slate-50 relative">
+              <div className="aspect-[16/9] rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-slate-50 relative">
                 <MiniMap
                   latitude={latitude}
                   longitude={longitude}
@@ -572,8 +572,8 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
             <div className="lg:col-span-8 flex flex-col justify-between">
                
               {/* Products Showcase */}
-              <div className="mb-4">
-                <h3 className="font-bold text-lg text-gray-900 border-b-2 border-gray-200 pb-2 mb-3">
+              <div className="mb-3">
+                <h3 className="font-bold text-base text-gray-900 border-b-2 border-gray-200 pb-1.5 mb-2">
                   Products & Services
                 </h3>
                 
@@ -594,9 +594,9 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
               </div>
 
               {/* Contact Information and Business Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div className="space-y-3">
-                  <h3 className="font-bold text-lg text-gray-900 border-b-2 border-gray-200 pb-2">Contact Information</h3>
+                  <h3 className="font-bold text-base text-gray-900 border-b-2 border-gray-200 pb-1.5">Contact Information</h3>
                   <div className="space-y-2">
                     <div>
                       <label className="text-slate-400 font-bold text-[10px] sm:text-[11px] uppercase block mb-1">Email Address:</label>
@@ -636,7 +636,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                 </div>
 
                 <div className="space-y-3">
-                  <h3 className="font-bold text-lg text-gray-900 border-b-2 border-gray-200 pb-2">Business Details</h3>
+                  <h3 className="font-bold text-base text-gray-900 border-b-2 border-gray-200 pb-1.5">Business Details</h3>
                   <div className="space-y-2">
                     {business.sector && (
                       <div>
@@ -714,7 +714,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
           </div>
 
           {/* BUTTONS AREA (HIDDEN IN JPEG) */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 mt-4 sm:mt-6 px-2 sm:px-0" data-export-ignore>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-3 sm:mt-4 px-2 sm:px-0" data-export-ignore>
             {/* Hide Send Inquiry button for exporters */}
             {user?.role !== 'EXPORTER' && (
               <Button 
@@ -723,7 +723,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                   e.stopPropagation();
                   setInquiryOpen(true);
                 }} 
-                className="w-full sm:flex-1 bg-transparent border-2 border-[#007a46] text-[#007a46] hover:bg-[#005c35] hover:text-white active:bg-[#005c35] active:text-white h-12 sm:h-14 rounded-2xl text-sm sm:text-base font-black shadow-xl touch-manipulation"
+                className="w-full sm:flex-1 bg-transparent border-2 border-[#007a46] text-[#007a46] hover:bg-[#005c35] hover:text-white active:bg-[#005c35] active:text-white h-10 sm:h-11 rounded-xl text-sm font-black shadow-xl touch-manipulation"
               >
                 <Send className="mr-2 h-4 sm:h-5 w-4 sm:w-5" /> 
                 <span className="hidden xs:inline">Send Official Inquiry</span>
@@ -739,7 +739,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                   setRatingOpen(true);
                 }} 
                 variant="outline"
-                className="w-full sm:flex-1 bg-transparent border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50 hover:text-black active:bg-yellow-50 active:text-black h-12 sm:h-14 rounded-2xl text-sm sm:text-base font-black shadow-lg touch-manipulation"
+                className="w-full sm:flex-1 bg-transparent border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50 hover:text-black active:bg-yellow-50 active:text-black h-10 sm:h-11 rounded-xl text-sm font-black shadow-lg touch-manipulation"
               >
                 <Star className="mr-2 h-4 sm:h-5 w-4 sm:w-5 group-hover:text-black" /> 
                 <span>Rate Business</span>
@@ -753,7 +753,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                 e.stopPropagation();
                 handleExportPDF();
               }}
-              className="w-full sm:flex-1 bg-red-600 hover:bg-red-700 active:bg-red-700 text-white border-2 border-red-600 h-12 sm:h-14 rounded-2xl text-sm sm:text-base font-black shadow-lg disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
+              className="w-full sm:flex-1 bg-red-600 hover:bg-red-700 active:bg-red-700 text-white border-2 border-red-600 h-10 sm:h-11 rounded-xl text-sm font-black shadow-lg disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
             >
               <Download className="mr-2 h-4 sm:h-5 w-4 sm:w-5 flex-shrink-0" /> 
               <span className="truncate">{isExportingPDF ? 'Generating...' : 'Download Profile'}</span>
