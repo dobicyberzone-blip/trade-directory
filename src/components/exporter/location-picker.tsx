@@ -34,54 +34,64 @@ export function LocationPicker({
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-        toast({
-          title: "Error",
-          description: "Geolocation is not supported by this browser",
-          variant: "destructive",
-        });
+      toast({
+        title: "Not Supported",
+        description: "Geolocation is not supported by this browser. Please enter coordinates manually.",
+      });
       return;
     }
 
     setIsGettingLocation(true);
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        const lat = latitude.toFixed(6);
+        const lng = longitude.toFixed(6);
         setCurrentLocation({ lat: latitude, lng: longitude });
-        setManualLat(latitude.toString());
-        setManualLng(longitude.toString());
+        setManualLat(lat);
+        setManualLng(lng);
         setIsGettingLocation(false);
+        // Auto-save and close immediately on success
+        const coordinates = `${lat}, ${lng}`;
+        onChange(coordinates);
+        setIsDialogOpen(false);
         toast({
-          title: "Success",
-          description: "Location detected successfully!",
+          title: "Location Set",
+          description: "Your current location has been saved.",
         });
       },
       (error) => {
         setIsGettingLocation(false);
-        let errorMessage = 'Failed to get location';
-        
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = 'Location access denied by user';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information unavailable';
-            break;
-          case error.TIMEOUT:
-            errorMessage = 'Location request timed out';
-            break;
+
+        if (error.code === error.PERMISSION_DENIED) {
+          toast({
+            title: "Location Permission Blocked",
+            description:
+              "Your browser has blocked location access. To fix this: click the lock icon in your browser's address bar → Site settings → Allow Location. Then try again.",
+            duration: 8000,
+          });
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          toast({
+            title: "Location Unavailable",
+            description: "Could not determine your location. Please enter coordinates manually.",
+          });
+        } else if (error.code === error.TIMEOUT) {
+          toast({
+            title: "Location Timed Out",
+            description: "GPS took too long to respond. Please try again or enter coordinates manually.",
+          });
+        } else {
+          toast({
+            title: "Location Error",
+            description: "Failed to get location. Please enter coordinates manually.",
+          });
         }
-        
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
+        timeout: 15000,
+        maximumAge: 0,
       }
     );
   };
@@ -307,7 +317,7 @@ function LocationPickerContent({
             {isGettingLocation ? 'Getting Location...' : 'Use My Current Location'}
           </Button>
           <p className="text-xs text-gray-500 mt-2">
-            This will use your device's GPS to detect your current location
+            This will use your device&apos;s GPS to detect your current location. If blocked, click the lock icon in your browser&apos;s address bar and allow location access.
           </p>
         </div>
 
