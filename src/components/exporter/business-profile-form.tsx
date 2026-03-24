@@ -306,23 +306,25 @@ export function BusinessProfileForm({
     const requiredFields = [
       'kenyanNationalId', 'name', 'logoUrl',
       'numberOfEmployees', 'kraPin', 'sector',
-      'registrationCertificateUrl', 'pinCertificateUrl', 'exportLicense',
+      'registrationCertificateUrl', 'pinCertificateUrl',
       'town', 'county', 'physicalAddress', 'contactPhone', 'companyEmail'
     ];
     
     const optionalFields = [
+      'exportLicense',
       'website', 'whatsappNumber', 'twitterUrl', 'instagramUrl',
       'exportVolumePast3Years', 'currentExportMarkets', 'productionCapacityPast3',
       'companyStory', 'mobileNumber', 'companySize', 'businessUserOrganisation',
     ];
 
-    const completedRequired = requiredFields.filter(field => 
-      watchedValues[field as keyof BusinessFormData]
-    ).length;
-    
-    const completedOptional = optionalFields.filter(field => 
-      watchedValues[field as keyof BusinessFormData]
-    ).length;
+    const isFieldFilled = (field: string) => {
+      const val = watchedValues[field as keyof BusinessFormData];
+      if (Array.isArray(val)) return val.length > 0;
+      return Boolean(val);
+    };
+
+    const completedRequired = requiredFields.filter(isFieldFilled).length;
+    const completedOptional = optionalFields.filter(isFieldFilled).length;
 
     const totalFields = requiredFields.length + optionalFields.length;
     const completedFields = completedRequired + completedOptional;
