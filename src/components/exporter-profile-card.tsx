@@ -422,19 +422,11 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                       {business.location || 'Nairobi'}, Kenya
                     </span>
                   </div>
-                  {/* Sector badge */}
-                  <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
-                    {business.sector || 'Agriculture'}
-                  </span>
-                  {/* Product categories */}
-                  {Array.isArray(products) && products.length > 0 && (
-                    <>
-                      {[...new Set(products.map((p) => p.category).filter((c) => Boolean(c)))].slice(0, 3).map((cat, idx) => (
-                        <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                          {cat}
-                        </span>
-                      ))}
-                    </>
+                  {/* Industry badge (replaces sector + product categories) */}
+                  {business.industry && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                      {business.industry}
+                    </span>
                   )}
                   {/* Rating inline */}
                   {businessRating && (
@@ -534,13 +526,18 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
             {/* RIGHT COLUMN */}
             <div className="lg:col-span-8 flex flex-col gap-3">
                
-              {/* Products — names only */}
+              {/* Products with HS codes */}
               {Array.isArray(products) && products.length > 0 && (
                 <div>
                   <h3 className="font-bold text-sm text-gray-900 border-b border-gray-200 pb-1.5 mb-2">Products & Services</h3>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
                     {[...products].reverse().map((product: ProductProfile, index: number) => (
-                      <span key={index} className="text-sm font-semibold text-gray-800">{product.name}</span>
+                      <div key={index} className="flex items-baseline gap-1.5">
+                        <span className="text-sm font-semibold text-gray-800">{product.name}</span>
+                        {product.hsCode && (
+                          <span className="text-[10px] font-mono text-slate-400 whitespace-nowrap">HS: {product.hsCode}</span>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
