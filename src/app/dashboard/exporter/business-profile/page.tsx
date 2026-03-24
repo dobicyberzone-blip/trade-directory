@@ -809,61 +809,7 @@ export default function BusinessProfilePage() {
                         className="w-full"
                         onClick={() => {
                           if (!certification.imageUrl) return;
-                          
-                          // Handle data URLs (base64 images)
-                          if (certification.imageUrl.startsWith('data:')) {
-                            try {
-                              // Create an HTML blob with the image
-                              const html = `
-                                <!DOCTYPE html>
-                                <html>
-                                  <head>
-                                    <title>Certificate Image</title>
-                                    <meta charset="UTF-8">
-                                    <style>
-                                      body {
-                                        margin: 0;
-                                        padding: 20px;
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                        min-height: 100vh;
-                                        background: #f5f5f5;
-                                      }
-                                      img {
-                                        max-width: 100%;
-                                        max-height: 90vh;
-                                        object-fit: contain;
-                                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                                        background: white;
-                                        padding: 10px;
-                                        border-radius: 4px;
-                                      }
-                                    </style>
-                                  </head>
-                                  <body>
-                                    <img src="${certification.imageUrl}" alt="Certificate" onerror="document.body.innerHTML='<p style=color:red>Failed to load image</p>'" />
-                                  </body>
-                                </html>
-                              `;
-                              
-                              const newWindow = window.open('', '_blank');
-                              if (newWindow) {
-                                newWindow.document.write(html);
-                                newWindow.document.close();
-                              }
-                            } catch (error) {
-                              console.error('Error opening image:', error);
-                              toast({
-                                title: "Error",
-                                description: "Failed to open certificate image. Please try again.",
-                                variant: "destructive",
-                              });
-                            }
-                          } else if (!certification.imageUrl.includes('example.com')) {
-                            // Handle regular URLs
-                            window.open(certification.imageUrl, '_blank');
-                          }
+                          window.open(resolveFileUrl(certification.imageUrl), '_blank', 'noopener,noreferrer');
                         }}
                       >
                         <Eye className="w-3 h-3 mr-1" />

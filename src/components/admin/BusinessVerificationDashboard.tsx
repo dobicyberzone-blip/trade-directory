@@ -76,6 +76,7 @@ import {
   PaginationModel,
   SortModel,
 } from '@/components/admin/AdminTableWrapper';
+import { resolveFileUrl } from '@/lib/pdf-viewer';
 
 // Types
 interface BusinessListing {
@@ -835,55 +836,7 @@ export default function BusinessVerificationDashboard() {
             </IconButton>
             <IconButton onClick={() => {
               if (!documentDialog.url) return;
-              
-              // Handle data URLs (base64 content)
-              if (documentDialog.url.startsWith('data:')) {
-                try {
-                  const html = `
-                    <!DOCTYPE html>
-                    <html>
-                      <head>
-                        <title>${documentDialog.title}</title>
-                        <meta charset="UTF-8">
-                        <style>
-                          body {
-                            margin: 0;
-                            padding: 20px;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            min-height: 100vh;
-                            background: #f5f5f5;
-                          }
-                          img {
-                            max-width: 100%;
-                            max-height: 90vh;
-                            object-fit: contain;
-                            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                            background: white;
-                            padding: 10px;
-                            border-radius: 4px;
-                          }
-                        </style>
-                      </head>
-                      <body>
-                        <img src="${documentDialog.url}" alt="${documentDialog.title}" onerror="document.body.innerHTML='<p style=color:red>Failed to load document</p>'" />
-                      </body>
-                    </html>
-                  `;
-                  
-                  const newWindow = window.open('', '_blank');
-                  if (newWindow) {
-                    newWindow.document.write(html);
-                    newWindow.document.close();
-                  }
-                } catch (error) {
-                  console.error('Error opening document:', error);
-                  alert('Failed to open document. Please try again.');
-                }
-              } else {
-                window.open(documentDialog.url, '_blank');
-              }
+              window.open(resolveFileUrl(documentDialog.url), '_blank', 'noopener,noreferrer');
             }}>
               <Download />
             </IconButton>
@@ -900,11 +853,18 @@ export default function BusinessVerificationDashboard() {
               style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
             />
           ) : (
-            <iframe
-              src={documentDialog.url}
-              style={{ width: '100%', height: '70vh', border: 'none' }}
-              title={documentDialog.title}
-            />
+            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap={2} p={4}>
+              <Typography variant="body1" color="textSecondary">
+                PDF documents open in a new tab for best viewing.
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<CloudDownload />}
+                onClick={() => window.open(documentDialog.url, '_blank', 'noopener,noreferrer')}
+              >
+                Open PDF
+              </Button>
+            </Box>
           )}
         </DialogContent>
       </Dialog>

@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDistanceToNow, format, isToday, isYesterday } from 'date-fns';
 import Image from 'next/image';
+import { resolveFileUrl } from '@/lib/pdf-viewer';
 
 // Types
 export interface ChatMessage {
@@ -160,7 +161,7 @@ function MessageBubble({ message, isOwn }: MessageBubbleProps) {
           {message.attachmentUrl && !isImage && (
             <div className="mt-1">
               <a
-                href={message.attachmentUrl}
+                href={resolveFileUrl(message.attachmentUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${

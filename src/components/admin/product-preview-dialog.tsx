@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, CheckCircle, XCircle, Clock, Trash2, Package } from 'lucide-react';
 import { useCenteredDialog } from '@/hooks/useCenteredDialog';
+import { resolveFileUrl } from '@/lib/pdf-viewer';
 
 interface ProductPreviewDialogProps {
   open: boolean;
@@ -230,55 +231,7 @@ export function ProductPreviewDialog({
                 className="flex-1 min-w-[80px] sm:min-w-[100px] h-7 sm:h-8 text-[10px] sm:text-xs"
                 onClick={() => {
                   if (!productData.imageUrl) return;
-                  
-                  // Handle data URLs (base64 images)
-                  if (productData.imageUrl.startsWith('data:')) {
-                    try {
-                      const html = `
-                        <!DOCTYPE html>
-                        <html>
-                          <head>
-                            <title>Product Image</title>
-                            <meta charset="UTF-8">
-                            <style>
-                              body {
-                                margin: 0;
-                                padding: 20px;
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                min-height: 100vh;
-                                background: #f5f5f5;
-                              }
-                              img {
-                                max-width: 100%;
-                                max-height: 90vh;
-                                object-fit: contain;
-                                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                                background: white;
-                                padding: 10px;
-                                border-radius: 4px;
-                              }
-                            </style>
-                          </head>
-                          <body>
-                            <img src="${productData.imageUrl}" alt="Product" onerror="document.body.innerHTML='<p style=color:red>Failed to load image</p>'" />
-                          </body>
-                        </html>
-                      `;
-                      
-                      const newWindow = window.open('', '_blank');
-                      if (newWindow) {
-                        newWindow.document.write(html);
-                        newWindow.document.close();
-                      }
-                    } catch (error) {
-                      console.error('Error opening image:', error);
-                      alert('Failed to open image. Please try again.');
-                    }
-                  } else {
-                    window.open(productData.imageUrl, '_blank');
-                  }
+                  window.open(resolveFileUrl(productData.imageUrl), '_blank', 'noopener,noreferrer');
                 }}
               >
                 <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />

@@ -543,64 +543,13 @@ export function DocumentPreviewDialog({
                           </div>
                         )}
                         
-                        {cert.imageUrl && (cert.imageUrl.startsWith('data:') || cert.imageUrl.startsWith('/uploads/') || (cert.imageUrl.startsWith('http') && !cert.imageUrl.includes('example.com'))) ? (
+                        {cert.imageUrl && (cert.imageUrl.startsWith('data:') || cert.imageUrl.startsWith('/uploads/') || cert.imageUrl.startsWith('/api/files/') || (cert.imageUrl.startsWith('http') && !cert.imageUrl.includes('example.com'))) ? (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => {
                               if (!cert.imageUrl) return;
-                              
-                              // Handle data URLs (base64 images)
-                              if (cert.imageUrl.startsWith('data:')) {
-                                try {
-                                  // Create an HTML blob with the image
-                                  const html = `
-                                    <!DOCTYPE html>
-                                    <html>
-                                      <head>
-                                        <title>Certificate Image</title>
-                                        <meta charset="UTF-8">
-                                        <style>
-                                          body {
-                                            margin: 0;
-                                            padding: 20px;
-                                            display: flex;
-                                            justify-content: center;
-                                            align-items: center;
-                                            min-height: 100vh;
-                                            background: #f5f5f5;
-                                          }
-                                          img {
-                                            max-width: 100%;
-                                            max-height: 90vh;
-                                            object-fit: contain;
-                                            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                                            background: white;
-                                            padding: 10px;
-                                            border-radius: 4px;
-                                          }
-                                        </style>
-                                      </head>
-                                      <body>
-                                        <img src="${cert.imageUrl}" alt="Certificate" onerror="document.body.innerHTML='<p style=color:red>Failed to load certificate</p>'" />
-                                      </body>
-                                    </html>
-                                  `;
-                                  
-                                  const newWindow = window.open('', '_blank');
-                                  if (newWindow) {
-                                    newWindow.document.write(html);
-                                    newWindow.document.close();
-                                  }
-                                } catch (error) {
-                                  console.error('Error opening certificate:', error);
-                                  alert('Failed to open certificate. Please try again.');
-                                }
-                              } else {
-                                // Handle regular URLs and uploaded files
-                                const absoluteUrl = getAbsoluteUrl(cert.imageUrl);
-                                window.open(absoluteUrl, '_blank');
-                              }
+                              window.open(getAbsoluteUrl(cert.imageUrl), '_blank', 'noopener,noreferrer');
                             }}
                             className="w-full text-xs"
                           >

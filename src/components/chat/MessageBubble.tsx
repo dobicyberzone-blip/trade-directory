@@ -6,6 +6,7 @@ import { Check, CheckCheck, Clock, FileIcon, Loader2, AlertCircle } from 'lucide
 import { formatDistanceToNow, format, isToday, isYesterday, isThisWeek } from 'date-fns';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { resolveFileUrl } from '@/lib/pdf-viewer';
 
 interface MessageBubbleProps {
   message: string;
@@ -148,7 +149,7 @@ export const MessageBubble = memo(function MessageBubble({
                 </div>
               ) : (
                 <a
-                  href={attachmentUrl}
+                  href={resolveFileUrl(attachmentUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(

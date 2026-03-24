@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { resolveFileUrl } from '@/lib/pdf-viewer';
 
 // Supported file types
 const FILE_TYPES = {
@@ -249,11 +250,11 @@ export function FileUpload({
   };
 
   const handleDownload = (file: UploadedFile) => {
-    window.open(file.url, '_blank');
+    window.open(resolveFileUrl(file.url), '_blank', 'noopener,noreferrer');
   };
 
   const handleView = (file: UploadedFile) => {
-    window.open(file.url, '_blank');
+    window.open(resolveFileUrl(file.url), '_blank', 'noopener,noreferrer');
   };
 
   const isImage = (fileType: string) => FILE_TYPES.images.includes(fileType);
@@ -543,7 +544,7 @@ interface FileGalleryProps {
 
 export function FileGallery({ files, className, viewMode = 'grid' }: FileGalleryProps) {
   const handleView = (file: UploadedFile) => {
-    window.open(file.url, '_blank');
+    window.open(resolveFileUrl(file.url), '_blank', 'noopener,noreferrer');
   };
 
   const handleDownload = (file: UploadedFile) => {

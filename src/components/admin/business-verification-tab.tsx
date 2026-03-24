@@ -13,16 +13,9 @@ import {
   MapPin as LocationOnIcon, Building as BusinessIcon, Search as SearchIcon,
   FileText as FileTextIcon, Download as DownloadIcon, Lock as LockIcon,
 } from 'lucide-react';
+import { resolveFileUrl } from '@/lib/pdf-viewer';
 import { apiClient } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-
-// Resolve relative /uploads/ or /api/files/ paths to absolute URLs
-function resolveDocUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
 
 interface Business {
   id: string;
@@ -488,7 +481,7 @@ export function BusinessVerificationTab() {
                         <FileTextIcon size={18} style={{ color: '#3b82f6' }} />
                         <Typography variant="subtitle2">{label}</Typography>
                       </Box>
-                      <Button size="small" startIcon={<DownloadIcon size={14} />} href={resolveDocUrl(url)} target="_blank" rel="noopener noreferrer">
+                      <Button size="small" startIcon={<DownloadIcon size={14} />} href={resolveFileUrl(url)} target="_blank" rel="noopener noreferrer">
                         View / Download
                       </Button>
                     </CardContent>
