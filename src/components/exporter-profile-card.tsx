@@ -387,7 +387,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
                         const parent = e.currentTarget.parentElement;
                         if (parent) {
                           const fallback = document.createElement('span');
-                          fallback.className = 'text-xl sm:text-2xl md:text-3xl font-black text-gray-600';
+                          fallback.className = 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-600';
                           fallback.textContent = business.name.charAt(0).toUpperCase();
                           parent.appendChild(fallback);
                         }
