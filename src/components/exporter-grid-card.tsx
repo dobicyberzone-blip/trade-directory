@@ -391,7 +391,7 @@ export function ExporterGridCard({ business, onViewProfileClick, hideActions }: 
               <span>{business.location}, Kenya</span>
               {business.county && <span></span>}
             </div>
-            <p className="text-xs font-semibold text-primary mt-1">{business.sector}</p>
+            <p className="text-xs font-semibold text-primary mt-1">{business.industry || business.sector}</p>
           </div>
 
           {/* Business Details Grid */}
