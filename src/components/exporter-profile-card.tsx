@@ -524,7 +524,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
             </div>
 
             {/* RIGHT COLUMN */}
-            <div className="lg:col-span-8 flex flex-col gap-2">
+            <div className="lg:col-span-8 flex flex-col gap-3">
                
               {/* Products with HS codes */}
               {Array.isArray(products) && products.length > 0 && (
@@ -544,7 +544,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
               )}
 
               {/* Contact + Business Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-bold text-sm text-gray-900 border-b border-gray-200 pb-1.5 mb-2">Contact Information</h3>
                   <div className="space-y-1.5">
@@ -591,7 +591,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
               </div>
 
               {/* TRUST SIGNALS */}
-              <div className="relative">
+              <div className="relative mt-auto">
                 <p className="absolute -top-2.5 left-5 px-2 bg-white text-[10px] font-black text-emerald-800/50 uppercase tracking-widest z-10">Trust Signals</p>
                 <div className={`p-3 rounded-xl border-2 ${business.verificationStatus === 'VERIFIED' ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
                   <div className="flex items-center justify-between gap-3">
