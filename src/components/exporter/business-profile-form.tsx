@@ -385,7 +385,7 @@ export function BusinessProfileForm({
       fields: ['twitterUrl', 'instagramUrl', 'coordinates']
     },
     {
-      title: 'Company Export Trading',
+      title: 'Export Capacity',
       icon: Award,
       fields: ['exportVolumePast3Years', 'currentExportMarkets', 'productionCapacityPast3', 'companyStory']
     }
@@ -1296,7 +1296,11 @@ export function BusinessProfileForm({
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               {React.createElement(sections[currentSection].icon, { className: "w-5 h-5" })}
-              <span>{sections[currentSection].title}</span>
+              <span>
+                {currentSection === 5
+                  ? 'Company Export Trading Capacity'
+                  : sections[currentSection].title}
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
