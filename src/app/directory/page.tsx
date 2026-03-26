@@ -310,70 +310,97 @@ interface PublicBusiness {
 }
 
 // Image with fallback to initials on broken src
-function ImgWithFallback({ src, alt, initials }: { src: string; alt: string; initials: string }) {
+function ImgWithFallback({ src, alt, initials, size = 'md' }: { src: string; alt: string; initials: string; size?: 'md' | 'lg' }) {
   const [broken, setBroken] = useState(false);
+  const cls = size === 'lg' ? 'w-16 h-16 text-2xl' : 'w-14 h-14 text-xl';
   if (broken) {
     return (
-      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-bold text-xl shadow-sm">
+      <div className={`${cls} rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-bold shadow-md flex-shrink-0`}>
         {initials}
       </div>
     );
   }
   return (
-    <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-200 bg-gray-50">
+    <div className={`${cls} rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0`}>
       <img src={src} alt={alt} className="w-full h-full object-cover" onError={() => setBroken(true)} />
     </div>
   );
 }
 
 function PublicBusinessCard({ biz }: { biz: PublicBusiness }) {
-  const address = [biz.physicalAddress, biz.town, biz.county].filter(Boolean).join(', ') || biz.location || '—';
+  const address = [biz.town, biz.county].filter(Boolean).join(', ') || biz.location || '';
   const productList = biz.products?.length
     ? biz.products.slice(0, 3).map(p => p.name).join(', ') + (biz.products.length > 3 ? ` +${biz.products.length - 3}` : '')
     : biz.serviceOffering || null;
-  // First letter of each word (up to 2), uppercase — same as main directory
   const initials = biz.name.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0].toUpperCase()).join('');
   const isVerified = biz.verificationStatus === 'VERIFIED';
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
-      <div className="p-5 pb-3 flex items-start gap-4">
-        {/* Logo / initials avatar */}
-        <div className="flex-shrink-0">
-          {biz.logoUrl ? (
-            <ImgWithFallback src={biz.logoUrl} alt={biz.name} initials={initials} />
-          ) : (
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-bold text-xl shadow-sm">
-              {initials}
-            </div>
-          )}
-        </div>
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
 
-        {/* Name + verified — verified sits inline to the right of the name */}
-        <div className="flex-1 min-w-0 pt-1">
-          <div className="flex items-start gap-2 flex-wrap">
-            <h3 className="font-bold text-gray-900 dark:text-white text-base leading-snug">{biz.name}</h3>
-            {isVerified && (
-              <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600 flex-shrink-0 mt-0.5">
-                {/* Scallop verified icon — matches main directory */}
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
-                  <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7l-3.61.81.34 3.7L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/>
-                </svg>
-                Verified
-              </span>
-            )}
+      {/* ── Top: avatar left, verified right ── */}
+      <div className="px-5 pt-5 pb-3 flex items-start justify-between">
+        {/* Avatar */}
+        {biz.logoUrl ? (
+          <ImgWithFallback src={biz.logoUrl} alt={biz.name} initials={initials} size="lg" />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-bold text-2xl shadow-md flex-shrink-0">
+            {initials}
           </div>
-        </div>
+        )}
+
+        {/* Verified badge — top right, no favorite */}
+        {isVerified && (
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-600">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 flex-shrink-0">
+              <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7l-3.61.81.34 3.7L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/>
+            </svg>
+            Verified
+          </span>
+        )}
+      </div>
+
+      {/* ── Business name, location, sector ── */}
+      <div className="px-5 pb-4">
+        <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-snug mb-1">{biz.name}</h3>
+        {address && (
+          <p className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-1.5">
+            <svg className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {address}, Kenya
+          </p>
+        )}
+        {biz.sector && (
+          <p className="text-sm font-bold text-green-600 dark:text-green-400">{biz.sector}</p>
+        )}
       </div>
 
       <div className="mx-5 border-t border-gray-100 dark:border-gray-700" />
-      <div className="p-5 pt-4 flex-1 space-y-3 text-sm">
-        <div><p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Sector</p><p className="text-gray-800 dark:text-gray-200">{biz.sector || '—'}</p></div>
-        <div><p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Products / Services</p><p className="text-gray-800 dark:text-gray-200 line-clamp-2">{productList || '—'}</p></div>
-        <div><p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Address</p><p className="text-gray-600 dark:text-gray-400 line-clamp-2">{address}</p></div>
+
+      {/* ── Products / Address detail ── */}
+      <div className="px-5 py-4 flex-1 space-y-2.5 text-sm">
+        {productList && (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Products / Services</p>
+            <p className="text-gray-700 dark:text-gray-300 line-clamp-2">{productList}</p>
+          </div>
+        )}
+        {biz.physicalAddress && (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Address</p>
+            <p className="text-gray-600 dark:text-gray-400 line-clamp-2">{biz.physicalAddress}</p>
+          </div>
+        )}
       </div>
+
+      {/* ── CTA ── */}
       <div className="px-5 pb-5">
-        <a href="/login?returnUrl=/directory" className="block w-full text-center text-xs font-semibold text-green-700 border border-green-200 rounded-lg py-2 hover:bg-green-50 transition-colors">Log in to view full profile →</a>
+        <a href="/login?returnUrl=/directory"
+          className="block w-full text-center text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg py-2.5 transition-colors">
+          Log in to view full profile
+        </a>
       </div>
     </div>
   );
