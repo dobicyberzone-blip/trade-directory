@@ -887,7 +887,7 @@ function RegisterPageContent({
                                     value={field.value || ''}
                                     onChange={(e) => field.onChange(e.target.value)}
                                     max={new Date().toISOString().split('T')[0]}
-                                    className="flex items-center w-full h-12 px-3 border border-gray-300 rounded-md bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-500 [&:not(:valid)]:text-gray-400 appearance-none [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-inner-spin-button]:hidden [&::-webkit-clear-button]:hidden [&::-webkit-datetime-edit-fields-wrapper]:p-0"
+                                    className="w-full h-12 px-3 pr-10 border border-gray-300 rounded-md bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-500 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-inner-spin-button]:hidden [&::-webkit-clear-button]:hidden"
                                     style={{ colorScheme: 'light' }}
                                   />
                                 </div>

@@ -1403,7 +1403,7 @@ export function BusinessProfileForm({
                                   ...certFormData,
                                   validUntil: e.target.value ? new Date(e.target.value) : undefined
                                 })}
-                                className="flex h-9 sm:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 appearance-none [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-inner-spin-button]:hidden [&::-webkit-clear-button]:hidden"
+                                className="h-9 sm:h-10 w-full rounded-md border border-input bg-background px-3 pr-10 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-inner-spin-button]:hidden [&::-webkit-clear-button]:hidden"
                                 style={{ colorScheme: 'light' }}
                               />
                             </div>
