@@ -98,6 +98,18 @@ export async function PUT(
       updatedFields
     ).catch(err => console.error('[Profile Update] Failed to send email:', err));
 
+    // In-app notification for all roles (Buyer, Exporter, Partner)
+    void prisma.notification.create({
+      data: {
+        userId: resolvedParams.id,
+        title: 'Profile Updated Successfully',
+        message: `Your profile was updated on ${new Date().toLocaleDateString('en-KE', { dateStyle: 'long' })}. Changes saved: ${updatedFields.join(', ')}.`,
+        type: 'PROFILE_UPDATE',
+        urgency: 'LOW',
+        link: '/dashboard/settings/profile',
+      },
+    }).catch(() => {});
+
     return NextResponse.json(
       {
         message: 'Profile updated successfully',
