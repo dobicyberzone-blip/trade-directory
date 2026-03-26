@@ -1086,6 +1086,16 @@ export function BusinessProfileForm({
                 </div>
               </div>
             </div>
+
+            <LocationPicker
+              label="Precise Location (GPS)"
+              description="Click 'Update Location' to set your business location on the map"
+              value={form.watch('coordinates')}
+              onChange={(coordinates) => {
+                form.setValue('coordinates', coordinates, { shouldDirty: true, shouldValidate: true });
+                silentAutoSave();
+              }}
+            />
           </div>
         );
 
@@ -1167,16 +1177,6 @@ export function BusinessProfileForm({
                 <Input id="telegramUrl" {...form.register('telegramUrl')} placeholder="https://t.me/yourcompany" type="url" className="mt-1" />
               </div>
             </div>
-
-            <LocationPicker
-              label="Precise Location (GPS)"
-              description="Click 'Update Location' to set your business location on the map"
-              value={form.watch('coordinates')}
-              onChange={(coordinates) => {
-                form.setValue('coordinates', coordinates, { shouldDirty: true, shouldValidate: true });
-                silentAutoSave();
-              }}
-            />
           </div>
         );
 
