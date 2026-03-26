@@ -75,6 +75,7 @@ function getNotificationIcon(type: NotificationType): string {
     case 'FEATURE_UPDATE': return '🆕';
     case 'SECURITY_ALERT': return '🔒';
     case 'SUCCESS_STORY_APPROVED': return '🎉';
+    case 'RATING_RECEIVED': return '⭐';
     default: return '🔔';
   }
 }

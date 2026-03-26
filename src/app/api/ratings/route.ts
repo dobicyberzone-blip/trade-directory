@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth-utils';
+import { sendRatingNotificationEmail } from '@/lib/email-templates';
+import { createNotificationAsync } from '@/lib/notifications';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,7 +17,7 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
   try {
     const user = await verifyToken(request);
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized - Please log in' },
@@ -42,9 +44,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if business exists
+    // Fetch business with owner details for notification
     const business = await prisma.business.findUnique({
       where: { id: businessId },
+      include: {
+        owner: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+      },
     });
 
     if (!business) {
@@ -53,6 +60,15 @@ export async function POST(request: NextRequest) {
         { status: 404, headers: corsHeaders }
       );
     }
+
+    // Fetch buyer name for the notification message
+    const buyer = await prisma.user.findUnique({
+      where: { id: user.userId },
+      select: { firstName: true, lastName: true, email: true },
+    });
+    const buyerName = buyer
+      ? `${buyer.firstName || ''} ${buyer.lastName || ''}`.trim() || buyer.email
+      : 'A buyer';
 
     // Check if user already rated this business
     const existingRating = await prisma.rating.findUnique({
@@ -65,6 +81,7 @@ export async function POST(request: NextRequest) {
     });
 
     let savedRating;
+    const isUpdate = !!existingRating;
 
     if (existingRating) {
       // Update existing rating
@@ -88,12 +105,51 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ rating: savedRating }, { 
-      status: existingRating ? 200 : 201,
-      headers: corsHeaders 
+    // ── Async notifications — fire-and-forget, never delays the buyer's response ──
+    const exporterName = business.owner
+      ? `${business.owner.firstName || ''} ${business.owner.lastName || ''}`.trim() || 'Exporter'
+      : 'Exporter';
+    const submittedAt = savedRating.updatedAt || savedRating.createdAt;
+    const exporterEmail = business.owner?.email ?? business.contactEmail;
+
+    // 1. Send branded email notification to the exporter
+    void sendRatingNotificationEmail(
+      exporterEmail,
+      exporterName,
+      business.name,
+      buyerName,
+      rating,
+      review || null,
+      submittedAt,
+      isUpdate
+    ).catch((err) =>
+      console.error('[Rating] Email notification failed:', err)
+    );
+
+    // 2. Create in-app notification for the exporter
+    if (business.owner?.id) {
+      const reviewSnippet = review
+        ? `: "${review.substring(0, 80)}${review.length > 80 ? '…' : ''}"`
+        : '.';
+      void createNotificationAsync({
+        userId: business.owner.id,
+        title: isUpdate ? 'Rating Updated' : 'New Rating Received',
+        message: `${buyerName} ${isUpdate ? 'updated their rating to' : 'rated'} ${business.name} ${rating}/5 star${rating !== 1 ? 's' : ''}${reviewSnippet}`,
+        type: 'RATING_RECEIVED',
+        urgency: 'LOW',
+      });
+    }
+
+    console.log(
+      `[Rating] ${isUpdate ? 'Updated' : 'Created'} — business: "${business.name}", buyer: ${user.userId}, score: ${rating}`
+    );
+
+    return NextResponse.json({ rating: savedRating }, {
+      status: isUpdate ? 200 : 201,
+      headers: corsHeaders,
     });
   } catch (error) {
-
+    console.error('[Rating] Failed to save rating:', error);
     return NextResponse.json(
       { error: 'Failed to create rating' },
       { status: 500, headers: corsHeaders }
@@ -105,7 +161,7 @@ export async function GET(request: NextRequest) {
   try {
     // Try to get user, but don't require authentication
     const user = await verifyToken(request);
-    
+
     if (!user) {
       // Return empty ratings if not authenticated
       return NextResponse.json(
@@ -131,7 +187,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ ratings: userRatings }, { headers: corsHeaders });
   } catch (error) {
-
     return NextResponse.json(
       { error: 'Failed to fetch ratings' },
       { status: 500, headers: corsHeaders }

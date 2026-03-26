@@ -1287,3 +1287,149 @@ export async function sendBusinessSuspendedEmail(
     return false;
   }
 }
+
+/**
+ * Send new rating notification email to exporter
+ * Triggered asynchronously when a buyer submits or updates a rating
+ */
+export async function sendRatingNotificationEmail(
+  exporterEmail: string,
+  exporterName: string,
+  businessName: string,
+  buyerName: string,
+  ratingScore: number,
+  review: string | null,
+  submittedAt: Date,
+  isUpdate: boolean = false
+): Promise<boolean> {
+  try {
+    const transport = getTransporter();
+    if (!transport) return false;
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const dashboardLink = `${appUrl}/dashboard/exporter/business-profile`;
+    const stars = '★'.repeat(ratingScore) + '☆'.repeat(5 - ratingScore);
+    const ratingLabel = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][ratingScore] || '';
+    const formattedDate = submittedAt.toLocaleString('en-KE', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: 'Africa/Nairobi',
+    });
+
+    await transport.sendMail({
+      from: `"${process.env.FROM_NAME || 'KEPROBA Trade Directory'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+      to: exporterEmail,
+      subject: `⭐ New Rating Received for ${businessName} – KEPROBA Trade Directory`,
+      html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Rating Received</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f6f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #333; }
+    .wrapper { max-width: 600px; margin: 32px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 36px 32px; text-align: center; }
+    .header img { height: 48px; margin-bottom: 12px; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 14px; }
+    .body { padding: 36px 32px; }
+    .greeting { font-size: 16px; margin-bottom: 20px; }
+    .rating-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 24px; margin: 24px 0; }
+    .rating-card h2 { margin: 0 0 16px; font-size: 17px; color: #15803d; }
+    .stars { font-size: 28px; color: #f59e0b; letter-spacing: 2px; margin-bottom: 4px; }
+    .rating-label { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
+    .detail-row { display: flex; gap: 8px; margin-bottom: 10px; font-size: 14px; }
+    .detail-label { font-weight: 600; color: #374151; min-width: 110px; }
+    .detail-value { color: #4b5563; }
+    .review-box { background: #ffffff; border: 1px solid #d1fae5; border-radius: 8px; padding: 14px 16px; margin-top: 14px; font-size: 14px; color: #374151; line-height: 1.6; font-style: italic; }
+    .no-review { color: #9ca3af; font-size: 13px; font-style: italic; margin-top: 10px; }
+    .cta { text-align: center; margin: 32px 0 8px; }
+    .cta a { display: inline-block; background: #16a34a; color: #ffffff; text-decoration: none; padding: 13px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; letter-spacing: 0.2px; }
+    .cta a:hover { background: #15803d; }
+    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 28px 0; }
+    .footer { background: #f8fafc; padding: 24px 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; }
+    .footer a { color: #16a34a; text-decoration: none; }
+    .badge { display: inline-block; background: ${isUpdate ? '#fef3c7' : '#dcfce7'}; color: ${isUpdate ? '#92400e' : '#166534'}; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Header -->
+    <div class="header">
+      <h1>🌟 New Rating Received</h1>
+      <p>Kenya Export Promotion &amp; Branding Agency</p>
+    </div>
+
+    <!-- Body -->
+    <div class="body">
+      <p class="greeting">Hello <strong>${exporterName}</strong>,</p>
+      <p style="font-size:15px; color:#4b5563;">
+        A buyer has ${isUpdate ? 'updated their rating' : 'submitted a new rating'} for your business on the KEPROBA Trade Directory.
+      </p>
+
+      <!-- Rating Card -->
+      <div class="rating-card">
+        <span class="badge">${isUpdate ? 'Rating Updated' : 'New Rating'}</span>
+        <h2>Rating Details</h2>
+
+        <div class="stars">${stars}</div>
+        <div class="rating-label">${ratingScore}/5 — ${ratingLabel}</div>
+
+        <div class="detail-row">
+          <span class="detail-label">Business:</span>
+          <span class="detail-value">${businessName}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Rated by:</span>
+          <span class="detail-value">${buyerName}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Submitted on:</span>
+          <span class="detail-value">${formattedDate}</span>
+        </div>
+
+        ${review
+          ? `<p style="margin:14px 0 4px; font-size:13px; font-weight:600; color:#374151;">Written Feedback:</p>
+             <div class="review-box">"${review}"</div>`
+          : `<p class="no-review">No written feedback was provided.</p>`
+        }
+      </div>
+
+      <!-- CTA -->
+      <div class="cta">
+        <a href="${dashboardLink}">View Your Business Profile &amp; Ratings →</a>
+      </div>
+
+      <hr class="divider" />
+
+      <p style="font-size:13px; color:#6b7280; text-align:center;">
+        Ratings help build trust with international buyers. Keep delivering excellent service to maintain a strong profile on the directory.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p style="margin:0 0 6px;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
+      <p style="margin:0 0 6px;">
+        <a href="${appUrl}">Trade Directory</a> &nbsp;|&nbsp;
+        <a href="${appUrl}/dashboard">Dashboard</a> &nbsp;|&nbsp;
+        <a href="${appUrl}/contact">Contact Support</a>
+      </p>
+      <p style="margin:8px 0 0; font-size:11px; color:#d1d5db;">
+        You are receiving this email because you are a registered exporter on the KEPROBA Trade Directory.<br/>
+        © ${new Date().getFullYear()} KEPROBA. All rights reserved.
+      </p>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
+
+    console.log(`[Email] Rating notification sent to ${exporterEmail} for business "${businessName}" (score: ${ratingScore}, isUpdate: ${isUpdate})`);
+    return true;
+  } catch (error) {
+    console.error(`[Email] Failed to send rating notification to ${exporterEmail}:`, error);
+    return false;
+  }
+}

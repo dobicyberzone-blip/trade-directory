@@ -23,7 +23,8 @@ export type NotificationType =
   | 'SUCCESS_STORY_APPROVED'
   | 'ADMIN_ALERT'
   | 'SYSTEM_ERROR'
-  | 'PRODUCT_VERIFICATION';
+  | 'PRODUCT_VERIFICATION'
+  | 'RATING_RECEIVED';
 
 export type NotificationUrgency = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
