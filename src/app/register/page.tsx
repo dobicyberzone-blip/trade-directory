@@ -388,7 +388,7 @@ function RegisterPageContent({
         toast({
           variant: 'destructive',
           title: 'Email Already Registered',
-          description: 'This email is already in use. Please use a different email or sign in.',
+          description: 'An account with this email already exists. Please use a different email address or sign in to your existing account.',
         });
         return;
       }
@@ -1286,21 +1286,34 @@ function RegisterPageContent({
                               </div>
                             </FormControl>
                             {/* Inline duplicate feedback */}
-                            {emailCheckState === 'taken' && (
-                              <p className="text-sm text-red-600 flex items-center gap-1 mt-1">
-                                <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            {emailCheckState === 'checking' && (
+                              <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-1">
+                                <svg className="animate-spin h-3.5 w-3.5 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                                 </svg>
-                                This email is already registered.{' '}
-                                <a href="/login" className="underline font-medium hover:text-red-700">Sign in instead?</a>
+                                Checking availability…
                               </p>
                             )}
+                            {emailCheckState === 'taken' && (
+                              <div className="mt-2 rounded-md bg-red-50 border border-red-200 px-3 py-2.5 flex items-start gap-2">
+                                <svg className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                                <div className="text-sm text-red-700 leading-snug">
+                                  <span className="font-semibold">Email already registered.</span>{' '}
+                                  An account with this email address already exists.{' '}
+                                  <a href="/login" className="underline font-medium hover:text-red-900 whitespace-nowrap">Sign in to your account →</a>
+                                  <span className="block text-xs text-red-500 mt-0.5">If you forgot your password, use the <a href="/forgot-password" className="underline hover:text-red-700">forgot password</a> link on the login page.</span>
+                                </div>
+                              </div>
+                            )}
                             {emailCheckState === 'available' && (
-                              <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
-                                <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <p className="text-sm text-green-700 flex items-center gap-1.5 mt-1">
+                                <svg className="h-4 w-4 flex-shrink-0 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                Email is available
+                                Great — this email is available
                               </p>
                             )}
                             {selectedRole === 'partner' && emailCheckState === 'idle' && (
