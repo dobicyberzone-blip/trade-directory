@@ -431,15 +431,6 @@ function PublicDirectoryView() {
             <p className="mt-3 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">Discover verified Kenyan exporters and their products.</p>
           </div>
 
-          {/* Login banner */}
-          <div className="mb-6 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <p className="text-sm text-green-800"><span className="font-semibold">Want full access?</span> Log in to view complete profiles, send inquiries, and connect directly with exporters.</p>
-            <div className="flex gap-2 flex-shrink-0">
-              <a href="/login?returnUrl=/directory"><button className="px-3 py-1.5 text-sm border border-green-600 text-green-700 rounded-md hover:bg-green-50">Log In</button></a>
-              <a href="/register"><button className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-md hover:bg-green-700">Register</button></a>
-            </div>
-          </div>
-
           {/* ── Search + Filters row ── */}
           <div className="flex flex-col sm:flex-row gap-2 mb-6 items-stretch">
             {/* Sector filter */}
