@@ -451,20 +451,30 @@ function PublicDirectoryView() {
               <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </div>
 
-            {/* Search input — takes remaining space */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              <input
-                value={searchInput}
-                onChange={e => setSearchInput(e.target.value)}
-                placeholder="Search by business name…"
-                className="w-full h-11 pl-9 pr-4 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-              {searchInput && (
-                <button onClick={() => { setSearchInput(''); setSearchTerm(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  <X className="h-4 w-4" />
-                </button>
-              )}
+            {/* Search input + Search button */}
+            <div className="relative flex-1 flex">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <input
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { setSearchTerm(searchInput); setCurrentPage(1); } }}
+                  placeholder="Search by business name…"
+                  className="w-full h-11 pl-9 pr-4 border border-gray-300 rounded-l-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10"
+                />
+                {searchInput && (
+                  <button onClick={() => { setSearchInput(''); setSearchTerm(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => { setSearchTerm(searchInput); setCurrentPage(1); }}
+                className="h-11 px-5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-r-md flex-shrink-0 flex items-center gap-2 transition-colors"
+              >
+                <Search className="h-4 w-4" />
+                Search
+              </button>
             </div>
 
             {/* Clear all */}
