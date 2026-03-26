@@ -20,13 +20,30 @@ const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const usefulLinks = [
-  { name: "Kenya Association of Manufacturers (KAM)", href: "https://www.kam.co.ke" },
-  { name: "Kenya National Chamber of Commerce and Industry (KNCCI)", href: "https://www.kenyachamber.or.ke" },
-  { name: "Kenya Trade Network Agency", href: "https://www.kentrade.go.ke" },
-  { name: "Info Trade Kenya", href: "https://www.infotradekenya.go.ke" },
-  { name: "Kenya Trade Portal", href: "https://www.kenyatradeportal.go.ke" },
-  { name: "ICT Authority", href: "https://www.icta.go.ke" },
-  { name: "Access to EU Market", href: "https://www.accesstomarkets.org" },
+  // Business Membership Organizations
+  { name: "Kenya Association of Manufacturers (KAM)", href: "https://www.kam.co.ke/" },
+  { name: "Kenya Flower Council", href: "https://kenyaflowercouncil.org/" },
+  { name: "Fresh Produce Exporters Association of Kenya (FPEAK)", href: "https://fpeak.org/" },
+  { name: "Fresh Produce Consortium of Kenya (FPCK)", href: "https://fpckenya.co.ke/" },
+  { name: "Avocado Society of Kenya", href: "https://kenyaavocados.co.ke/" },
+  { name: "Avocado Exporters Association of Kenya", href: "https://avocado.ke/" },
+  { name: "Kenya National Chamber of Commerce and Industry (KNCCI)", href: "https://www.kenyachamber.or.ke/" },
+
+  // Sector Regulators
+  { name: "Kenya Bureau of Standards (KEBS)", href: "https://www.kebs.org/" },
+  { name: "Agriculture and Food Authority (AFA)", href: "https://www.afa.go.ke/" },
+  { name: "Kenya Plant Health Inspectorate Service (KEPHIS)", href: "https://www.kephis.go.ke/" },
+  { name: "Kenya Revenue Authority (KRA)", href: "https://www.kra.go.ke/" },
+  { name: "Kenya Ports Authority (KPA)", href: "https://www.kpa.co.ke/" },
+  { name: "State Department for Mining", href: "https://mining.go.ke/" },
+  { name: "Kenya Fisheries Service (KeFS)", href: "https://kefs.go.ke/" },
+
+  // Trade Facilitating Agencies
+  { name: "Kenya Trade Network Agency (KenTrade)", href: "https://kentrade.go.ke/" },
+  { name: "Info Trade Kenya", href: "https://www.infotradekenya.go.ke/" },
+  { name: "Kenya Trade Portal", href: "https://www.kenyatradeportal.go.ke/" },
+  { name: "ICT Authority", href: "https://www.icta.go.ke/" },
+  { name: "Access to Markets (EU)", href: "https://www.accesstomarkets.org/" },
 ];
 
 const platformLinks = [
