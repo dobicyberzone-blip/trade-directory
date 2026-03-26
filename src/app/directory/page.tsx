@@ -6,7 +6,7 @@ import { ExporterGridCard, ExporterGridCardSkeleton } from '@/components/exporte
 import dynamicImport from 'next/dynamic';
 import { apiClient, type Business as APIBusiness } from '@/lib/api';
 import { trackSearch } from '@/lib/analytics';
-import { Search, X, LayoutGrid, Map as MapIcon, SlidersHorizontal, Heart, Loader2 } from 'lucide-react';
+import { Search, X, LayoutGrid, Map as MapIcon, SlidersHorizontal, Heart, Loader2, Building2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -347,35 +347,79 @@ function PublicBusinessCard({ biz }: { biz: PublicBusiness }) {
 function PublicDirectoryView() {
   const searchParams = useSearchParams();
   const [businesses, setBusinesses] = useState<PublicBusiness[]>([]);
+  const [allBusinesses, setAllBusinesses] = useState<PublicBusiness[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [sectorFilter, setSectorFilter] = useState(searchParams.get('sector') || '');
+  const [productFilter, setProductFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const PER_PAGE = 24;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Debounce search
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => { setSearchTerm(searchInput); setCurrentPage(1); }, 250);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchInput]);
 
+  // Fetch a larger set once to populate filter options
+  useEffect(() => {
+    fetch('/api/businesses?verified=true&limit=500')
+      .then(r => r.json())
+      .then(d => setAllBusinesses(d.businesses || []))
+      .catch(() => {});
+  }, []);
+
+  // Unique sectors from loaded businesses
+  const sectorOptions = Array.from(
+    new Set(allBusinesses.map(b => b.sector).filter(Boolean))
+  ).sort();
+
+  // Unique products from loaded businesses
+  const productOptions = Array.from(
+    new Set(
+      allBusinesses.flatMap(b =>
+        b.products?.map(p => p.name) || (b.serviceOffering ? [b.serviceOffering] : [])
+      ).filter(Boolean)
+    )
+  ).sort().slice(0, 80); // cap at 80
+
   const fetchPublic = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams({ verified: 'true', page: String(currentPage - 1), limit: String(PER_PAGE) });
       if (searchTerm) params.set('search', searchTerm);
-      const sector = searchParams.get('sector');
-      if (sector) params.set('sector', sector);
+      if (sectorFilter) params.set('sector', sectorFilter);
       const res = await fetch(`/api/businesses?${params}`);
       const data = await res.json();
-      setBusinesses(data.businesses || []);
-      setTotalCount(data.pagination?.total ?? (data.businesses?.length || 0));
+      // Client-side product filter (API doesn't support it directly)
+      let biz: PublicBusiness[] = data.businesses || [];
+      if (productFilter) {
+        const pf = productFilter.toLowerCase();
+        biz = biz.filter(b =>
+          b.products?.some(p => p.name.toLowerCase().includes(pf)) ||
+          b.serviceOffering?.toLowerCase().includes(pf)
+        );
+      }
+      setBusinesses(biz);
+      setTotalCount(productFilter ? biz.length : (data.pagination?.total ?? biz.length));
     } catch { setBusinesses([]); } finally { setIsLoading(false); }
-  }, [currentPage, searchTerm, searchParams]);
+  }, [currentPage, searchTerm, sectorFilter, productFilter]);
 
   useEffect(() => { fetchPublic(); }, [fetchPublic]);
+
+  const clearAll = () => {
+    setSearchInput(''); setSearchTerm('');
+    setSectorFilter(''); setProductFilter('');
+    setCurrentPage(1);
+  };
+
+  const hasFilters = searchInput || sectorFilter || productFilter;
+
+  const selectCls = "h-11 pl-3 pr-8 border border-gray-300 rounded-md bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer appearance-none";
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -386,6 +430,7 @@ function PublicDirectoryView() {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary">Kenya Export Trade Directory</h1>
             <p className="mt-3 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">Discover verified Kenyan exporters and their products.</p>
           </div>
+
           {/* Login banner */}
           <div className="mb-6 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <p className="text-sm text-green-800"><span className="font-semibold">Want full access?</span> Log in to view complete profiles, send inquiries, and connect directly with exporters.</p>
@@ -394,16 +439,82 @@ function PublicDirectoryView() {
               <a href="/register"><button className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-md hover:bg-green-700">Register</button></a>
             </div>
           </div>
-          {/* Search */}
-          <div className="max-w-2xl mx-auto mb-8 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-            <input value={searchInput} onChange={e => setSearchInput(e.target.value)} placeholder="Search by company name, sector, product…"
-              className="w-full h-11 pl-9 pr-4 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+
+          {/* ── Search + Filters row ── */}
+          <div className="flex flex-col sm:flex-row gap-2 mb-6 items-stretch">
+            {/* Sector filter */}
+            <div className="relative flex-shrink-0">
+              <select value={sectorFilter} onChange={e => { setSectorFilter(e.target.value); setCurrentPage(1); }} className={selectCls} style={{ minWidth: 160 }}>
+                <option value="">All Sectors</option>
+                {sectorOptions.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </div>
+
+            {/* Product filter */}
+            <div className="relative flex-shrink-0">
+              <select value={productFilter} onChange={e => { setProductFilter(e.target.value); setCurrentPage(1); }} className={selectCls} style={{ minWidth: 160 }}>
+                <option value="">All Products</option>
+                {productOptions.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </div>
+
+            {/* Search input — takes remaining space */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              <input
+                value={searchInput}
+                onChange={e => setSearchInput(e.target.value)}
+                placeholder="Search by business name…"
+                className="w-full h-11 pl-9 pr-4 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {searchInput && (
+                <button onClick={() => { setSearchInput(''); setSearchTerm(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Clear all */}
+            {hasFilters && (
+              <button onClick={clearAll} className="h-11 px-4 text-sm border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 flex-shrink-0 whitespace-nowrap">
+                Clear
+              </button>
+            )}
           </div>
-          {totalCount > 0 && !isLoading && <p className="text-sm text-gray-500 mb-4 text-center">{totalCount.toLocaleString()} verified exporters</p>}
+
+          {/* Active filter chips */}
+          {(sectorFilter || productFilter) && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {sectorFilter && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                  Sector: {sectorFilter}
+                  <button onClick={() => setSectorFilter('')} className="hover:text-green-600"><X className="h-3 w-3" /></button>
+                </span>
+              )}
+              {productFilter && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                  Product: {productFilter}
+                  <button onClick={() => setProductFilter('')} className="hover:text-green-600"><X className="h-3 w-3" /></button>
+                </span>
+              )}
+            </div>
+          )}
+
+          {totalCount > 0 && !isLoading && (
+            <p className="text-sm text-gray-500 mb-4">{totalCount.toLocaleString()} verified {totalCount === 1 ? 'exporter' : 'exporters'} found</p>
+          )}
+
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-64 bg-white rounded-2xl animate-pulse border border-gray-100" />)}
+            </div>
+          ) : businesses.length === 0 ? (
+            <div className="text-center py-20">
+              <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg font-medium">No exporters found</p>
+              {hasFilters && <button onClick={clearAll} className="mt-2 text-sm text-green-600 underline">Clear filters</button>}
             </div>
           ) : (
             <>
