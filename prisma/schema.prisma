@@ -181,6 +181,7 @@ model Business {
   primaryContactLastName     String?
   primaryContactEmail        String?
   primaryContactPhone        String?
+  otherDocuments             String?   // JSON array of {label, url}
   certifications             BusinessCertification[]
   owner                      User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   favorites                  Favorite[]

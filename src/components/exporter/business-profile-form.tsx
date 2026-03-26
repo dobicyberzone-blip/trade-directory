@@ -165,6 +165,9 @@ export function BusinessProfileForm({
   // Directors state
   const [directors, setDirectors] = useState<{ name: string; role: string }[]>([]);
 
+  // Other documents state
+  const [otherDocs, setOtherDocs] = useState<{ label: string; url: string }[]>([]);
+
   // Load initial certifications if editing existing business
   useEffect(() => {
     if (initialData && (initialData as any).certifications) {
@@ -193,6 +196,13 @@ export function BusinessProfileForm({
       try {
         const parsed = JSON.parse((initialData as any).managementTeam);
         if (Array.isArray(parsed)) setDirectors(parsed);
+      } catch { /* ignore malformed */ }
+    }
+    // Parse other documents
+    if ((initialData as any)?.otherDocuments) {
+      try {
+        const parsed = JSON.parse((initialData as any).otherDocuments);
+        if (Array.isArray(parsed)) setOtherDocs(parsed);
       } catch { /* ignore malformed */ }
     }
   }, []);
@@ -287,6 +297,7 @@ export function BusinessProfileForm({
       runSave({
         ...form.getValues(),
         managementTeam: directors.length > 0 ? JSON.stringify(directors) : null,
+        otherDocuments: otherDocs.length > 0 ? JSON.stringify(otherDocs) : null,
       });
     }, 500);
   }, [onAutoSave, form, runSave, directors]);
@@ -374,7 +385,7 @@ export function BusinessProfileForm({
       fields: ['twitterUrl', 'instagramUrl', 'coordinates']
     },
     {
-      title: 'Company Export Trading Capacity',
+      title: 'Company Export Trading',
       icon: Award,
       fields: ['exportVolumePast3Years', 'currentExportMarkets', 'productionCapacityPast3', 'companyStory']
     }
@@ -390,6 +401,7 @@ export function BusinessProfileForm({
         _certificationsUpdated: true,
         _isFinalSave: true,
         managementTeam: directors.length > 0 ? JSON.stringify(directors) : null,
+        otherDocuments: otherDocs.length > 0 ? JSON.stringify(otherDocs) : null,
       };
       await onSubmit(dataWithCertifications as any);
       toast({
@@ -445,6 +457,7 @@ export function BusinessProfileForm({
     runSave({
       ...form.getValues(),
       managementTeam: directors.length > 0 ? JSON.stringify(directors) : null,
+      otherDocuments: otherDocs.length > 0 ? JSON.stringify(otherDocs) : null,
     });
   };
 
@@ -869,6 +882,70 @@ export function BusinessProfileForm({
                 {form.formState.errors.exportLicenseUrl.message}
               </p>
             )}
+
+            {/* ── Other Documents ── */}
+            <div className="border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Other Documents (Optional)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Attach any additional supporting documents — certifications, permits, letters, etc.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOtherDocs(prev => [...prev, { label: '', url: '' }])}
+                  className="flex items-center gap-1.5 text-sm text-green-600 hover:text-green-700 font-medium"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Document
+                </button>
+              </div>
+
+              {otherDocs.length === 0 && (
+                <p className="text-xs text-gray-400 italic text-center py-2">No additional documents added. Click "Add Document" to attach one.</p>
+              )}
+
+              {otherDocs.map((doc, index) => (
+                <div key={index} className="space-y-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Document label (e.g. Tax Compliance Certificate)"
+                      value={doc.label}
+                      onChange={(e) => {
+                        const updated = [...otherDocs];
+                        updated[index] = { ...updated[index], label: e.target.value };
+                        setOtherDocs(updated);
+                      }}
+                      className="flex-1 h-9 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setOtherDocs(prev => prev.filter((_, i) => i !== index))}
+                      className="text-red-500 hover:text-red-700 p-1 flex-shrink-0"
+                      title="Remove"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  <FileUploader
+                    label=""
+                    description="PDF, JPG, PNG — max 5MB"
+                    value={doc.url}
+                    onChange={(url) => {
+                      const updated = [...otherDocs];
+                      updated[index] = { ...updated[index], url };
+                      setOtherDocs(updated);
+                    }}
+                    validationOptions={{ ...DEFAULT_DOCUMENT_OPTIONS, maxSize: 5 * 1024 * 1024 }}
+                    accept="application/pdf,image/jpeg,image/png"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         );
 

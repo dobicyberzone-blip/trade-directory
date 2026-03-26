@@ -160,6 +160,7 @@ export async function POST(request: NextRequest) {
         kenyanNationalIdUrl: businessData.kenyanNationalIdUrl,
         incorporationCertificateUrl: businessData.incorporationCertificateUrl,
         exportLicenseUrl: businessData.exportLicenseUrl,
+        otherDocuments: businessData.otherDocuments ?? null,
         documentsUploadedAt: new Date(),
         
         // Location & Contact
@@ -364,6 +365,7 @@ export async function PUT(request: NextRequest) {
         kenyanNationalIdUrl: businessData.kenyanNationalIdUrl,
         incorporationCertificateUrl: businessData.incorporationCertificateUrl,
         exportLicenseUrl: businessData.exportLicenseUrl,
+        otherDocuments: businessData.otherDocuments ?? null,
         documentsUploadedAt: wasVerified ? new Date() : existingBusiness.documentsUploadedAt,
         
         // Location & Contact (editable only)
