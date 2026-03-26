@@ -5,11 +5,11 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Search, X, Building2, MapPin, Tag, Package } from 'lucide-react';
+import { Search, X, Building2, MapPin, Tag, Package, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Pagination } from '@/components/pagination';
+import Image from 'next/image';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,14 +21,119 @@ interface PublicBusiness {
   town?: string;
   county?: string;
   physicalAddress?: string;
+  logoUrl?: string;
   products?: { id: string; name: string; category: string }[];
   serviceOffering?: string;
   verificationStatus: string;
 }
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 24;
 
-// Inner component — uses useSearchParams, must be inside <Suspense>
+// ── Single card ──────────────────────────────────────────────────────────────
+function BusinessCard({ biz }: { biz: PublicBusiness }) {
+  const address = [biz.physicalAddress, biz.town, biz.county]
+    .filter(Boolean)
+    .join(', ') || biz.location || '—';
+
+  const productList = biz.products?.length
+    ? biz.products.slice(0, 3).map(p => p.name).join(', ') +
+      (biz.products.length > 3 ? ` +${biz.products.length - 3} more` : '')
+    : biz.serviceOffering || null;
+
+  const initials = biz.name
+    .split(' ')
+    .slice(0, 2)
+    .map(w => w[0])
+    .join('')
+    .toUpperCase();
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+      {/* Card header */}
+      <div className="p-5 pb-3 flex items-start gap-4">
+        {/* Logo / avatar */}
+        <div className="flex-shrink-0">
+          {biz.logoUrl ? (
+            <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-200 dark:border-gray-600 bg-gray-50">
+              <Image
+                src={biz.logoUrl}
+                alt={biz.name}
+                width={56}
+                height={56}
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            </div>
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+              {initials}
+            </div>
+          )}
+        </div>
+
+        {/* Name + verified */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-gray-900 dark:text-white text-base leading-snug line-clamp-2">
+            {biz.name}
+          </h3>
+          {biz.verificationStatus === 'VERIFIED' && (
+            <span className="inline-flex items-center gap-1 mt-1 text-xs font-semibold text-green-700 dark:text-green-400">
+              <CheckCircle className="h-3.5 w-3.5" /> Verified
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="mx-5 border-t border-gray-100 dark:border-gray-700" />
+
+      {/* Fields */}
+      <div className="p-5 pt-4 flex-1 space-y-3">
+        {/* Sector */}
+        <div className="flex items-start gap-2.5">
+          <Tag className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Sector</p>
+            <p className="text-sm text-gray-800 dark:text-gray-200 leading-snug">
+              {biz.sector || <span className="text-gray-400 italic">—</span>}
+            </p>
+          </div>
+        </div>
+
+        {/* Products */}
+        <div className="flex items-start gap-2.5">
+          <Package className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Products / Services</p>
+            <p className="text-sm text-gray-800 dark:text-gray-200 leading-snug line-clamp-2">
+              {productList || <span className="text-gray-400 italic">—</span>}
+            </p>
+          </div>
+        </div>
+
+        {/* Address */}
+        <div className="flex items-start gap-2.5">
+          <MapPin className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Address</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug line-clamp-2">{address}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer CTA */}
+      <div className="px-5 pb-5">
+        <Link href="/login?returnUrl=/directory">
+          <button className="w-full text-xs font-semibold text-green-700 dark:text-green-400 border border-green-200 dark:border-green-700 rounded-lg py-2 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors">
+            Log in to view full profile →
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// ── Inner page content (uses useSearchParams) ────────────────────────────────
 function DirectoryContent() {
   const searchParams = useSearchParams();
   const [businesses, setBusinesses] = useState<PublicBusiness[]>([]);
@@ -80,7 +185,7 @@ function DirectoryContent() {
     setCurrentPage(1);
   };
 
-  const hasFilters = searchInput || sectorFilter;
+  const hasFilters = !!(searchInput || sectorFilter);
 
   return (
     <>
@@ -124,7 +229,7 @@ function DirectoryContent() {
       </div>
 
       {/* Login prompt banner */}
-      <div className="max-w-4xl mx-auto mb-6 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="max-w-5xl mx-auto mb-8 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <p className="text-sm text-green-800 dark:text-green-300">
           <span className="font-semibold">Want full access?</span> Log in to view complete exporter profiles, send inquiries, and connect directly with businesses.
         </p>
@@ -138,12 +243,12 @@ function DirectoryContent() {
         </div>
       </div>
 
-      {/* Table / cards */}
+      {/* Grid */}
       <div className="max-w-7xl mx-auto">
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="h-16 bg-white dark:bg-gray-800 rounded-lg animate-pulse border border-gray-100 dark:border-gray-700" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-64 bg-white dark:bg-gray-800 rounded-2xl animate-pulse border border-gray-100 dark:border-gray-700" />
             ))}
           </div>
         ) : businesses.length === 0 ? (
@@ -159,104 +264,21 @@ function DirectoryContent() {
           </div>
         ) : (
           <>
-            {/* Desktop table */}
-            <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-green-700 text-white">
-                    <th className="text-left px-5 py-3.5 font-semibold w-[28%]">
-                      <span className="flex items-center gap-2"><Building2 className="h-4 w-4" /> Company Name</span>
-                    </th>
-                    <th className="text-left px-5 py-3.5 font-semibold w-[18%]">
-                      <span className="flex items-center gap-2"><Tag className="h-4 w-4" /> Sector</span>
-                    </th>
-                    <th className="text-left px-5 py-3.5 font-semibold w-[28%]">
-                      <span className="flex items-center gap-2"><Package className="h-4 w-4" /> Products / Services</span>
-                    </th>
-                    <th className="text-left px-5 py-3.5 font-semibold w-[26%]">
-                      <span className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Address</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                  {businesses.map((biz, idx) => (
-                    <tr
-                      key={biz.id}
-                      className={`${idx % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/60'} hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors`}
-                    >
-                      <td className="px-5 py-4">
-                        <div className="font-semibold text-gray-900 dark:text-white leading-snug">{biz.name}</div>
-                        {biz.verificationStatus === 'VERIFIED' && (
-                          <Badge className="mt-1 text-[10px] bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 px-1.5 py-0">✓ Verified</Badge>
-                        )}
-                      </td>
-                      <td className="px-5 py-4 text-gray-700 dark:text-gray-300">
-                        {biz.sector || <span className="text-gray-400 italic text-xs">—</span>}
-                      </td>
-                      <td className="px-5 py-4 text-gray-700 dark:text-gray-300">
-                        {biz.products && biz.products.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {biz.products.slice(0, 3).map(p => (
-                              <span key={p.id} className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-0.5 rounded-full">{p.name}</span>
-                            ))}
-                            {biz.products.length > 3 && <span className="text-xs text-gray-400">+{biz.products.length - 3} more</span>}
-                          </div>
-                        ) : biz.serviceOffering ? (
-                          <span className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{biz.serviceOffering}</span>
-                        ) : (
-                          <span className="text-gray-400 italic text-xs">—</span>
-                        )}
-                      </td>
-                      <td className="px-5 py-4 text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                        {[biz.physicalAddress, biz.town, biz.county].filter(Boolean).join(', ') || biz.location || '—'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile cards */}
-            <div className="md:hidden space-y-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Showing {businesses.length} of {totalCount.toLocaleString()} exporters
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {businesses.map(biz => (
-                <div key={biz.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-snug">{biz.name}</h3>
-                    {biz.verificationStatus === 'VERIFIED' && (
-                      <Badge className="text-[10px] bg-green-100 text-green-700 border-green-200 flex-shrink-0 px-1.5 py-0">✓</Badge>
-                    )}
-                  </div>
-                  <div className="space-y-1.5 text-xs text-gray-600 dark:text-gray-400">
-                    {biz.sector && (
-                      <div className="flex items-center gap-1.5"><Tag className="h-3 w-3 flex-shrink-0 text-gray-400" /><span>{biz.sector}</span></div>
-                    )}
-                    {(biz.products?.length || biz.serviceOffering) && (
-                      <div className="flex items-start gap-1.5">
-                        <Package className="h-3 w-3 flex-shrink-0 text-gray-400 mt-0.5" />
-                        <span className="line-clamp-2">
-                          {biz.products?.length
-                            ? biz.products.slice(0, 3).map(p => p.name).join(', ') + (biz.products.length > 3 ? ` +${biz.products.length - 3}` : '')
-                            : biz.serviceOffering}
-                        </span>
-                      </div>
-                    )}
-                    {([biz.physicalAddress, biz.town, biz.county].filter(Boolean).join(', ') || biz.location) && (
-                      <div className="flex items-start gap-1.5">
-                        <MapPin className="h-3 w-3 flex-shrink-0 text-gray-400 mt-0.5" />
-                        <span>{[biz.physicalAddress, biz.town, biz.county].filter(Boolean).join(', ') || biz.location}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <BusinessCard key={biz.id} biz={biz} />
               ))}
             </div>
 
             {totalCount > ITEMS_PER_PAGE && (
-              <div className="mt-8 flex justify-center">
+              <div className="mt-10 flex justify-center">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={Math.ceil(totalCount / ITEMS_PER_PAGE)}
-                  onPageChange={setCurrentPage}
+                  onPageChange={p => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                 />
               </div>
             )}
@@ -267,6 +289,7 @@ function DirectoryContent() {
   );
 }
 
+// ── Page shell ───────────────────────────────────────────────────────────────
 export default function DirectoryPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -274,10 +297,9 @@ export default function DirectoryPage() {
       <main className="flex-grow pt-28 sm:pt-32 lg:pt-36 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Suspense fallback={
-            <div className="space-y-3 pt-4">
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse max-w-2xl mx-auto mb-8" />
-              {Array.from({ length: 10 }).map((_, i) => (
-                <div key={i} className="h-16 bg-white dark:bg-gray-800 rounded-lg animate-pulse border border-gray-100 dark:border-gray-700" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-64 bg-white dark:bg-gray-800 rounded-2xl animate-pulse border border-gray-100 dark:border-gray-700" />
               ))}
             </div>
           }>
