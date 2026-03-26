@@ -877,82 +877,24 @@ function RegisterPageContent({
                         <FormField 
                           control={form.control} 
                           name="dateOfIncorporation" 
-                          render={({ field }) => {
-                            // Parse existing value (YYYY-MM-DD)
-                            const parts = (field.value || '').split('-');
-                            const selYear  = parts[0] || '';
-                            const selMonth = parts[1] || '';
-                            const selDay   = parts[2] || '';
-
-                            const months = [
-                              { v: '01', l: 'January' }, { v: '02', l: 'February' }, { v: '03', l: 'March' },
-                              { v: '04', l: 'April' },   { v: '05', l: 'May' },      { v: '06', l: 'June' },
-                              { v: '07', l: 'July' },    { v: '08', l: 'August' },   { v: '09', l: 'September' },
-                              { v: '10', l: 'October' }, { v: '11', l: 'November' }, { v: '12', l: 'December' },
-                            ];
-
-                            const daysInMonth = selYear && selMonth
-                              ? new Date(parseInt(selYear), parseInt(selMonth), 0).getDate()
-                              : 31;
-                            const days = Array.from({ length: daysInMonth }, (_, i) => String(i + 1).padStart(2, '0'));
-
-                            const currentYear = new Date().getFullYear();
-                            const years = Array.from({ length: 80 }, (_, i) => String(currentYear - i));
-
-                            const update = (y: string, m: string, d: string) => {
-                              if (y && m && d) field.onChange(`${y}-${m}-${d}`);
-                              else field.onChange('');
-                            };
-
-                            const selectCls = "flex-1 h-12 px-3 border border-gray-300 rounded-md bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-500 cursor-pointer appearance-none";
-
-                            return (
-                              <FormItem>
-                                <FormLabel className="text-gray-900 font-medium">Date of Incorporation</FormLabel>
-                                <FormControl>
-                                  <div className="flex gap-2">
-                                    {/* Day */}
-                                    <div className="relative flex-1">
-                                      <select
-                                        value={selDay}
-                                        onChange={e => update(selYear, selMonth, e.target.value)}
-                                        className={selectCls}
-                                      >
-                                        <option value="">Day</option>
-                                        {days.map(d => <option key={d} value={d}>{parseInt(d)}</option>)}
-                                      </select>
-                                      <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                    </div>
-                                    {/* Month */}
-                                    <div className="relative flex-[1.6]">
-                                      <select
-                                        value={selMonth}
-                                        onChange={e => update(selYear, e.target.value, selDay)}
-                                        className={selectCls}
-                                      >
-                                        <option value="">Month</option>
-                                        {months.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
-                                      </select>
-                                      <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                    </div>
-                                    {/* Year */}
-                                    <div className="relative flex-[1.3]">
-                                      <select
-                                        value={selYear}
-                                        onChange={e => update(e.target.value, selMonth, selDay)}
-                                        className={selectCls}
-                                      >
-                                        <option value="">Year</option>
-                                        {years.map(y => <option key={y} value={y}>{y}</option>)}
-                                      </select>
-                                      <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                    </div>
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            );
-                          }} 
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-900 font-medium">Date of Incorporation</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <input
+                                    type="date"
+                                    value={field.value || ''}
+                                    onChange={(e) => field.onChange(e.target.value)}
+                                    max={new Date().toISOString().split('T')[0]}
+                                    className="w-full h-12 px-3 border border-gray-300 rounded-md bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-500 [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-inner-spin-button]:hidden [&::-webkit-clear-button]:hidden"
+                                    style={{ colorScheme: 'light' }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} 
                         />
 
                         <FormField 
