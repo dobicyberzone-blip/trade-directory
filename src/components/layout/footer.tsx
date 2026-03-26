@@ -40,7 +40,31 @@ const getStartedLinks = [
     { name: "For Exporters", href: "/register" },
     { name: "For Buyers", href: "/directory" },
     { name: "FAQs", href: "/faq" },
-]
+];
+
+const usefulLinks = {
+  membership: [
+    { name: "Kenya Association of Manufacturers", href: "https://www.kam.co.ke/" },
+    { name: "Kenya Flower Council", href: "https://kenyaflowercouncil.org/" },
+    { name: "Fresh Produce Exporters Association of Kenya", href: "https://fpeak.org/" },
+    { name: "Fresh Produce Consortium of Kenya", href: "https://fpckenya.co.ke/" },
+    { name: "Avocado Society of Kenya", href: "https://kenyaavocados.co.ke/" },
+    { name: "Avocado Exporters Association of Kenya", href: "https://avocado.ke/" },
+    { name: "Kenya National Chamber of Commerce and Industry", href: "https://www.kenyachamber.or.ke/" },
+  ],
+  regulators: [
+    { name: "Kenya Bureau of Standards", href: "https://www.kebs.org/" },
+    { name: "Agriculture and Food Authority", href: "https://www.afa.go.ke/" },
+    { name: "Kenya Plant Health Inspectorate Service", href: "https://www.kephis.go.ke/" },
+    { name: "Kenya Revenue Authority", href: "https://www.kra.go.ke/" },
+    { name: "Kenya Ports Authority", href: "https://www.kpa.co.ke/" },
+    { name: "State Department for Mining", href: "https://mining.go.ke/" },
+    { name: "Kenya Fisheries Services", href: "https://kefs.go.ke/" },
+  ],
+  facilitators: [
+    { name: "Kenya Trade Network Agency", href: "https://kentrade.go.ke/" },
+  ],
+};
 
 
 const contactInfo = [
@@ -136,11 +160,10 @@ export function Footer() {
   return (
     <footer className="bg-footer text-footer-foreground">
       <div className="container mx-auto px-4 pt-20 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-            {/* Logo + Description + Social + Contact */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+            {/* Col 1–2: Logo + Description + Social + Contact */}
             <div className="lg:col-span-2 space-y-4">
-                {/*<Logo size="small" isLight={true} priority variant="footer" />*/}
-                 <Logo />
+                <Logo />
                 <p className="text-sm text-footer-foreground/80 pr-8">
                     The Kenya Export Promotion and Branding Agency (KEPROBA) is the official government body for promoting Kenyan exports to the world.
                 </p>
@@ -181,11 +204,10 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* Links — Platform + Get Started side by side */}
+            {/* Col 3: Platform + Get Started */}
             <div className="space-y-4">
                 <h4 className="font-bold text-base text-white">Links</h4>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-0">
-                    {/* Platform sub-group */}
+                <div className="grid grid-cols-2 gap-x-6">
                     <div className="space-y-2">
                         <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Platform</p>
                         <ul className="space-y-2 text-sm">
@@ -198,7 +220,6 @@ export function Footer() {
                             ))}
                         </ul>
                     </div>
-                    {/* Get Started sub-group */}
                     <div className="space-y-2">
                         <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Get Started</p>
                         <ul className="space-y-2 text-sm">
@@ -214,7 +235,56 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* Newsletter */}
+            {/* Col 4: Useful Links */}
+            <div className="space-y-4">
+                <h4 className="font-bold text-base text-white">Useful Links</h4>
+
+                <div className="space-y-4">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Business Membership</p>
+                        <ul className="space-y-1.5 text-sm">
+                            {usefulLinks.membership.map(link => (
+                                <li key={link.name}>
+                                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
+                                        className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
+                                        {link.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Sector Regulators</p>
+                        <ul className="space-y-1.5 text-sm">
+                            {usefulLinks.regulators.map(link => (
+                                <li key={link.name}>
+                                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
+                                        className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
+                                        {link.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Trade Facilitating Agencies</p>
+                        <ul className="space-y-1.5 text-sm">
+                            {usefulLinks.facilitators.map(link => (
+                                <li key={link.name}>
+                                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
+                                        className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
+                                        {link.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {/* Col 5: Newsletter */}
             <div className="space-y-4">
                 <h4 className="font-bold text-base text-white">Newsletter</h4>
                 <p className="text-sm text-footer-foreground/80">Get the latest on trade policies, market opportunities, and featured exporters.</p>
