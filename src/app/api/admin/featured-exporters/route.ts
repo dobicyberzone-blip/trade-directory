@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth-utils';
+import { AuditLogger } from '@/lib/admin/audit';
 
 // GET - List all featured exporters
 export async function GET(request: NextRequest) {
@@ -85,6 +86,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Business not found' }, { status: 404 });
     }
 
+    // ── CORE RULE: only VERIFIED businesses may be featured ──
+    if (business.verificationStatus !== 'VERIFIED') {
+      return NextResponse.json(
+        {
+          error: 'Only verified exporters can be featured.',
+          detail: `"${business.name}" has verification status "${business.verificationStatus}". Complete the verification process before enabling featuring.`,
+        },
+        { status: 422 }
+      );
+    }
+
     // Check if already featured
     const existing = await prisma.featuredExporter.findUnique({
       where: { businessId },
@@ -115,6 +127,16 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Audit log
+    void AuditLogger.logCreate(
+      'FeaturedExporter',
+      featured.id,
+      { businessId, businessName: business.name, priority, featuredUntil },
+      user.userId,
+      request.headers.get('x-forwarded-for') || undefined,
+      request.headers.get('user-agent') || undefined
+    ).catch(() => {});
 
     return NextResponse.json({ success: true, data: featured });
   } catch (error: any) {

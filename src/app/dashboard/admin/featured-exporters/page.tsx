@@ -27,7 +27,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 
 // Icons
-import { Search, Star, Building2, MapPin, CheckCircle } from 'lucide-react';
+import { Search, Star, Building2, MapPin, CheckCircle, Lock } from 'lucide-react';
 
 interface Business {
   id: string;
@@ -55,8 +55,8 @@ export default function FeaturedExportersPage() {
     try {
       setLoading(true);
       
-      // Load all verified businesses
-      const response = await apiClient.getBusinesses({ verified: true });
+      // Load all businesses (verified and unverified) so admins can see which are locked
+      const response = await apiClient.getBusinesses({});
       const allBusinesses = response.businesses || [];
       
       // Load featured exporters from settings
@@ -219,7 +219,7 @@ export default function FeaturedExportersPage() {
       }}>
         <Chip 
           icon={<Building2 size={16} />} 
-          label={`${businesses.length} Verified Businesses`} 
+          label={`${businesses.filter(b => b.verificationStatus === 'VERIFIED').length} Verified Businesses`} 
           color="primary" 
           variant="outlined"
           sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
@@ -364,21 +364,35 @@ export default function FeaturedExportersPage() {
                       display: { xs: 'none', md: 'table-cell' }
                     }}>
                       <Chip 
-                        icon={<CheckCircle size={14} />}
-                        label="Verified" 
+                        icon={business.verificationStatus === 'VERIFIED' ? <CheckCircle size={14} /> : <Lock size={14} />}
+                        label={business.verificationStatus} 
                         size="small" 
-                        color="success"
+                        color={business.verificationStatus === 'VERIFIED' ? 'success' : 'default'}
+                        variant={business.verificationStatus === 'VERIFIED' ? 'filled' : 'outlined'}
                         sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                       />
                     </TableCell>
                     <TableCell align="center" sx={{ py: { xs: 1.5, sm: 2 } }}>
-                      <Tooltip title={business.featured ? 'Remove from featured' : 'Add to featured'}>
-                        <Switch
-                          checked={business.featured || false}
-                          onChange={() => handleToggleFeatured(business.id, business.featured || false)}
-                          color="success"
-                        />
-                      </Tooltip>
+                      {business.verificationStatus === 'VERIFIED' ? (
+                        <Tooltip title={business.featured ? 'Remove from featured' : 'Add to featured'}>
+                          <Switch
+                            checked={business.featured || false}
+                            onChange={() => handleToggleFeatured(business.id, business.featured || false)}
+                            color="success"
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title={`Cannot feature — business is not verified (status: ${business.verificationStatus}). Complete verification first.`}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                            <Lock size={14} color="#9ca3af" />
+                            <Switch
+                              checked={false}
+                              disabled
+                              color="default"
+                            />
+                          </Box>
+                        </Tooltip>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
