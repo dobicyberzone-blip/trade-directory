@@ -309,28 +309,63 @@ interface PublicBusiness {
   serviceOffering?: string; verificationStatus: string;
 }
 
+// Image with fallback to initials on broken src
+function ImgWithFallback({ src, alt, initials }: { src: string; alt: string; initials: string }) {
+  const [broken, setBroken] = useState(false);
+  if (broken) {
+    return (
+      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-bold text-xl shadow-sm">
+        {initials}
+      </div>
+    );
+  }
+  return (
+    <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-200 bg-gray-50">
+      <img src={src} alt={alt} className="w-full h-full object-cover" onError={() => setBroken(true)} />
+    </div>
+  );
+}
+
 function PublicBusinessCard({ biz }: { biz: PublicBusiness }) {
   const address = [biz.physicalAddress, biz.town, biz.county].filter(Boolean).join(', ') || biz.location || '—';
   const productList = biz.products?.length
     ? biz.products.slice(0, 3).map(p => p.name).join(', ') + (biz.products.length > 3 ? ` +${biz.products.length - 3}` : '')
     : biz.serviceOffering || null;
-  const initials = biz.name.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
+  // First letter of each word (up to 2), uppercase — same as main directory
+  const initials = biz.name.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0].toUpperCase()).join('');
+  const isVerified = biz.verificationStatus === 'VERIFIED';
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
       <div className="p-5 pb-3 flex items-start gap-4">
+        {/* Logo / initials avatar */}
         <div className="flex-shrink-0">
-          {biz.logoUrl
-            ? <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-200 bg-gray-50"><img src={biz.logoUrl} alt={biz.name} className="w-full h-full object-cover" /></div>
-            : <div className="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-lg">{initials}</div>
-          }
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-gray-900 dark:text-white text-base leading-snug line-clamp-2">{biz.name}</h3>
-          {biz.verificationStatus === 'VERIFIED' && (
-            <span className="inline-flex items-center gap-1 mt-1 text-xs font-semibold text-green-700">✓ Verified</span>
+          {biz.logoUrl ? (
+            <ImgWithFallback src={biz.logoUrl} alt={biz.name} initials={initials} />
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-bold text-xl shadow-sm">
+              {initials}
+            </div>
           )}
         </div>
+
+        {/* Name + verified — verified sits inline to the right of the name */}
+        <div className="flex-1 min-w-0 pt-1">
+          <div className="flex items-start gap-2 flex-wrap">
+            <h3 className="font-bold text-gray-900 dark:text-white text-base leading-snug">{biz.name}</h3>
+            {isVerified && (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600 flex-shrink-0 mt-0.5">
+                {/* Scallop verified icon — matches main directory */}
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
+                  <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7l-3.61.81.34 3.7L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/>
+                </svg>
+                Verified
+              </span>
+            )}
+          </div>
+        </div>
       </div>
+
       <div className="mx-5 border-t border-gray-100 dark:border-gray-700" />
       <div className="p-5 pt-4 flex-1 space-y-3 text-sm">
         <div><p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Sector</p><p className="text-gray-800 dark:text-gray-200">{biz.sector || '—'}</p></div>
@@ -434,8 +469,8 @@ function PublicDirectoryView() {
           {/* ── Search + Filters row ── */}
           <div className="flex flex-col sm:flex-row gap-2 mb-6 items-stretch">
             {/* Sector filter */}
-            <div className="relative flex-shrink-0">
-              <select value={sectorFilter} onChange={e => { setSectorFilter(e.target.value); setCurrentPage(1); }} className={selectCls} style={{ minWidth: 160 }}>
+            <div className="relative w-full sm:w-auto sm:flex-shrink-0">
+              <select value={sectorFilter} onChange={e => { setSectorFilter(e.target.value); setCurrentPage(1); }} className={`${selectCls} w-full sm:min-w-[160px]`}>
                 <option value="">All Sectors</option>
                 {sectorOptions.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -443,8 +478,8 @@ function PublicDirectoryView() {
             </div>
 
             {/* Product filter */}
-            <div className="relative flex-shrink-0">
-              <select value={productFilter} onChange={e => { setProductFilter(e.target.value); setCurrentPage(1); }} className={selectCls} style={{ minWidth: 160 }}>
+            <div className="relative w-full sm:w-auto sm:flex-shrink-0">
+              <select value={productFilter} onChange={e => { setProductFilter(e.target.value); setCurrentPage(1); }} className={`${selectCls} w-full sm:min-w-[160px]`}>
                 <option value="">All Products</option>
                 {productOptions.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
