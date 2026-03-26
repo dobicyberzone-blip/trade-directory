@@ -1492,7 +1492,7 @@ function RegisterPageContent({
                   )}
 
                   {/* Terms & Conditions checkbox — only shown on credentials step */}
-                  {currentStep === 'credentials' && (
+                  {(currentStep === 'credentials' || selectedRole === 'buyer' || selectedRole === 'partner') && (
                     <div className="pt-2">
                       <label className="flex items-start gap-3 cursor-pointer group">
                         <div className="relative flex-shrink-0 mt-0.5">
