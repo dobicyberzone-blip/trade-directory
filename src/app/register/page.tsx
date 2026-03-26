@@ -195,6 +195,21 @@ function RegisterPageContent({
   const [partnerOtherText, setPartnerOtherText] = useState('');
   const [legalOtherText, setLegalOtherText] = useState('');
 
+  // Email duplicate check state
+  const [emailCheckState, setEmailCheckState] = useState<'idle' | 'checking' | 'taken' | 'available'>('idle');
+
+  const checkEmailAvailability = async (email: string) => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    setEmailCheckState('checking');
+    try {
+      const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      setEmailCheckState(data.available ? 'available' : 'taken');
+    } catch {
+      setEmailCheckState('idle');
+    }
+  };
+
   // Product/Services multi-select state
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [productSearch, setProductSearch] = useState('');
@@ -368,6 +383,16 @@ function RegisterPageContent({
 
   async function onSubmit(values: FormValues) {
     try {
+      // Block submission if email is already taken
+      if (emailCheckState === 'taken') {
+        toast({
+          variant: 'destructive',
+          title: 'Email Already Registered',
+          description: 'This email is already in use. Please use a different email or sign in.',
+        });
+        return;
+      }
+
       // Clear auto-save
       localStorage.removeItem('registration_draft');
       setAutoSaveEnabled(false);
@@ -1220,14 +1245,65 @@ function RegisterPageContent({
                               {selectedRole === 'partner' ? 'Official / Organisation Email' : 'Email Address'} <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                type="email"
-                                placeholder={selectedRole === 'partner' ? 'official@organisation.go.ke' : 'you@company.com'}
-                                {...field}
-                                className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                              />
+                              <div className="relative">
+                                <Input
+                                  type="email"
+                                  placeholder={selectedRole === 'partner' ? 'official@organisation.go.ke' : 'you@company.com'}
+                                  {...field}
+                                  className={`h-12 border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10 ${
+                                    emailCheckState === 'taken' ? 'border-red-400 focus:border-red-400 focus:ring-red-400' :
+                                    emailCheckState === 'available' ? 'border-green-400' : ''
+                                  }`}
+                                  onBlur={(e) => {
+                                    field.onBlur();
+                                    checkEmailAvailability(e.target.value);
+                                  }}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    // Reset check state when user edits the field
+                                    if (emailCheckState !== 'idle') setEmailCheckState('idle');
+                                  }}
+                                />
+                                {/* Status icon */}
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                  {emailCheckState === 'checking' && (
+                                    <svg className="animate-spin h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                                    </svg>
+                                  )}
+                                  {emailCheckState === 'available' && (
+                                    <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  )}
+                                  {emailCheckState === 'taken' && (
+                                    <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </div>
                             </FormControl>
-                            {selectedRole === 'partner' && (
+                            {/* Inline duplicate feedback */}
+                            {emailCheckState === 'taken' && (
+                              <p className="text-sm text-red-600 flex items-center gap-1 mt-1">
+                                <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                                This email is already registered.{' '}
+                                <a href="/login" className="underline font-medium hover:text-red-700">Sign in instead?</a>
+                              </p>
+                            )}
+                            {emailCheckState === 'available' && (
+                              <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
+                                <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                Email is available
+                              </p>
+                            )}
+                            {selectedRole === 'partner' && emailCheckState === 'idle' && (
                               <p className="text-xs text-gray-500">Use your official organisation email address</p>
                             )}
                             <FormMessage />
