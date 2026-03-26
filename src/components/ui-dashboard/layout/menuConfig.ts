@@ -43,6 +43,14 @@ const superAdminMenuItems: MenuItem[] = [
     ],
   },
   {
+    id: 'admin-master-data',
+    title: 'Master Data',
+    type: 'group',
+    children: [
+      { id: 'admin-master-data-page', title: 'Industries & Sectors', type: 'item', icon: 'layers', url: '/dashboard/admin/master-data' },
+    ],
+  },
+  {
     id: 'admin-communication',
     title: 'Communication',
     type: 'group',
@@ -99,6 +107,14 @@ const adminMenuItems: MenuItem[] = [
       { id: 'admin-business-verifications', title: 'Business Verifications', type: 'item', icon: 'building-check', url: '/dashboard/admin/business-verification' },
       { id: 'admin-products', title: 'Product Verifications', type: 'item', icon: 'package-check', url: '/dashboard/admin/products-management' },
       { id: 'admin-notification-settings', title: 'Notification Settings', type: 'item', icon: 'bell', url: '/dashboard/admin/settings/notifications' },
+    ],
+  },
+  {
+    id: 'admin-master-data-normal',
+    title: 'Master Data',
+    type: 'group',
+    children: [
+      { id: 'admin-master-data-page-normal', title: 'Industries & Sectors', type: 'item', icon: 'layers', url: '/dashboard/admin/master-data' },
     ],
   },
   {

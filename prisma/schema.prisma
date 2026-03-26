@@ -566,6 +566,58 @@ model ExportMarket {
   @@map("export_markets")
 }
 
+// ── Master Data: Industry → Sector → BusinessOrganization ──────────────────
+
+model Industry {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sectors     Sector[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+  @@map("industries")
+}
+
+model Sector {
+  id                  String               @id @default(cuid())
+  name                String
+  description         String?
+  isActive            Boolean              @default(true)
+  sortOrder           Int                  @default(0)
+  industryId          String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  industry            Industry             @relation(fields: [industryId], references: [id], onDelete: Cascade)
+  businessOrganizations BusinessOrganization[]
+
+  @@unique([name, industryId])
+  @@index([industryId])
+  @@index([isActive])
+  @@map("sectors")
+}
+
+model BusinessOrganization {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  sectorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sector      Sector   @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+
+  @@unique([name, sectorId])
+  @@index([sectorId])
+  @@index([isActive])
+  @@map("business_organizations")
+}
+
 model AuditLog {
   id             String   @id @default(cuid())
   actorUserId    String?

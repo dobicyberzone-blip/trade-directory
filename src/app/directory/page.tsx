@@ -99,11 +99,11 @@ const Filters = ({
         <Accordion type="multiple" defaultValue={[]} className="w-full">
           {viewMode !== 'map' && (
             <AccordionItem value="sort">
-              <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">Sort by</AccordionTrigger>
+              <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">Sort by</AccordionTrigger>
               <AccordionContent className="pt-2">
                 <RadioGroup value={sortOrder} onValueChange={onSortChange} className="space-y-1 px-4 pb-2">
                   {sortOptions.map(option => (
-                    <div key={option.value} className="flex items-center space-x-2">
+                    <div key={option.value} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                       <RadioGroupItem value={option.value} id={`sort-${option.value}`} />
                       <Label htmlFor={`sort-${option.value}`} className="font-normal cursor-pointer flex-grow py-1">{option.label}</Label>
                     </div>
@@ -113,12 +113,12 @@ const Filters = ({
             </AccordionItem>
           )}
           <AccordionItem value="county">
-            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">County</AccordionTrigger>
+            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">County</AccordionTrigger>
             <AccordionContent className="pt-2">
               <ScrollArea className="h-60 px-4">
                 <div className="space-y-2 pb-2">
                   {COUNTIES.map(county => (
-                    <div key={county} className="flex items-center space-x-2">
+                    <div key={county} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                       <Checkbox
                         id={`county-${county}`}
                         checked={selectedFilters['county']?.includes(county) || false}
@@ -133,12 +133,12 @@ const Filters = ({
           </AccordionItem>
 
           <AccordionItem value="city">
-            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">City</AccordionTrigger>
+            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">City</AccordionTrigger>
             <AccordionContent className="pt-2">
               <ScrollArea className="h-60 px-4">
                 <div className="space-y-2 pb-2">
                   {[...new Set(KENYAN_CITIES)].map(city => (
-                    <div key={city} className="flex items-center space-x-2">
+                    <div key={city} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                       <Checkbox
                         id={`city-${city}`}
                         checked={selectedFilters['town']?.includes(city) || false}
@@ -154,12 +154,12 @@ const Filters = ({
 
           {/* Industry — always full list */}
           <AccordionItem value="industry">
-            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">Industry</AccordionTrigger>
+            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">Industry</AccordionTrigger>
             <AccordionContent className="pt-2">
               <ScrollArea className="h-60 px-4">
                 <div className="space-y-2 pb-2">
                   {INDUSTRIES.map(industry => (
-                    <div key={industry} className="flex items-center space-x-2">
+                    <div key={industry} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                       <Checkbox
                         id={`industry-${industry}`}
                         checked={selectedFilters['industry']?.includes(industry) || false}
@@ -175,7 +175,7 @@ const Filters = ({
 
           {/* Sector — filtered by selected industries */}
           <AccordionItem value="sector">
-            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">
+            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">
               Sector
               {selectedIndustries.length > 0 && (
                 <span className="ml-2 text-xs font-normal text-green-600">
@@ -190,7 +190,7 @@ const Filters = ({
               <ScrollArea className="h-60 px-4">
                 <div className="space-y-2 pb-2">
                   {sectorOptions.map(sector => (
-                    <div key={sector} className="flex items-center space-x-2">
+                    <div key={sector} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                       <Checkbox
                         id={`sector-${sector}`}
                         checked={selectedFilters['sector']?.includes(sector) || false}
@@ -208,13 +208,13 @@ const Filters = ({
             const useScrollArea = category.options.length > 8;
             return (
               <AccordionItem key={category.id} value={category.id}>
-                <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">{category.name}</AccordionTrigger>
+                <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">{category.name}</AccordionTrigger>
                 <AccordionContent className="pt-2">
                   {useScrollArea ? (
                     <ScrollArea className="h-60 px-4">
                       <div className="space-y-2 pb-2">
                         {category.options.map(option => (
-                          <div key={option} className="flex items-center space-x-2">
+                          <div key={option} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                             <Checkbox
                               id={`${category.id}-${option}`}
                               checked={selectedFilters[category.id]?.includes(option) || false}
@@ -228,7 +228,7 @@ const Filters = ({
                   ) : (
                     <div className="space-y-2 px-4 pb-2">
                       {category.options.map(option => (
-                        <div key={option} className="flex items-center space-x-2">
+                        <div key={option} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                           <Checkbox
                             id={`${category.id}-${option}`}
                             checked={selectedFilters[category.id]?.includes(option) || false}
@@ -244,36 +244,36 @@ const Filters = ({
             );
           })}
           <AccordionItem value="productHsCode">
-            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">Product HS Code</AccordionTrigger>
+            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">Product HS Code</AccordionTrigger>
             <AccordionContent className="pt-2 px-4 pb-3">
               <Input
                 placeholder="e.g. 09 or Coffee"
                 value={selectedFilters['productHsCode']?.[0] || ''}
                 onChange={(e) => onTextFilterChange('productHsCode', e.target.value)}
-                className="text-sm"
+                className="text-sm h-10 sm:h-9"
               />
-              <p className="text-xs text-gray-500 mt-1">Search by HS code number or keyword</p>
+              <p className="text-xs text-gray-500 mt-1.5">Search by HS code number or keyword</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="serviceOffering">
-            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">Service Offering</AccordionTrigger>
+            <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">Service Offering</AccordionTrigger>
             <AccordionContent className="pt-2 px-4 pb-3">
               <Input
                 placeholder="e.g. Logistics or Export Trading"
                 value={selectedFilters['serviceOffering']?.[0] || ''}
                 onChange={(e) => onTextFilterChange('serviceOffering', e.target.value)}
-                className="text-sm"
+                className="text-sm h-10 sm:h-9"
               />
-              <p className="text-xs text-gray-500 mt-1">Search by service type keyword</p>
+              <p className="text-xs text-gray-500 mt-1.5">Search by service type keyword</p>
             </AccordionContent>
           </AccordionItem>
           {viewMode !== 'map' && (
             <AccordionItem value="rating">
-              <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3">Rating</AccordionTrigger>
+              <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">Rating</AccordionTrigger>
               <AccordionContent className="pt-2">
                 <div className="space-y-2 px-4 pb-2">
                   {['4 stars & up', '3 stars & up', '2 stars & up', '1 star & up'].map(option => (
-                    <div key={option} className="flex items-center space-x-2">
+                    <div key={option} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                       <Checkbox
                         id={`rating-${option}`}
                         checked={selectedFilters['rating']?.includes(option) || false}
@@ -290,7 +290,11 @@ const Filters = ({
       </ScrollArea>
       {activeFilterCount > 0 && (
         <div className="p-3 sm:p-4 mt-auto border-t">
-          <Button variant="outline" onClick={clearFilters} className="w-full text-xs sm:text-sm">
+          <Button
+            variant="outline"
+            onClick={clearFilters}
+            className="w-full text-xs sm:text-sm h-10 sm:h-9 active:scale-95 transition-transform"
+          >
             <X className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" /> Clear All Filters ({activeFilterCount})
           </Button>
         </div>
@@ -435,19 +439,19 @@ function PublicDirectoryView() {
       .catch(() => {});
   }, []);
 
-  // Unique sectors from loaded businesses
+  // Unique sectors from loaded businesses (case-insensitive alphabetical sort)
   const sectorOptions = Array.from(
     new Set(allBusinesses.map(b => b.sector).filter(Boolean))
-  ).sort();
+  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 
-  // Unique products from loaded businesses
+  // Unique products from loaded businesses (case-insensitive alphabetical sort)
   const productOptions = Array.from(
     new Set(
       allBusinesses.flatMap(b =>
         b.products?.map(p => p.name) || (b.serviceOffering ? [b.serviceOffering] : [])
       ).filter(Boolean)
     )
-  ).sort().slice(0, 80); // cap at 80
+  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).slice(0, 80); // cap at 80
 
   const fetchPublic = useCallback(async () => {
     setIsLoading(true);
@@ -481,7 +485,7 @@ function PublicDirectoryView() {
 
   const hasFilters = searchInput || sectorFilter || productFilter;
 
-  const selectCls = "h-11 pl-3 pr-8 border border-gray-300 rounded-md bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer appearance-none";
+  const selectCls = "h-12 sm:h-11 pl-4 sm:pl-3 pr-10 sm:pr-8 border-2 sm:border border-gray-300 rounded-lg sm:rounded-md bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer appearance-none transition-all duration-200 hover:border-green-400 active:scale-[0.98]";
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -494,23 +498,39 @@ function PublicDirectoryView() {
           </div>
 
           {/* ── Search + Filters row ── */}
-          <div className="flex flex-col sm:flex-row gap-2 mb-6 items-stretch">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mb-6 items-stretch">
             {/* Sector filter */}
             <div className="relative w-full sm:w-auto sm:flex-shrink-0">
-              <select value={sectorFilter} onChange={e => { setSectorFilter(e.target.value); setCurrentPage(1); }} className={`${selectCls} w-full sm:min-w-[160px]`}>
+              <label htmlFor="sector-filter" className="block text-xs font-semibold text-gray-500 mb-1.5 sm:hidden">
+                Filter by Sector
+              </label>
+              <select
+                id="sector-filter"
+                value={sectorFilter}
+                onChange={e => { setSectorFilter(e.target.value); setCurrentPage(1); }}
+                className={`${selectCls} w-full sm:min-w-[180px] ${sectorFilter ? 'border-green-500 bg-green-50' : ''}`}
+              >
                 <option value="">All Sectors</option>
                 {sectorOptions.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
-              <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              <svg className="pointer-events-none absolute right-3 sm:right-2.5 top-1/2 sm:top-1/2 -translate-y-1/2 h-5 w-5 sm:h-4 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </div>
 
             {/* Product filter */}
             <div className="relative w-full sm:w-auto sm:flex-shrink-0">
-              <select value={productFilter} onChange={e => { setProductFilter(e.target.value); setCurrentPage(1); }} className={`${selectCls} w-full sm:min-w-[160px]`}>
+              <label htmlFor="product-filter" className="block text-xs font-semibold text-gray-500 mb-1.5 sm:hidden">
+                Filter by Product
+              </label>
+              <select
+                id="product-filter"
+                value={productFilter}
+                onChange={e => { setProductFilter(e.target.value); setCurrentPage(1); }}
+                className={`${selectCls} w-full sm:min-w-[180px] ${productFilter ? 'border-green-500 bg-green-50' : ''}`}
+              >
                 <option value="">All Products</option>
                 {productOptions.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
-              <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              <svg className="pointer-events-none absolute right-3 sm:right-2.5 top-1/2 sm:top-1/2 -translate-y-1/2 h-5 w-5 sm:h-4 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </div>
 
             {/* Search input + Search button */}
@@ -522,26 +542,33 @@ function PublicDirectoryView() {
                   onChange={e => setSearchInput(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { setSearchTerm(searchInput); setCurrentPage(1); } }}
                   placeholder="Search by business name…"
-                  className="w-full h-11 pl-9 pr-4 border border-gray-300 rounded-l-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10"
+                  className="w-full h-12 sm:h-11 pl-10 sm:pl-9 pr-10 sm:pr-4 border-2 sm:border border-gray-300 rounded-lg sm:rounded-l-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10 transition-all duration-200 hover:border-green-400"
                 />
                 {searchInput && (
-                  <button onClick={() => { setSearchInput(''); setSearchTerm(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <button
+                    onClick={() => { setSearchInput(''); setSearchTerm(''); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-1 transition-colors"
+                    aria-label="Clear search"
+                  >
                     <X className="h-4 w-4" />
                   </button>
                 )}
               </div>
               <button
                 onClick={() => { setSearchTerm(searchInput); setCurrentPage(1); }}
-                className="h-11 px-5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-r-md flex-shrink-0 flex items-center gap-2 transition-colors"
+                className="h-12 sm:h-11 px-5 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-semibold rounded-r-lg sm:rounded-r-md flex-shrink-0 flex items-center gap-2 transition-all duration-200 active:scale-95"
               >
                 <Search className="h-4 w-4" />
-                Search
+                <span className="hidden sm:inline">Search</span>
               </button>
             </div>
 
             {/* Clear all */}
             {hasFilters && (
-              <button onClick={clearAll} className="h-11 px-4 text-sm border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 flex-shrink-0 whitespace-nowrap">
+              <button
+                onClick={clearAll}
+                className="h-12 sm:h-11 px-4 text-sm border-2 sm:border border-gray-300 rounded-lg sm:rounded-md bg-white text-gray-600 hover:bg-gray-50 active:bg-gray-100 flex-shrink-0 whitespace-nowrap transition-all duration-200 active:scale-95"
+              >
                 Clear
               </button>
             )}
@@ -549,17 +576,29 @@ function PublicDirectoryView() {
 
           {/* Active filter chips */}
           {(sectorFilter || productFilter) && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 sm:gap-2 mb-4">
               {sectorFilter && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                  Sector: {sectorFilter}
-                  <button onClick={() => setSectorFilter('')} className="hover:text-green-600"><X className="h-3 w-3" /></button>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-1 rounded-full bg-green-100 text-green-800 text-xs sm:text-xs font-medium shadow-sm">
+                  <span className="font-semibold">Sector:</span> {sectorFilter}
+                  <button
+                    onClick={() => setSectorFilter('')}
+                    className="hover:text-green-600 hover:bg-green-200 rounded-full p-0.5 transition-colors"
+                    aria-label="Clear sector filter"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
                 </span>
               )}
               {productFilter && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                  Product: {productFilter}
-                  <button onClick={() => setProductFilter('')} className="hover:text-green-600"><X className="h-3 w-3" /></button>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-1 rounded-full bg-green-100 text-green-800 text-xs sm:text-xs font-medium shadow-sm">
+                  <span className="font-semibold">Product:</span> {productFilter}
+                  <button
+                    onClick={() => setProductFilter('')}
+                    className="hover:text-green-600 hover:bg-green-200 rounded-full p-0.5 transition-colors"
+                    aria-label="Clear product filter"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
                 </span>
               )}
             </div>
@@ -714,7 +753,7 @@ function DirectoryPageContentClient() {
         if (data.products) {
           const names = Array.from(
             new Set<string>((data.products as { name: string }[]).map(p => p.name.trim()).filter(Boolean))
-          ).sort() as string[];
+          ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })) as string[];
           setProductOptions(names);
           try { sessionStorage.setItem(PRODUCT_OPTIONS_CACHE_KEY, JSON.stringify(names)); } catch { /* ignore */ }
         }
@@ -744,7 +783,7 @@ function DirectoryPageContentClient() {
           values.add(value.trim());
         }
       });
-      return Array.from(values).sort();
+      return Array.from(values).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     };
 
     const rangeDefinitions = [
