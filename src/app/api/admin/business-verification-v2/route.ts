@@ -461,13 +461,13 @@ export async function PATCH(request: NextRequest) {
     await prisma.notification.create({
       data: {
         userId: currentBusiness.ownerId,
-        title: `Business ${action === 'approve' ? 'Verified' : 'Rejected'}`,
+        title: action === 'approve' ? '🎉 Business Verified — Full Access Unlocked' : 'Business Verification Rejected',
         message: action === 'approve'
-          ? `Congratulations! Your business "${currentBusiness.name}" has been verified and is now live on the directory.${notes ? ` Note: ${notes}` : ''}`
-          : `Your business "${currentBusiness.name}" verification was rejected.${notes ? ` Reason: ${notes}` : ''} Please update your business details and resubmit: ${process.env.NEXT_PUBLIC_APP_URL}/dashboard/exporter/business-profile`,
+          ? `Congratulations, ${currentBusiness.owner?.firstName}! Your business "${currentBusiness.name}" has been verified on ${new Date().toLocaleDateString('en-KE', { dateStyle: 'long' })}. Your profile is now live in the Trade Directory and buyers can find and contact you directly.${notes ? ` Admin note: ${notes}` : ''}`
+          : `Your business "${currentBusiness.name}" verification was not approved on ${new Date().toLocaleDateString('en-KE', { dateStyle: 'long' })}.${notes ? ` Reason: ${notes}` : ''} Please update your business details and resubmit.`,
         type: 'BUSINESS_VERIFICATION',
         urgency: action === 'approve' ? 'MEDIUM' : 'HIGH',
-        link: action === 'reject' ? '/dashboard/exporter/business-profile' : undefined,
+        link: action === 'reject' ? '/dashboard/exporter/business-profile' : '/dashboard/exporter',
       },
     });
 

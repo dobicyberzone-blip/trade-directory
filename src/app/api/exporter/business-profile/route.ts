@@ -456,6 +456,20 @@ export async function PUT(request: NextRequest) {
         business.name,
         ['Business profile updated']
       ).catch(err => console.error('[Business Update] Failed to send email:', err));
+
+      // In-app notification for every final save (re-verification notification already sent above if applicable)
+      if (!wasVerified) {
+        void prisma.notification.create({
+          data: {
+            userId: tokenPayload.userId,
+            title: 'Business Profile Updated',
+            message: `Your business profile "${business.name}" was updated successfully on ${new Date().toLocaleDateString('en-KE', { dateStyle: 'long' })}.`,
+            type: 'PROFILE_UPDATE',
+            urgency: 'LOW',
+            link: '/dashboard/exporter/business-profile',
+          },
+        }).catch(() => {});
+      }
     }
 
     return NextResponse.json(

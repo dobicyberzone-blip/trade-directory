@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth-utils';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { sendProfileUpdateEmail } from '@/lib/email-templates';
 
 // CORS headers
 const corsHeaders = {
@@ -125,6 +126,27 @@ export async function PUT(request: NextRequest) {
         updatedAt: true,
       },
     });
+
+    // Send profile update email + in-app notification
+    const updatedFieldNames = Object.keys(validatedData).map(k =>
+      k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())
+    );
+    void sendProfileUpdateEmail(
+      updatedUser.email,
+      updatedUser.firstName,
+      updatedFieldNames
+    ).catch(() => {});
+
+    void prisma.notification.create({
+      data: {
+        userId: decoded.userId,
+        title: 'Profile Updated Successfully',
+        message: `Your profile was updated on ${new Date().toLocaleDateString('en-KE', { dateStyle: 'long' })}. The following details were saved: ${updatedFieldNames.join(', ')}.`,
+        type: 'PROFILE_UPDATE',
+        urgency: 'LOW',
+        link: '/dashboard/settings/profile',
+      },
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,
