@@ -360,7 +360,7 @@ export function BusinessProfileForm({
       fields: ['twitterUrl', 'instagramUrl', 'coordinates']
     },
     {
-      title: 'Company Capacity & Story',
+      title: 'Company Export Trading Capacity',
       icon: Award,
       fields: ['exportVolumePast3Years', 'currentExportMarkets', 'productionCapacityPast3', 'companyStory']
     }
@@ -669,7 +669,7 @@ export function BusinessProfileForm({
               <div>
                 <Label htmlFor="industry">Industry</Label>
                 <SearchableSelect
-                  options={INDUSTRIES}
+                  options={[...INDUSTRIES]}
                   value={form.watch('industry') || ''}
                   onChange={(value) => form.setValue('industry', value, { shouldDirty: true })}
                   placeholder="Select industry"
@@ -843,8 +843,8 @@ export function BusinessProfileForm({
             />
 
             <FileUploader
-              label="Export License (Optional)"
-              description="Upload your export license document (PDF only, max 1MB)"
+              label="Export License/Permit (Optional)"
+              description="Upload your Export License/Permit document (PDF only, max 1MB)"
               value={form.watch('exportLicenseUrl')}
               onChange={(url) => form.setValue('exportLicenseUrl', url)}
               validationOptions={DEFAULT_DOCUMENT_OPTIONS}

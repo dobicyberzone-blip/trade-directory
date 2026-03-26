@@ -6,8 +6,6 @@ export function PartnerLogosCarousel() {
         { name: "JAPAN", src: "/Japan.jpg", height: "h-20" },
         { name: "UNDP", src: "/UNDP.png", height: "h-28" },
         { name: "Gov Kenya", src: "/GOK.png", height: "h-20" },
-        {  name: "KAM", src: "/KAM.png", height: "h-20" },
-        { name: "KNCCI", src: "/KNCCI.png", height: "h-20" },
     ];
     return (
         <section className="py-12 md:py-16 bg-background">

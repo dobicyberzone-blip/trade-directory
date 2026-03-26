@@ -139,7 +139,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
             {/* Logo + Description + Social + Contact */}
             <div className="lg:col-span-2 space-y-4">
-                <Logo size="small" isLight={true} priority variant="footer" />
+                {/*<Logo size="small" isLight={true} priority variant="footer" />*/}
+                 <Logo />
                 <p className="text-sm text-footer-foreground/80 pr-8">
                     The Kenya Export Promotion and Branding Agency (KEPROBA) is the official government body for promoting Kenyan exports to the world.
                 </p>

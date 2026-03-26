@@ -11,7 +11,7 @@ export default function AboutPage() {
         <section className="relative h-[40vh] min-h-[300px] flex items-center justify-center text-center text-white">
           <Image
             src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=2070&auto=format&fit=crop"
-            alt="Kenya Trade Hub - Connecting Kenyan Exporters to Global Markets"
+            alt="Kenya Trade Directory- Connecting Kenyan Exporters to Global Markets"
             fill
             className="object-cover"
             priority
@@ -19,7 +19,7 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-black/60" />
           <div className="relative z-10 max-w-4xl px-4">
             <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
-              About The Kenya Trade Hub
+              About The Kenya Trade Directory
             </h1>
             <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto drop-shadow-md">
               Facilitating global trade by connecting the world to verified Kenyan exporters.
@@ -36,7 +36,7 @@ export default function AboutPage() {
                   The Kenya Export Promotion and Branding Agency (KEPROBA) is a state corporation established under the State Corporations Act Cap 446 through Legal Notice No. 110 of August 9th, 2019, after the merger of the Export Promotion Council and Brand Kenya Board.
                 </p>
                 <p className="text-muted-foreground">
-                  Our mandate is to implement export promotion and nation branding initiatives and to coordinate the Government of Kenya's efforts to promote the country's goods and services in export markets. The Kenya Trade Hub is our flagship digital platform designed to bridge the gap between Kenyan exporters and international buyers.
+                  Our mandate is to implement export promotion and nation branding initiatives and to coordinate the Government of Kenya's efforts to promote the country's goods and services in export markets. The Kenya Trade Directory is our flagship digital platform designed to bridge the gap between Kenyan exporters and international buyers.
                 </p>
               </div>
               <div className="order-1 md:order-2">

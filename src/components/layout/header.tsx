@@ -236,7 +236,7 @@ export function Header() {
                       rel="noopener noreferrer"
                       className={navigationMenuTriggerStyle()}
                     >
-                        LMS
+                        e-Learning
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
