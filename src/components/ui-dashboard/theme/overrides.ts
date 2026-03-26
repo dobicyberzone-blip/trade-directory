@@ -266,6 +266,41 @@ export default function componentsOverrides(theme: Theme, borderRadius: number) 
         }
       }
     },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          overflowX: 'auto',
+          // Always show horizontal scrollbar when content overflows
+          // so users know there are more columns to the right
+          '&::-webkit-scrollbar': {
+            height: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: theme.palette.grey[100],
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: theme.palette.primary.main,
+            borderRadius: '4px',
+            '&:hover': {
+              background: theme.palette.primary.dark,
+            },
+          },
+          // Firefox
+          scrollbarWidth: 'thin',
+          scrollbarColor: `${theme.palette.primary.main} ${theme.palette.grey[100]}`,
+        },
+      },
+    },
+    MuiTable: {
+      styleOverrides: {
+        root: {
+          // Ensure tables are wide enough to trigger horizontal scroll
+          // when columns exceed the viewport
+          minWidth: 650,
+        },
+      },
+    },
     MuiTableHead: {
       styleOverrides: {
         root: {

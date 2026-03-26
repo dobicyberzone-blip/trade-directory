@@ -360,10 +360,27 @@
     z-index: 1200 !important;
   }
   
-  /* Fix for MUI table overflow on mobile */
+  /* Persistent styled horizontal scrollbar on all MUI tables */
   .MuiTableContainer-root {
     overflow-x: auto !important;
     max-width: 100%;
+    /* Always show scrollbar track so users know columns extend beyond view */
+    scrollbar-width: thin;
+    scrollbar-color: #16a34a #f3f4f6;
+  }
+  .MuiTableContainer-root::-webkit-scrollbar {
+    height: 8px;
+  }
+  .MuiTableContainer-root::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 4px;
+  }
+  .MuiTableContainer-root::-webkit-scrollbar-thumb {
+    background-color: #16a34a;
+    border-radius: 4px;
+  }
+  .MuiTableContainer-root::-webkit-scrollbar-thumb:hover {
+    background-color: #15803d;
   }
   
   /* Ensure cards don't overflow */
