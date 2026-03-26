@@ -213,6 +213,10 @@ function RegisterPageContent({
   // Business name duplicate check state
   const [bizNameCheckState, setBizNameCheckState] = useState<'idle' | 'checking' | 'taken' | 'available'>('idle');
 
+  // Terms agreement state
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [termsModalOpen, setTermsModalOpen] = useState<'terms' | 'privacy' | null>(null);
+
   const checkBusinessNameAvailability = async (name: string) => {
     if (!name || name.trim().length < 2) return;
     setBizNameCheckState('checking');
@@ -414,6 +418,16 @@ function RegisterPageContent({
           variant: 'destructive',
           title: 'Business Name Already Registered',
           description: 'A business with this name already exists. Please use a unique business name.',
+        });
+        return;
+      }
+
+      // Block submission if terms not accepted
+      if (!agreedToTerms) {
+        toast({
+          variant: 'destructive',
+          title: 'Terms & Conditions Required',
+          description: 'Please read and accept the Terms and Conditions and Privacy Policy to continue.',
         });
         return;
       }
@@ -1477,6 +1491,55 @@ function RegisterPageContent({
                     </div>
                   )}
 
+                  {/* Terms & Conditions checkbox — only shown on credentials step */}
+                  {currentStep === 'credentials' && (
+                    <div className="pt-2">
+                      <label className="flex items-start gap-3 cursor-pointer group">
+                        <div className="relative flex-shrink-0 mt-0.5">
+                          <input
+                            type="checkbox"
+                            checked={agreedToTerms}
+                            onChange={e => setAgreedToTerms(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                            agreedToTerms
+                              ? 'bg-green-600 border-green-600'
+                              : 'bg-white border-gray-300 group-hover:border-green-400'
+                          }`}>
+                            {agreedToTerms && (
+                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm text-gray-700 leading-snug">
+                          By signing up you agree to our{' '}
+                          <button
+                            type="button"
+                            onClick={() => setTermsModalOpen('terms')}
+                            className="text-green-600 font-semibold underline underline-offset-2 hover:text-green-700"
+                          >
+                            Terms and Conditions
+                          </button>
+                          {' '}and{' '}
+                          <button
+                            type="button"
+                            onClick={() => setTermsModalOpen('privacy')}
+                            className="text-green-600 font-semibold underline underline-offset-2 hover:text-green-700"
+                          >
+                            Privacy Policy
+                          </button>
+                          .
+                        </span>
+                      </label>
+                      {!agreedToTerms && form.formState.isSubmitted && (
+                        <p className="text-xs text-red-600 mt-1.5 ml-8">You must accept the terms to create an account.</p>
+                      )}
+                    </div>
+                  )}
+
                   {/* Navigation Buttons */}
                   <div className="flex gap-4 pt-4">
                     {currentStep !== 'role' && (
@@ -1531,6 +1594,106 @@ function RegisterPageContent({
           )}
         </div>
       </div>
+
+      {/* Terms / Privacy Policy Modal */}
+      {termsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setTermsModalOpen(null)}
+          />
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+              <h2 className="text-lg font-bold text-gray-900">
+                {termsModalOpen === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'}
+              </h2>
+              <button
+                onClick={() => setTermsModalOpen(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            {/* Scrollable content */}
+            <div className="overflow-y-auto flex-1 px-6 py-5 text-sm text-gray-700 leading-relaxed space-y-4">
+              {termsModalOpen === 'terms' ? (
+                <>
+                  <p className="text-xs text-gray-400">Last updated: January 2026</p>
+                  <p>Welcome to the Kenya Export Promotion and Branding Agency (KEPROBA) Trade Directory. These Terms and Conditions govern your use of our platform and services. By creating an account, you agree to be bound by these terms.</p>
+                  {[
+                    ['1. Acceptance of Terms', 'By creating an account, accessing, or using the KEPROBA Trade Directory platform, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions and our Privacy Policy.'],
+                    ['2. Platform Purpose', 'The KEPROBA Trade Directory connects verified Kenyan exporters with international buyers, promotes Kenyan products and services in global markets, and supports Kenya\'s export development objectives.'],
+                    ['3. User Accounts', 'You must provide accurate and complete information during registration. You are responsible for maintaining the confidentiality of your account credentials. One person or entity may maintain only one account.'],
+                    ['4. Verification Process', 'Exporters must undergo KEPROBA\'s verification process, which requires submission of valid business documentation. KEPROBA reserves the right to approve or reject verification applications.'],
+                    ['5. User Responsibilities', 'All information provided must be accurate, current, and complete. Users must maintain professional standards in all communications and must not post false, misleading, or fraudulent information.'],
+                    ['6. Prohibited Activities', 'Users must not engage in spam, harassment, or abusive behavior; attempt to circumvent platform security measures; use the platform for illegal activities; or infringe on intellectual property rights.'],
+                    ['7. Business Transactions', 'KEPROBA facilitates connections but is not party to business transactions. All commercial agreements are between buyers and exporters directly. KEPROBA does not guarantee the completion or success of any transaction.'],
+                    ['8. Data Protection', 'Personal data is processed according to our Privacy Policy. Business information may be displayed publicly for trade promotion. Users consent to data sharing with relevant government agencies.'],
+                    ['9. Limitation of Liability', 'KEPROBA provides the platform "as is" without warranties. We are not liable for business losses or failed transactions. Users assume responsibility for their business decisions.'],
+                    ['10. Governing Law', 'These Terms and Conditions are governed by the laws of Kenya. Any disputes shall be subject to the jurisdiction of Kenyan courts.'],
+                  ].map(([title, body]) => (
+                    <div key={title}>
+                      <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+                      <p>{body}</p>
+                    </div>
+                  ))}
+                  <p className="text-xs text-gray-500 pt-2 border-t">For questions: legal@keproba.go.ke | +254 20 222 85 34 8</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-gray-400">Last updated: January 2026</p>
+                  <p>KEPROBA is committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, and safeguard your information.</p>
+                  {[
+                    ['Information We Collect', 'We collect your name, email address, contact information, business details, account credentials, and technical information such as IP addresses and usage patterns.'],
+                    ['How We Use Your Information', 'We use your information to provide our trade directory services, verify business credentials, facilitate connections between exporters and buyers, send important account updates, and comply with legal obligations.'],
+                    ['Public Directory', 'Verified business information is displayed publicly to promote Kenyan exports, including company name, description, contact details, product offerings, certifications, and business location.'],
+                    ['Government Agencies', 'As a state corporation, we may share information with relevant government bodies for trade promotion, regulatory compliance, and national economic planning.'],
+                    ['Data Security', 'We implement encryption of data in transit and at rest, regular security audits, access controls, and employee training on data protection practices.'],
+                    ['Your Rights', 'You have the right to access and review your personal information, request corrections, delete your account, opt-out of marketing communications, and lodge complaints with data protection authorities.'],
+                    ['Data Retention', 'We retain your information for as long as necessary to provide our services and comply with legal obligations. Business directory information may be retained longer to maintain historical trade records.'],
+                    ['Changes to This Policy', 'We may update this Privacy Policy periodically. We will notify you of significant changes through email or platform notifications.'],
+                  ].map(([title, body]) => (
+                    <div key={title}>
+                      <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+                      <p>{body}</p>
+                    </div>
+                  ))}
+                  <p className="text-xs text-gray-500 pt-2 border-t">For questions: privacy@keproba.go.ke | +254 20 222 85 34 8</p>
+                </>
+              )}
+            </div>
+            {/* Footer actions */}
+            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between gap-3 flex-shrink-0 bg-gray-50 rounded-b-2xl">
+              <p className="text-xs text-gray-500">
+                Read the full version at{' '}
+                <a
+                  href={termsModalOpen === 'terms' ? '/terms-and-conditions' : '/privacy-policy'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-600 underline"
+                >
+                  {termsModalOpen === 'terms' ? '/terms-and-conditions' : '/privacy-policy'}
+                </a>
+              </p>
+              <button
+                onClick={() => {
+                  setAgreedToTerms(true);
+                  setTermsModalOpen(null);
+                }}
+                className="px-5 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              >
+                I Agree
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer/>
     </div>
   );
