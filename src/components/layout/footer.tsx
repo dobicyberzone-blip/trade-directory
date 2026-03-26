@@ -159,150 +159,170 @@ export function Footer() {
 
   return (
     <footer className="bg-footer text-footer-foreground">
-      <div className="container mx-auto px-4 pt-20 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-            {/* Col 1–2: Logo + Description + Social + Contact */}
-            <div className="lg:col-span-2 space-y-4">
-                <Logo />
-                <p className="text-sm text-footer-foreground/80 pr-8">
-                    The Kenya Export Promotion and Branding Agency (KEPROBA) is the official government body for promoting Kenyan exports to the world.
-                </p>
-                {/* Social links */}
-                <div className="flex space-x-4 pt-1">
-                    <Link href="https://web.facebook.com/MakeItKenya" aria-label="Facebook">
-                      <Facebook className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
-                    </Link>
-                    <Link href="https://twitter.com/MakeItKenya" aria-label="X (Twitter)">
-                      <XIcon className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
-                    </Link>
-                    <Link href="https://www.linkedin.com/company/keproba" aria-label="LinkedIn">
-                      <Linkedin className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
-                    </Link>
-                    <Link href="https://www.instagram.com/makeitkenya/" aria-label="Instagram">
-                      <Instagram className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
-                    </Link>
-                    <Link href="https://www.youtube.com/c/MakeitKenya-BrandKenya" aria-label="YouTube">
-                      <Youtube className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
-                    </Link>
-                </div>
-                {/* Contact info */}
-                <div className="space-y-4 pt-2">
-                  {contactInfo.map((item, index) => {
-                    const Icon = item.icon;
-                    const lines = item.content.split('\n');
-                    return (
-                      <div key={index} className="flex items-start space-x-3">
-                        <Icon className="h-5 w-5 text-footer-foreground/80 mt-1 flex-shrink-0" />
-                        <div className="text-sm text-footer-foreground/80">
-                          {lines.map((line, lineIndex) => (
-                            <p key={lineIndex}>{line}</p>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+
+      {/* ── TOP SECTION: Logo + Navigation Links ── */}
+      <div className="container mx-auto px-4 pt-16 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+
+          {/* Logo */}
+          <div className="flex items-start">
+            <Logo />
+          </div>
+
+          {/* Platform + Get Started */}
+          <div className="space-y-4">
+            <h4 className="font-bold text-base text-white">Links</h4>
+            <div className="grid grid-cols-2 gap-x-6">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Platform</p>
+                <ul className="space-y-2 text-sm">
+                  {quickLinks.map(link => (
+                    <li key={link.name}>
+                      <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Get Started</p>
+                <ul className="space-y-2 text-sm">
+                  {getStartedLinks.map(link => (
+                    <li key={link.name}>
+                      <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
+          </div>
 
-            {/* Col 3: Platform + Get Started */}
-            <div className="space-y-4">
-                <h4 className="font-bold text-base text-white">Links</h4>
-                <div className="grid grid-cols-2 gap-x-6">
-                    <div className="space-y-2">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Platform</p>
-                        <ul className="space-y-2 text-sm">
-                            {quickLinks.map(link => (
-                                <li key={link.name}>
-                                    <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="space-y-2">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Get Started</p>
-                        <ul className="space-y-2 text-sm">
-                            {getStartedLinks.map(link => (
-                                <li key={link.name}>
-                                    <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+          {/* Useful Links — Membership + Facilitators */}
+          <div className="space-y-4">
+            <h4 className="font-bold text-base text-white">Useful Links</h4>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Business Membership</p>
+              <ul className="space-y-1.5 text-sm">
+                {usefulLinks.membership.map(link => (
+                  <li key={link.name}>
+                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
+                      className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-
-            {/* Col 4: Useful Links */}
-            <div className="space-y-4">
-                <h4 className="font-bold text-base text-white">Useful Links</h4>
-
-                <div className="space-y-4">
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Business Membership</p>
-                        <ul className="space-y-1.5 text-sm">
-                            {usefulLinks.membership.map(link => (
-                                <li key={link.name}>
-                                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
-                                        className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Sector Regulators</p>
-                        <ul className="space-y-1.5 text-sm">
-                            {usefulLinks.regulators.map(link => (
-                                <li key={link.name}>
-                                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
-                                        className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Trade Facilitating Agencies</p>
-                        <ul className="space-y-1.5 text-sm">
-                            {usefulLinks.facilitators.map(link => (
-                                <li key={link.name}>
-                                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
-                                        className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Trade Facilitating Agencies</p>
+              <ul className="space-y-1.5 text-sm">
+                {usefulLinks.facilitators.map(link => (
+                  <li key={link.name}>
+                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
+                      className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
+          </div>
 
-            {/* Col 5: Newsletter */}
-            <div className="space-y-4">
-                <h4 className="font-bold text-base text-white">Newsletter</h4>
-                <p className="text-sm text-footer-foreground/80">Get the latest on trade policies, market opportunities, and featured exporters.</p>
-                <NewsletterForm />
+          {/* Useful Links — Sector Regulators */}
+          <div className="space-y-4">
+            <h4 className="font-bold text-base text-white invisible">Useful Links</h4>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-2">Sector Regulators</p>
+              <ul className="space-y-1.5 text-sm">
+                {usefulLinks.regulators.map(link => (
+                  <li key={link.name}>
+                    <Link href={link.href} target="_blank" rel="noopener noreferrer"
+                      className="hover:underline text-footer-foreground/80 hover:text-white transition-colors leading-snug block">
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
+          </div>
+
         </div>
       </div>
+
+      {/* ── MIDDLE SECTION: Description + Social + Contact + Newsletter ── */}
+      <div className="border-t border-footer-foreground/10">
+        <div className="container mx-auto px-4 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+            {/* Description + Social */}
+            <div className="space-y-4">
+              <p className="text-sm text-footer-foreground/80">
+                The Kenya Export Promotion and Branding Agency (KEPROBA) is the official government body for promoting Kenyan exports to the world.
+              </p>
+              <div className="flex space-x-4">
+                <Link href="https://web.facebook.com/MakeItKenya" aria-label="Facebook">
+                  <Facebook className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
+                </Link>
+                <Link href="https://twitter.com/MakeItKenya" aria-label="X (Twitter)">
+                  <XIcon className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
+                </Link>
+                <Link href="https://www.linkedin.com/company/keproba" aria-label="LinkedIn">
+                  <Linkedin className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
+                </Link>
+                <Link href="https://www.instagram.com/makeitkenya/" aria-label="Instagram">
+                  <Instagram className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
+                </Link>
+                <Link href="https://www.youtube.com/c/MakeitKenya-BrandKenya" aria-label="YouTube">
+                  <Youtube className="h-5 w-5 text-footer-foreground/80 hover:text-white transition-colors"/>
+                </Link>
+              </div>
+            </div>
+
+            {/* Contact info */}
+            <div className="space-y-4">
+              {contactInfo.map((item, index) => {
+                const Icon = item.icon;
+                const lines = item.content.split('\n');
+                return (
+                  <div key={index} className="flex items-start space-x-3">
+                    <Icon className="h-5 w-5 text-footer-foreground/80 mt-1 flex-shrink-0" />
+                    <div className="text-sm text-footer-foreground/80">
+                      {lines.map((line, lineIndex) => (
+                        <p key={lineIndex}>{line}</p>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Newsletter */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-base text-white">Newsletter</h4>
+              <p className="text-sm text-footer-foreground/80">Get the latest on trade policies, market opportunities, and featured exporters.</p>
+              <NewsletterForm />
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* ── BOTTOM BAR: Copyright + Legal ── */}
       <div className="bg-black/20">
         <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center text-xs text-white/90">
-            <p suppressHydrationWarning>© {currentYear || 2024} KEPROBA. All Rights Reserved.</p>
-              <div className="flex gap-4 mt-4 md:mt-0 flex-wrap justify-center">
-                <Link href="/privacy-policy" className="hover:underline hover:text-white transition-colors text-white/90">Privacy Policy</Link>
-                <Link href="/terms-and-conditions" className="hover:underline hover:text-white transition-colors text-white/90">Terms & Conditions</Link>
-                <Link href="/legal" className="hover:underline hover:text-white transition-colors text-white/90">Legal</Link>
-                <Link href="https://www.eiti.tech/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-white transition-colors text-white/90">Website Developer</Link>
-            </div>
+          <p suppressHydrationWarning>© {currentYear || 2024} KEPROBA. All Rights Reserved.</p>
+          <div className="flex gap-4 mt-4 md:mt-0 flex-wrap justify-center">
+            <Link href="/privacy-policy" className="hover:underline hover:text-white transition-colors text-white/90">Privacy Policy</Link>
+            <Link href="/terms-and-conditions" className="hover:underline hover:text-white transition-colors text-white/90">Terms & Conditions</Link>
+            <Link href="/legal" className="hover:underline hover:text-white transition-colors text-white/90">Legal</Link>
+            <Link href="https://www.eiti.tech/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-white transition-colors text-white/90">Website Developer</Link>
+          </div>
         </div>
       </div>
+
     </footer>
   );
 }
