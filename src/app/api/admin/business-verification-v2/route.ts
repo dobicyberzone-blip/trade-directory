@@ -9,6 +9,7 @@ import prisma from '@/lib/prisma';
 import { sendBusinessVerificationApprovedEmail, sendBusinessVerificationRejectedEmail, sendBusinessSuspendedEmail } from '@/lib/email-templates';
 import { verifyToken } from '@/lib/auth-utils';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { notifyAdminsVerificationCompleted } from '@/lib/admin-alerts';
 
 // Verification validation criteria
 const VERIFICATION_CRITERIA = {
@@ -478,6 +479,16 @@ export async function PATCH(request: NextRequest) {
           currentBusiness.owner.email,
           currentBusiness.owner.firstName,
           currentBusiness.name
+        ).catch(() => {});
+
+        // Notify all admins — verification completed (fire-and-forget)
+        void notifyAdminsVerificationCompleted(
+          currentBusiness.id,
+          currentBusiness.name,
+          `${currentBusiness.owner.firstName} ${currentBusiness.owner.lastName}`.trim(),
+          currentBusiness.owner.email,
+          tokenPayload.userId,
+          tokenPayload.email   // used as verifiedByAdminName fallback
         ).catch(() => {});
       } else {
         void sendBusinessVerificationRejectedEmail(

@@ -639,3 +639,68 @@ export async function revertToKnownGoodState(component: string): Promise<boolean
   // In a real implementation, this would involve database transactions or cache rollback
   return true;
 }
+
+/**
+ * Notify ALL admins when an exporter's verification is completed
+ * Sends both in-app notification and a rich dedicated email to every admin
+ */
+export async function notifyAdminsVerificationCompleted(
+  businessId: string,
+  businessName: string,
+  exporterName: string,
+  exporterEmail: string,
+  verifiedByAdminId: string,
+  verifiedByAdminName: string
+): Promise<void> {
+  try {
+    const { sendAdminVerificationCompletedEmail } = await import('./email-templates');
+    const admins = await getAdminRecipients();
+
+    if (admins.length === 0) {
+      console.warn('[AdminAlerts] No admin recipients found for verification notification');
+      return;
+    }
+
+    const verifiedAt = new Date();
+
+    // In-app notifications (bulk)
+    await prisma.notification.createMany({
+      data: admins.map(admin => ({
+        userId: admin.id,
+        title: `✅ Exporter Verified: ${businessName}`,
+        message: `${exporterName} (${exporterEmail}) has been successfully verified on ${verifiedAt.toLocaleDateString('en-KE', { dateStyle: 'long' })}. Verified by: ${verifiedByAdminName}.`,
+        type: 'ADMIN_ALERT',
+        urgency: 'MEDIUM',
+        link: `/dashboard/admin/business-verification`,
+        metadata: JSON.stringify({
+          alertType: AdminAlertType.EXPORTER_STATUS_CHANGE,
+          businessId,
+          businessName,
+          exporterEmail,
+          verifiedBy: verifiedByAdminName,
+          verifiedAt: verifiedAt.toISOString(),
+        }),
+      })),
+    });
+
+    // Rich email to each admin (fire-and-forget)
+    void Promise.allSettled(
+      admins.map(admin =>
+        sendAdminVerificationCompletedEmail(
+          admin.email,
+          `${admin.firstName} ${admin.lastName}`.trim() || 'Admin',
+          businessName,
+          businessId,
+          exporterName,
+          exporterEmail,
+          verifiedByAdminName,
+          verifiedAt
+        )
+      )
+    );
+
+    console.log(`[AdminAlerts] Verification completed notifications sent to ${admins.length} admin(s) for "${businessName}"`);
+  } catch (error) {
+    console.error('[AdminAlerts] Failed to send verification completed notifications:', error);
+  }
+}

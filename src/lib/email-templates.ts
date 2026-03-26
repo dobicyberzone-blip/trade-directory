@@ -1482,3 +1482,143 @@ export async function sendRatingNotificationEmail(
     return false;
   }
 }
+
+
+/**
+ * Send admin notification email when an exporter's verification is completed
+ * Sent to ALL admin users upon successful verification approval
+ */
+export async function sendAdminVerificationCompletedEmail(
+  adminEmail: string,
+  adminName: string,
+  businessName: string,
+  businessId: string,
+  exporterName: string,
+  exporterEmail: string,
+  verifiedBy: string,
+  verifiedAt: Date
+): Promise<boolean> {
+  try {
+    const transport = getTransporter();
+    if (!transport) return false;
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    const reviewUrl = `${appUrl}/dashboard/admin/business-verification`;
+    const formattedDate = verifiedAt.toLocaleString('en-KE', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: 'Africa/Nairobi',
+    });
+
+    await transport.sendMail({
+      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+      to: adminEmail,
+      subject: `✅ Exporter Verified: ${businessName} — KEPROBA Trade Directory`,
+      html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exporter Verification Completed</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f6f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #333; }
+    .wrapper { max-width: 600px; margin: 32px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 32px; text-align: center; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 14px; }
+    .body { padding: 36px 32px; }
+    .greeting { font-size: 16px; margin-bottom: 20px; }
+    .verified-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 24px; margin: 24px 0; }
+    .verified-card h2 { margin: 0 0 16px; font-size: 17px; color: #15803d; }
+    .badge { display: inline-block; background: #16a34a; color: #fff; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    .detail-row { display: flex; gap: 8px; margin-bottom: 10px; font-size: 14px; }
+    .detail-label { font-weight: 600; color: #374151; min-width: 130px; }
+    .detail-value { color: #4b5563; }
+    .cta { text-align: center; margin: 32px 0 8px; }
+    .cta a { display: inline-block; background: #16a34a; color: #ffffff; text-decoration: none; padding: 13px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; }
+    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 28px 0; }
+    .footer { background: #f8fafc; padding: 24px 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; }
+    .footer a { color: #16a34a; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>✅ Exporter Verification Completed</h1>
+      <p>Kenya Export Promotion &amp; Branding Agency</p>
+    </div>
+    <div class="body">
+      <p class="greeting">Hello <strong>${adminName}</strong>,</p>
+      <p style="font-size:15px; color:#4b5563;">
+        An exporter's verification process has been successfully completed on the KEPROBA Trade Directory. The details are below for your records.
+      </p>
+
+      <div class="verified-card">
+        <span class="badge">✓ Verified</span>
+        <h2>Verification Details</h2>
+        <div class="detail-row">
+          <span class="detail-label">Business Name:</span>
+          <span class="detail-value"><strong>${businessName}</strong></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Business ID:</span>
+          <span class="detail-value" style="font-family: monospace; font-size: 13px;">${businessId}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Exporter:</span>
+          <span class="detail-value">${exporterName}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Exporter Email:</span>
+          <span class="detail-value"><a href="mailto:${exporterEmail}" style="color:#16a34a;">${exporterEmail}</a></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Verified By:</span>
+          <span class="detail-value">${verifiedBy}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Verified On:</span>
+          <span class="detail-value">${formattedDate}</span>
+        </div>
+      </div>
+
+      <p style="font-size:14px; color:#4b5563;">
+        The exporter's business profile is now live in the Trade Directory. You can review the full verified details, manage featuring, or take any further administrative actions using the button below.
+      </p>
+
+      <div class="cta">
+        <a href="${reviewUrl}">Review Verified Business →</a>
+      </div>
+      <p style="text-align:center; font-size:12px; color:#9ca3af; margin-top:8px;">
+        Or copy this link: <a href="${reviewUrl}" style="color:#16a34a;">${reviewUrl}</a>
+      </p>
+
+      <hr class="divider" />
+
+      <p style="font-size:13px; color:#6b7280; text-align:center;">
+        This notification was sent because you are an administrator on the KEPROBA Trade Directory platform.
+      </p>
+    </div>
+    <div class="footer">
+      <p style="margin:0 0 6px;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
+      <p style="margin:0 0 6px;">
+        <a href="${appUrl}">Trade Directory</a> &nbsp;|&nbsp;
+        <a href="${appUrl}/dashboard/admin">Admin Dashboard</a> &nbsp;|&nbsp;
+        <a href="${appUrl}/contact">Contact Support</a>
+      </p>
+      <p style="margin:8px 0 0; font-size:11px; color:#d1d5db;">
+        © ${new Date().getFullYear()} KEPROBA. All rights reserved.
+      </p>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
+
+    console.log(`[Email] Admin verification notification sent to ${adminEmail} for business "${businessName}"`);
+    return true;
+  } catch (error) {
+    console.error(`[Email] Failed to send admin verification notification to ${adminEmail}:`, error);
+    return false;
+  }
+}
