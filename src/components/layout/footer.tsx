@@ -36,35 +36,11 @@ const quickLinks = [
     { name: "Contact Us", href: "/contact" },
 ];
 
-const forYouLinks = [
+const getStartedLinks = [
     { name: "For Exporters", href: "/register" },
     { name: "For Buyers", href: "/directory" },
     { name: "FAQs", href: "/faq" },
-];
-
-const usefulLinks = {
-  "Business Membership": [
-    { name: "Kenya Association of Manufacturers", href: "https://www.kam.co.ke/" },
-    { name: "Kenya Flower Council", href: "https://kenyaflowercouncil.org/" },
-    { name: "Fresh Produce Exporters Assoc.", href: "https://fpeak.org/" },
-    { name: "Fresh Produce Consortium of Kenya", href: "https://fpckenya.co.ke/" },
-    { name: "Avocado Society of Kenya", href: "https://kenyaavocados.co.ke/" },
-    { name: "Avocado Exporters Assoc. of Kenya", href: "https://avocado.ke/" },
-    { name: "Kenya National Chamber of Commerce", href: "https://www.kenyachamber.or.ke/" },
-  ],
-  "Sector Regulators": [
-    { name: "Kenya Bureau of Standards", href: "https://www.kebs.org/" },
-    { name: "Agriculture and Food Authority", href: "https://www.afa.go.ke/" },
-    { name: "Kenya Plant Health Inspectorate", href: "https://www.kephis.go.ke/" },
-    { name: "Kenya Revenue Authority", href: "https://www.kra.go.ke/" },
-    { name: "Kenya Ports Authority", href: "https://www.kpa.co.ke/" },
-    { name: "State Department for Mining", href: "https://mining.go.ke/" },
-    { name: "Kenya Fisheries Services", href: "https://kefs.go.ke/" },
-  ],
-  "Trade Facilitating Agencies": [
-    { name: "Kenya Trade Network Agency", href: "https://kentrade.go.ke/" },
-  ],
-};
+]
 
 
 const contactInfo = [
@@ -160,7 +136,7 @@ export function Footer() {
   return (
     <footer className="bg-footer text-footer-foreground">
       <div className="container mx-auto px-4 pt-20 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Logo + Description + Social + Contact */}
             <div className="lg:col-span-2 space-y-4">
                 {/*<Logo size="small" isLight={true} priority variant="footer" />*/}
@@ -204,64 +180,46 @@ export function Footer() {
                   })}
                 </div>
             </div>
-            
-            <div className="space-y-4">
-                <h4 className="font-bold text-base text-white">Platform</h4>
-                 <ul className="space-y-2 text-sm">
-                     {quickLinks.map(link => (
-                         <li key={link.name}>
-                             <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
-                                 {link.name}
-                             </Link>
-                         </li>
-                     ))}
-                 </ul>
-            </div>
 
+            {/* Links — Platform + Get Started side by side */}
             <div className="space-y-4">
-                <h4 className="font-bold text-base text-white">Get Started</h4>
-                 <ul className="space-y-2 text-sm">
-                     {forYouLinks.map(link => (
-                         <li key={link.name}>
-                             <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
-                                 {link.name}
-                             </Link>
-                         </li>
-                     ))}
-                 </ul>
-            </div>
-
-            {/* Useful Links */}
-            <div className="lg:col-span-2 space-y-6">
-                <h4 className="font-bold text-base text-white">Useful Links</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {Object.entries(usefulLinks).map(([category, links]) => (
-                    <div key={category} className="space-y-2">
-                      <h5 className="text-xs font-semibold uppercase tracking-wider text-white/60 mb-2">{category}</h5>
-                      <ul className="space-y-1.5 text-sm">
-                        {links.map(link => (
-                          <li key={link.name}>
-                            <Link
-                              href={link.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-footer-foreground/75 hover:text-white hover:underline transition-colors leading-snug block"
-                            >
-                              {link.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                <h4 className="font-bold text-base text-white">Links</h4>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-0">
+                    {/* Platform sub-group */}
+                    <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Platform</p>
+                        <ul className="space-y-2 text-sm">
+                            {quickLinks.map(link => (
+                                <li key={link.name}>
+                                    <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
+                                        {link.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                  ))}
+                    {/* Get Started sub-group */}
+                    <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-footer-foreground/50 mb-3">Get Started</p>
+                        <ul className="space-y-2 text-sm">
+                            {getStartedLinks.map(link => (
+                                <li key={link.name}>
+                                    <Link href={link.href} className="hover:underline text-footer-foreground/80 hover:text-white transition-colors">
+                                        {link.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-             <div className="space-y-4">
+            {/* Newsletter */}
+            <div className="space-y-4">
                 <h4 className="font-bold text-base text-white">Newsletter</h4>
                 <p className="text-sm text-footer-foreground/80">Get the latest on trade policies, market opportunities, and featured exporters.</p>
                 <NewsletterForm />
-             </div>
+            </div>
         </div>
       </div>
       <div className="bg-black/20">
