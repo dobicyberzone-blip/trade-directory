@@ -22,8 +22,8 @@ export const LoginSchema = z.object({
 // Unified registration schema with all fields
 export const RegisterSchema = z.object({
   // Account type selection
-  role: z.enum(["exporter", "buyer"], { 
-    required_error: "Please select an account type." 
+  role: z.enum(["exporter", "buyer", "partner"], {
+    required_error: "Please select an account type."
   }),
   
   // Partner type (for buyers only)
@@ -63,15 +63,10 @@ export const RegisterSchema = z.object({
   message: "Passwords do not match.",
   path: ["confirmPassword"],
 }).refine(data => {
-  // If role is buyer/partner, partnerType is required
-  if (data.role === 'buyer') {
-    if (!data.partnerType || data.partnerType.length === 0) {
-      return false;
-    }
-    // If "Other" is selected without custom text, it's invalid
-    if (data.partnerType === 'Other') {
-      return false;
-    }
+  // partnerType is required only for the partner role
+  if (data.role === 'partner') {
+    if (!data.partnerType || data.partnerType.length === 0) return false;
+    if (data.partnerType === 'Other') return false;
     return true;
   }
   return true;

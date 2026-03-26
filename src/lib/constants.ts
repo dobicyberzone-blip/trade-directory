@@ -361,7 +361,6 @@ export const USER_ROLE_OPTIONS = USER_ROLES.map(role => ({
 // PARTNER TYPES (for Buyer role)
 // ============================================
 export const PARTNER_TYPES = [
-  'Buyers',
   'Development Partners',
   "TSI's",
   'Kenya Government Ministries & State Department',

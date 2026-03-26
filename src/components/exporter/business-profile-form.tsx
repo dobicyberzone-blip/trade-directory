@@ -355,7 +355,7 @@ export function BusinessProfileForm({
       fields: ['town', 'county', 'physicalAddress', 'website', 'contactPhone', 'companyEmail', 'whatsappNumber']
     },
     {
-      title: 'Social Media & Location',
+      title: 'Social Media',
       icon: Globe,
       fields: ['twitterUrl', 'instagramUrl', 'coordinates']
     },
@@ -998,7 +998,7 @@ export function BusinessProfileForm({
           </div>
         );
 
-      case 4: // Social Media & Location
+      case 4: // Social Media 
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -162,7 +162,7 @@ function RegisterPageContent({
   
   // Wizard state - always start at role step (ignore any saved state)
   const [currentStep, setCurrentStep] = useState<WizardStep>('role');
-  const [selectedRole, setSelectedRole] = useState<'exporter' | 'buyer'>('exporter');
+  const [selectedRole, setSelectedRole] = useState<'exporter' | 'buyer' | 'partner'>('exporter');
   
   // Dropdown states
   const [sectorOpen, setSectorOpen] = useState(false);
@@ -223,7 +223,7 @@ function RegisterPageContent({
   const form = useForm<FormValues>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      role: "exporter" as "exporter" | "buyer",
+      role: "exporter" as "exporter" | "buyer" | "partner",
       email: "",
       password: "",
       confirmPassword: "",
@@ -312,14 +312,16 @@ function RegisterPageContent({
       // Validate role selection
       const role = form.getValues('role');
       if (role) {
-        // If buyer/partner, validate partnerType is selected
+        // If buyer, go straight to credentials
         if (role === 'buyer') {
+          setCurrentStep('credentials');
+        } else if (role === 'partner') {
+          // Partner must select a partner type first
           const partnerType = form.getValues('partnerType');
           if (!partnerType || partnerType === '') {
             toast({ variant: "destructive", title: "Error", description: "Please select your partner type" });
             return;
           }
-          // If "Other" is selected but no custom text provided, show error
           if (partnerType === 'Other' && (!partnerOtherText || partnerOtherText.trim() === '')) {
             toast({ variant: "destructive", title: "Error", description: "Please specify your partner type" });
             return;
@@ -355,8 +357,8 @@ function RegisterPageContent({
     } else if (currentStep === 'contact') {
       setCurrentStep('business');
     } else if (currentStep === 'credentials') {
-      // If buyer, go back to role selection
-      if (role === 'buyer') {
+      // Buyer and partner go back to role selection (no business steps)
+      if (role === 'buyer' || role === 'partner') {
         setCurrentStep('role');
       } else {
         setCurrentStep('contact');
@@ -376,7 +378,7 @@ function RegisterPageContent({
         firstName: values.firstName,
         lastName: values.lastName,
         phoneNumber: values.phoneNumber?.trim() || undefined,
-        role: values.role.toUpperCase() as 'ADMIN' | 'EXPORTER' | 'BUYER',
+        role: (values.role === 'partner' ? 'BUYER' : values.role.toUpperCase()) as 'ADMIN' | 'EXPORTER' | 'BUYER',
       };
 
       let registrationData: any;
@@ -545,9 +547,11 @@ function RegisterPageContent({
               <div className="text-center space-y-3 mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
                 <p className="text-gray-600 text-sm">
-                  {selectedRole === 'exporter' 
+                  {selectedRole === 'exporter'
                     ? 'Register your business to start exporting'
-                    : 'Join as a partner to connect with exporters'}
+                    : selectedRole === 'partner'
+                    ? 'Register as a partner organisation'
+                    : 'Join as a buyer to connect with exporters'}
                 </p>
               </div>
 
@@ -571,52 +575,71 @@ function RegisterPageContent({
                               <RadioGroup
                                 onValueChange={(value) => {
                                   field.onChange(value);
-                                  setSelectedRole(value as 'exporter' | 'buyer');
+                                  setSelectedRole(value as 'exporter' | 'buyer' | 'partner');
+                                  // Clear partnerType when switching away from partner
+                                  if (value !== 'partner') form.setValue('partnerType', '');
                                 }}
                                 defaultValue={field.value}
-                                className="grid grid-cols-2 gap-4 items-stretch"
+                                className="grid grid-cols-3 gap-4 items-stretch"
                               >
+                                {/* Exporter */}
                                 <FormItem className="h-full">
                                   <RadioGroupItem value="exporter" id="exporter" className="sr-only" />
-                                  <Label 
+                                  <Label
                                     htmlFor="exporter"
                                     className={cn(
                                       "flex flex-col items-center justify-center rounded-lg border-2 bg-white p-4 cursor-pointer transition-all h-full min-h-[100px]",
-                                      field.value === 'exporter' 
-                                        ? "border-green-500 bg-green-50" 
+                                      field.value === 'exporter'
+                                        ? "border-green-500 bg-green-50"
                                         : "border-gray-200 hover:border-gray-300"
                                     )}
                                   >
                                     <div className={cn("mb-2 w-5 h-5 rounded-full flex-shrink-0", field.value === 'exporter' ? "bg-green-500" : "bg-gray-300")}></div>
-                                    <span className={cn("font-medium text-lg", field.value === 'exporter' ? "text-green-700" : "text-gray-700")}>
-                                      Exporter
-                                    </span>
+                                    <span className={cn("font-medium text-base", field.value === 'exporter' ? "text-green-700" : "text-gray-700")}>Exporter</span>
                                     <span className="text-xs text-gray-500 mt-1 text-center">Kenyan Businesses</span>
                                   </Label>
                                 </FormItem>
+
+                                {/* Buyer */}
                                 <FormItem className="h-full">
                                   <RadioGroupItem value="buyer" id="buyer" className="sr-only" />
-                                  <Label 
+                                  <Label
                                     htmlFor="buyer"
                                     className={cn(
                                       "flex flex-col items-center justify-center rounded-lg border-2 bg-white p-4 cursor-pointer transition-all h-full min-h-[100px]",
-                                      field.value === 'buyer' 
-                                        ? "border-green-500 bg-green-50" 
+                                      field.value === 'buyer'
+                                        ? "border-green-500 bg-green-50"
                                         : "border-gray-200 hover:border-gray-300"
                                     )}
                                   >
                                     <div className={cn("mb-2 w-5 h-5 rounded-full flex-shrink-0", field.value === 'buyer' ? "bg-green-500" : "bg-gray-300")}></div>
-                                    <span className={cn("font-medium text-lg", field.value === 'buyer' ? "text-green-700" : "text-gray-700")}>
-                                      Partner
-                                    </span>
-                                    <span className="text-xs text-gray-500 mt-1 text-center">Buyers, Government, etc.</span>
+                                    <span className={cn("font-medium text-base", field.value === 'buyer' ? "text-green-700" : "text-gray-700")}>Buyer</span>
+                                    <span className="text-xs text-gray-500 mt-1 text-center">International Buyers</span>
+                                  </Label>
+                                </FormItem>
+
+                                {/* Partner */}
+                                <FormItem className="h-full">
+                                  <RadioGroupItem value="partner" id="partner" className="sr-only" />
+                                  <Label
+                                    htmlFor="partner"
+                                    className={cn(
+                                      "flex flex-col items-center justify-center rounded-lg border-2 bg-white p-4 cursor-pointer transition-all h-full min-h-[100px]",
+                                      field.value === 'partner'
+                                        ? "border-green-500 bg-green-50"
+                                        : "border-gray-200 hover:border-gray-300"
+                                    )}
+                                  >
+                                    <div className={cn("mb-2 w-5 h-5 rounded-full flex-shrink-0", field.value === 'partner' ? "bg-green-500" : "bg-gray-300")}></div>
+                                    <span className={cn("font-medium text-base", field.value === 'partner' ? "text-green-700" : "text-gray-700")}>Partner</span>
+                                    <span className="text-xs text-gray-500 mt-1 text-center">Government, TSIs, etc.</span>
                                   </Label>
                                 </FormItem>
                               </RadioGroup>
                             </FormControl>
-                            
-                            {/* Partner type selection (only for buyer) */}
-                            {field.value === 'buyer' && (
+
+                            {/* Partner type dropdown — only for Partner selection */}
+                            {field.value === 'partner' && (
                               <div className="mt-4 space-y-3">
                                 <FormField
                                   control={form.control}
@@ -1129,14 +1152,14 @@ function RegisterPageContent({
                   )}
 
                   {/* STEP 4: Account Credentials */}
-                  {(currentStep === 'credentials' || selectedRole === 'buyer') && (
+                  {(currentStep === 'credentials' || selectedRole === 'buyer' || selectedRole === 'partner') && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
                       <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
                         {selectedRole === 'exporter' ? 'Account Credentials' : 'Personal & Account Information'}
                       </h3>
 
-                      {/* Buyer: collect name manually */}
-                      {selectedRole === 'buyer' && (
+                      {/* Buyer / Partner: collect name manually */}
+                      {(selectedRole === 'buyer' || selectedRole === 'partner') && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <FormField control={form.control} name="firstName" render={({ field }) => (
                             <FormItem>
@@ -1193,10 +1216,20 @@ function RegisterPageContent({
                         }
                         return (
                           <FormItem>
-                            <FormLabel className="text-gray-900 font-medium">Email Address <span className="text-red-500">*</span></FormLabel>
+                            <FormLabel className="text-gray-900 font-medium">
+                              {selectedRole === 'partner' ? 'Official / Organisation Email' : 'Email Address'} <span className="text-red-500">*</span>
+                            </FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="you@company.com" {...field} className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500" />
+                              <Input
+                                type="email"
+                                placeholder={selectedRole === 'partner' ? 'official@organisation.go.ke' : 'you@company.com'}
+                                {...field}
+                                className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                              />
                             </FormControl>
+                            {selectedRole === 'partner' && (
+                              <p className="text-xs text-gray-500">Use your official organisation email address</p>
+                            )}
                             <FormMessage />
                           </FormItem>
                         );
