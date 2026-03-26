@@ -178,6 +178,13 @@ export async function POST(request: NextRequest) {
         // Social Media
         twitterUrl: businessData.twitterUrl,
         instagramUrl: businessData.instagramUrl,
+        facebookUrl: businessData.facebookUrl,
+        linkedInUrl: businessData.linkedInUrl,
+        youtubeUrl: businessData.youtubeUrl,
+        tiktokUrl: businessData.tiktokUrl,
+        pinterestUrl: businessData.pinterestUrl,
+        snapchatUrl: businessData.snapchatUrl,
+        telegramUrl: businessData.telegramUrl,
         
         // Location GPS
         coordinates: businessData.coordinates,
@@ -368,6 +375,13 @@ export async function PUT(request: NextRequest) {
         // Social Media (editable)
         twitterUrl: businessData.twitterUrl,
         instagramUrl: businessData.instagramUrl,
+        facebookUrl: businessData.facebookUrl,
+        linkedInUrl: businessData.linkedInUrl,
+        youtubeUrl: businessData.youtubeUrl,
+        tiktokUrl: businessData.tiktokUrl,
+        pinterestUrl: businessData.pinterestUrl,
+        snapchatUrl: businessData.snapchatUrl,
+        telegramUrl: businessData.telegramUrl,
         
         // Location GPS (editable)
         coordinates: businessData.coordinates,

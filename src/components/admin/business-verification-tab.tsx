@@ -14,6 +14,7 @@ import {
   FileText as FileTextIcon, Download as DownloadIcon, Lock as LockIcon,
 } from 'lucide-react';
 import { resolveFileUrl } from '@/lib/pdf-viewer';
+import { SocialLinks } from '@/components/social-links';
 import { apiClient } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
@@ -59,6 +60,13 @@ interface Business {
   website?: string;
   twitterUrl?: string;
   instagramUrl?: string;
+  facebookUrl?: string;
+  linkedInUrl?: string;
+  youtubeUrl?: string;
+  tiktokUrl?: string;
+  pinterestUrl?: string;
+  snapchatUrl?: string;
+  telegramUrl?: string;
   productHsCode?: string;
   exportVolumePast3Years?: string;
   currentExportMarkets?: string;
@@ -275,6 +283,16 @@ export function BusinessVerificationTab() {
                     </Box>
                   </CardContent>
                 </Card>
+
+                {/* Social Media */}
+                {(business.twitterUrl || business.instagramUrl || business.facebookUrl || business.linkedInUrl || business.youtubeUrl || business.tiktokUrl || business.pinterestUrl || business.snapchatUrl || business.whatsappNumber || business.telegramUrl) && (
+                  <Card variant="outlined">
+                    <CardContent sx={{ pt: 2 }}>
+                      <Typography variant="h6" gutterBottom>Social Media</Typography>
+                      <SocialLinks business={business} variant="list" />
+                    </CardContent>
+                  </Card>
+                )}
               </Grid>
 
               {/* Sector & Products */}
@@ -448,15 +466,12 @@ export function BusinessVerificationTab() {
                 </Card>
               </Grid>
 
-              {(business.twitterUrl || business.instagramUrl) && (
+              {(business.twitterUrl || business.instagramUrl || business.facebookUrl || business.linkedInUrl || business.youtubeUrl || business.tiktokUrl || business.pinterestUrl || business.snapchatUrl || business.whatsappNumber || business.telegramUrl) && (
                 <Grid item xs={12} md={6}>
                   <Card variant="outlined">
                     <CardContent>
                       <Typography variant="h6" gutterBottom>Social Media</Typography>
-                      <Box display="flex" flexDirection="column" gap={1.5}>
-                        <InfoRow label="Twitter" value={business.twitterUrl} />
-                        <InfoRow label="Instagram" value={business.instagramUrl} />
-                      </Box>
+                      <SocialLinks business={business} variant="list" />
                     </CardContent>
                   </Card>
                 </Grid>

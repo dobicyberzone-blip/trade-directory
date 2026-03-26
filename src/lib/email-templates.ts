@@ -62,7 +62,7 @@ export async function sendRegistrationEmail(
     if (!transporter) return false;
 
     const userName = `${firstName} ${lastName}`.trim();
-    const roleText = role === 'EXPORTER' ? 'Exporter' : role === 'BUYER' ? 'Buyer' : 'Admin';
+    const roleText = role === 'EXPORTER' ? 'Exporter' : role === 'BUYER' ? 'Buyer' : role === 'PARTNER' ? 'Partner' : 'Admin';
 
     await transporter.sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
@@ -79,6 +79,8 @@ export async function sendRegistrationEmail(
             .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
             .content { padding: 40px 30px; }
             .welcome-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 20px; margin: 25px 0; border-radius: 4px; }
+            .cta-box { background: #f0fdf4; border: 2px solid #16a34a; border-radius: 10px; padding: 24px 20px; margin: 28px 0; text-align: center; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff !important; text-decoration: none; font-size: 16px; font-weight: 700; padding: 14px 36px; border-radius: 8px; letter-spacing: 0.3px; }
             .footer { background: #f8f9fa; text-align: center; padding: 25px 30px; color: #666; font-size: 13px; border-top: 1px solid #e9ecef; }
           </style>
         </head>
@@ -91,7 +93,7 @@ export async function sendRegistrationEmail(
               <p style="font-size: 16px;">Hello ${userName},</p>
               <div class="welcome-box">
                 <h2 style="margin: 0 0 12px 0; color: #16a34a;">Registration Successful!</h2>
-                <p style="margin: 0;">Your ${roleText} account has been created successfully. You can now access all features of the KEPROBA platform.</p>
+                <p style="margin: 0;">Your ${roleText} account has been created successfully. You can now access all features of the KEPROBA Trade Directory platform.</p>
               </div>
               <p><strong>Account Details:</strong></p>
               <ul>
@@ -99,10 +101,17 @@ export async function sendRegistrationEmail(
                 <li>Role: ${roleText}</li>
                 <li>Registration Date: ${new Date().toLocaleDateString()}</li>
               </ul>
+              <div class="cta-box">
+                <p style="margin: 0 0 6px 0; font-size: 15px; font-weight: 600; color: #15803d;">Your Trade Directory account is ready</p>
+                <p style="margin: 0 0 18px 0; font-size: 14px; color: #555;">Sign in now to access your dashboard and get started.</p>
+                <a href="${dashboardUrl}/login" class="cta-button">Access Trade Directory</a>
+                <p style="margin: 16px 0 0 0; font-size: 12px; color: #888;">Or copy this link: <a href="${dashboardUrl}/login" style="color: #16a34a;">${dashboardUrl}/login</a></p>
+              </div>
               <p><strong>Next Steps:</strong></p>
               <ul>
                 ${role === 'EXPORTER' ? '<li>Complete your business profile</li><li>Add your products to the directory</li><li>Start receiving inquiries from buyers</li>' : ''}
                 ${role === 'BUYER' ? '<li>Browse the exporter directory</li><li>Send inquiries to exporters</li><li>Connect with verified businesses</li>' : ''}
+                ${role === 'PARTNER' ? '<li>Explore partnership opportunities</li><li>Connect with exporters and buyers</li><li>Access the Trade Directory resources</li>' : ''}
                 ${role === 'ADMIN' ? '<li>Access the admin dashboard</li><li>Manage users and businesses</li><li>Review verification requests</li>' : ''}
               </ul>
             </div>
@@ -155,6 +164,7 @@ export async function sendLoginEmail(
             .content { padding: 40px 30px; }
             .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; margin: 25px 0; border-radius: 8px; }
             .warning-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff !important; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px; }
             .footer { background: #f8f9fa; text-align: center; padding: 25px 30px; color: #666; font-size: 13px; border-top: 1px solid #e9ecef; }
           </style>
         </head>
@@ -177,6 +187,9 @@ export async function sendLoginEmail(
               <div class="warning-box">
                 <strong>Security Notice:</strong>
                 <p style="margin: 10px 0 0 0;">If this wasn't you, please secure your account immediately by changing your password and contacting our support team.</p>
+              </div>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/settings/security" class="cta-button">Review Security Settings</a>
               </div>
             </div>
             <div class="footer">
@@ -225,6 +238,7 @@ export async function sendProfileUpdateEmail(
             .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 30px; text-align: center; }
             .content { padding: 40px 30px; }
             .success-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 20px; margin: 25px 0; border-radius: 4px; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff !important; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px; }
             .footer { background: #f8f9fa; text-align: center; padding: 25px 30px; color: #666; font-size: 13px; border-top: 1px solid #e9ecef; }
           </style>
         </head>
@@ -243,6 +257,9 @@ export async function sendProfileUpdateEmail(
                 </ul>
               </div>
               <p>Updated on: ${new Date().toLocaleString()}</p>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/settings/profile" class="cta-button">View Your Profile</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
@@ -288,6 +305,7 @@ export async function sendBusinessSubmittedEmail(
             .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 30px; text-align: center; }
             .content { padding: 40px 30px; }
             .info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 20px; margin: 25px 0; border-radius: 4px; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff !important; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px; }
             .footer { background: #f8f9fa; text-align: center; padding: 25px 30px; color: #666; font-size: 13px; border-top: 1px solid #e9ecef; }
           </style>
         </head>
@@ -310,6 +328,9 @@ export async function sendBusinessSubmittedEmail(
                 <li>Typical review time: 2-3 business days</li>
               </ul>
               <p>You'll be notified via email once your business is verified and visible in the directory.</p>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/exporter/business-profile" class="cta-button">Track Verification Status</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
@@ -355,6 +376,7 @@ export async function sendPasswordChangeEmail(
             .content { padding: 40px 30px; }
             .success-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 20px; margin: 25px 0; border-radius: 4px; }
             .warning-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff !important; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px; }
             .footer { background: #f8f9fa; text-align: center; padding: 25px 30px; color: #666; font-size: 13px; border-top: 1px solid #e9ecef; }
           </style>
         </head>
@@ -372,6 +394,9 @@ export async function sendPasswordChangeEmail(
               <div class="warning-box">
                 <strong>Security Alert:</strong>
                 <p style="margin: 10px 0 0 0;">If you didn't make this change, please contact our support team immediately to secure your account.</p>
+              </div>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/settings/security" class="cta-button">Go to Security Settings</a>
               </div>
             </div>
             <div class="footer">
@@ -439,6 +464,9 @@ export async function sendProductSubmittedEmail(
                 <li>You'll receive an email once the review is complete</li>
                 <li>Typical review time: 1-2 business days</li>
               </ul>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/exporter/products" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">View My Products</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
@@ -510,10 +538,13 @@ export async function sendInquiryReceivedEmail(
                 <li>Include pricing and minimum order quantities</li>
                 <li>Be professional and courteous</li>
               </ul>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/exporter/inquiries" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">Reply to Inquiry</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
-              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard" style="color: #16a34a;">Go to Dashboard</a></p>
+              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard/exporter/inquiries" style="color: #16a34a;">View All Inquiries</a></p>
             </div>
           </div>
         </body>
@@ -571,10 +602,13 @@ export async function sendInquiryResponseEmail(
                 <p style="margin: 0;">${exporterName} has responded to your inquiry about "${productName}".</p>
               </div>
               <p>Check your messages to view the full response and continue the conversation.</p>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/buyer/inquiries" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">View Response</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
-              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard" style="color: #16a34a;">Go to Dashboard</a></p>
+              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard/buyer/inquiries" style="color: #16a34a;">View All Inquiries</a></p>
             </div>
           </div>
         </body>
@@ -639,6 +673,9 @@ export async function sendBusinessDetailsUpdatedEmail(
               </div>
               <p>Updated on: ${new Date().toLocaleString()}</p>
               <p><strong>Note:</strong> If your business was previously verified, these changes may require re-verification by our team.</p>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/exporter/business-profile" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">View Business Profile</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
@@ -706,6 +743,9 @@ export async function sendSuccessStorySubmittedEmail(
                 <li>You'll receive an email when your story is published</li>
               </ul>
               <p>Your success story helps inspire other Kenyan exporters and showcases the impact of our platform!</p>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/exporter/success-stories" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">View My Stories</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
@@ -781,10 +821,13 @@ export async function sendInquirySentEmail(
                 <li>Be clear about your requirements and quantities</li>
                 <li>Ask about certifications and shipping options</li>
               </ul>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/buyer/inquiries" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">Track My Inquiries</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
-              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard" style="color: #16a34a;">Go to Dashboard</a></p>
+              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard/buyer/inquiries" style="color: #16a34a;">View All Inquiries</a></p>
             </div>
           </div>
         </body>
@@ -860,6 +903,9 @@ export async function sendBusinessVerificationApprovedEmail(
                 <li>Respond promptly to buyer inquiries</li>
                 <li>Share your success stories</li>
               </ul>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/exporter/business-profile" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">View Your Business Profile</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
@@ -934,10 +980,13 @@ export async function sendProductApprovedEmail(
                 <li>Respond quickly to inquiries</li>
                 <li>Add more products to your catalog</li>
               </ul>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="${dashboardUrl}/dashboard/exporter/products" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 13px 32px; border-radius: 8px;">View My Products</a>
+              </div>
             </div>
             <div class="footer">
               <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
-              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard" style="color: #16a34a;">Go to Dashboard</a></p>
+              <p style="margin: 0;"><a href="${dashboardUrl}/dashboard/exporter/products" style="color: #16a34a;">View All Products</a></p>
             </div>
           </div>
         </body>
@@ -1190,7 +1239,7 @@ export async function sendAccountUnsuspendedEmail(
                 <li>✓ Send and receive inquiries</li>
                 <li>✓ Manage your listings</li>
               </ul>
-              <p>We encourage you to review our <a href="${dashboardUrl}/terms" style="color: #16a34a;">Terms of Service</a> to ensure continued compliance.</p>
+              <p>We encourage you to review our <a href="${dashboardUrl}/terms-and-conditions" style="color: #16a34a;">Terms of Service</a> to ensure continued compliance.</p>
               <p style="margin-top: 30px;">
                 <a href="${dashboardUrl}/login" style="background: #16a34a; color: white; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: 600;">Log In Now</a>
               </p>

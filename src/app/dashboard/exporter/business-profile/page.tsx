@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { SocialLinks } from '@/components/social-links';
 import { 
   Building2, 
   CheckCircle, 
@@ -21,8 +22,6 @@ import {
   Mail,
   Globe,
   MessageCircle,
-  Twitter,
-  Instagram,
   Users,
   Package,
   TrendingUp,
@@ -238,6 +237,13 @@ export default function BusinessProfilePage() {
             // Social Media
             twitterUrl: business.twitterUrl || '',
             instagramUrl: business.instagramUrl || '',
+            facebookUrl: (business as any).facebookUrl || '',
+            linkedInUrl: (business as any).linkedInUrl || '',
+            youtubeUrl: (business as any).youtubeUrl || '',
+            tiktokUrl: (business as any).tiktokUrl || '',
+            pinterestUrl: (business as any).pinterestUrl || '',
+            snapchatUrl: (business as any).snapchatUrl || '',
+            telegramUrl: (business as any).telegramUrl || '',
             // GPS
             coordinates: business.coordinates || '',
             // Capacity
@@ -677,28 +683,7 @@ export default function BusinessProfilePage() {
                   </div>
                 </div>
               )}
-              {business.twitterUrl && (
-                <div className="flex items-start gap-2">
-                  <Twitter className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Twitter / X</p>
-                    <a href={business.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
-                      {business.twitterUrl}
-                    </a>
-                  </div>
-                </div>
-              )}
-              {business.instagramUrl && (
-                <div className="flex items-start gap-2">
-                  <Instagram className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Instagram</p>
-                    <a href={business.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
-                      {business.instagramUrl}
-                    </a>
-                  </div>
-                </div>
-              )}
+              <SocialLinks business={business} variant="list" />
             </CardContent>
           </Card>
 

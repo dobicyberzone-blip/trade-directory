@@ -161,6 +161,13 @@ model Business {
   verificationDocuments      String?
   verificationNotes          String?
   whatsappNumber             String?
+  facebookUrl                String?
+  linkedInUrl                String?
+  youtubeUrl                 String?
+  tiktokUrl                  String?
+  pinterestUrl               String?
+  snapchatUrl                String?
+  telegramUrl                String?
   businessPurpose            String?
   dateOfIncorporation        String?
   industry                   String?

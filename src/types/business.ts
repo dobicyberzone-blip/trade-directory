@@ -58,6 +58,13 @@ export interface BusinessFormData {
   // Social Media
   twitterUrl?: string;
   instagramUrl?: string;
+  facebookUrl?: string;
+  linkedInUrl?: string;
+  youtubeUrl?: string;
+  tiktokUrl?: string;
+  pinterestUrl?: string;
+  snapchatUrl?: string;
+  telegramUrl?: string;
   
   // Location GPS
   coordinates?: string;
