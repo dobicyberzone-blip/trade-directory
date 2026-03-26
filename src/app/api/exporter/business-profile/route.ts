@@ -115,6 +115,20 @@ export async function POST(request: NextRequest) {
     // Extract certifications if provided
     const { certifications, ...businessData } = data;
 
+    // Check for duplicate business name (case-insensitive)
+    if (businessData.name) {
+      const nameTaken = await prisma.business.findFirst({
+        where: { name: { equals: businessData.name, mode: 'insensitive' } },
+        select: { id: true },
+      });
+      if (nameTaken) {
+        return NextResponse.json(
+          { error: `A business named "${businessData.name}" is already registered. Please use a unique business name.` },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+    }
+
     // Debug logging for the three fields of interest
 
     // Calculate profile completion

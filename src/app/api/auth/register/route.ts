@@ -91,6 +91,20 @@ export async function POST(request: NextRequest) {
     // Create business if role is EXPORTER and business name provided
     let business = null;
     if (validatedData.role === 'EXPORTER' && validatedData.businessName) {
+      // Check for duplicate business name (case-insensitive)
+      const existingBusiness = await prisma.business.findFirst({
+        where: { name: { equals: validatedData.businessName, mode: 'insensitive' } },
+        select: { id: true },
+      });
+      if (existingBusiness) {
+        // Roll back the user we just created
+        await prisma.user.delete({ where: { id: user.id } });
+        return NextResponse.json(
+          { error: `A business named "${validatedData.businessName}" is already registered. Please use a unique business name.` },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+
       const resolvedSector = validatedData.sector || validatedData.productCategory || 'General';
       const resolvedLocation = validatedData.city || validatedData.businessLocation || validatedData.county || '';
       const productServicesStr = Array.isArray(validatedData.productServices)
