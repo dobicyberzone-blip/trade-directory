@@ -20,12 +20,23 @@ export async function OPTIONS() {
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const industryId = searchParams.get('industryId');
+  const sectorId = searchParams.get('sectorId');
 
   try {
     const industryCount = await prisma.industry.count({ where: { isActive: true } });
 
     // If DB has data, serve from DB
     if (industryCount > 0) {
+      if (sectorId) {
+        // Return organizations for a specific sector
+        const organizations = await prisma.businessOrganization.findMany({
+          where: { sectorId, isActive: true },
+          orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+          select: { id: true, name: true },
+        });
+        return NextResponse.json({ organizations }, { headers: cors });
+      }
+
       if (industryId) {
         // Return sectors for a specific industry
         const sectors = await prisma.sector.findMany({
@@ -44,8 +55,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ industries, source: 'db' }, { headers: cors });
     }
 
-    // Fallback: return from constants
+    // Fallback: return from constants (no org fallback — orgs are DB-only)
     const industries = INDUSTRIES.map((name, i) => ({ id: name, name, sortOrder: i }));
+    if (sectorId) {
+      return NextResponse.json({ organizations: [], source: 'constants' }, { headers: cors });
+    }
     if (industryId) {
       const sectors = (SECTORS_BY_INDUSTRY[industryId] || []).map((name, i) => ({ id: name, name, sortOrder: i }));
       return NextResponse.json({ sectors, source: 'constants' }, { headers: cors });

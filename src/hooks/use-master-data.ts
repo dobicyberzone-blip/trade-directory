@@ -19,6 +19,8 @@ interface MasterSector   { id: string; name: string }
 interface MasterDataState {
   industries: MasterIndustry[];
   sectorsByIndustry: Record<string, string[]>;
+  /** Full sector objects keyed by industry name — needed to resolve sector ID from name */
+  sectorObjectsByIndustry: Record<string, MasterSector[]>;
   allSectors: string[];
   loading: boolean;
 }
@@ -58,12 +60,15 @@ function writeCache(data: Omit<MasterDataState, 'loading'>) {
 
 function constantsFallback(): Omit<MasterDataState, 'loading'> {
   const sectorsByIndustry: Record<string, string[]> = {};
+  const sectorObjectsByIndustry: Record<string, MasterSector[]> = {};
   for (const [ind, sectors] of Object.entries(SECTORS_BY_INDUSTRY)) {
     sectorsByIndustry[ind] = sectors;
+    sectorObjectsByIndustry[ind] = sectors.map(name => ({ id: name, name }));
   }
   return {
     industries: INDUSTRIES.map(name => ({ id: name, name })),
     sectorsByIndustry,
+    sectorObjectsByIndustry,
     allSectors: Object.values(SECTORS_BY_INDUSTRY).flat(),
   };
 }
@@ -91,20 +96,24 @@ export function useMasterData(): MasterDataState {
       const industries: MasterIndustry[] = iData.industries;
 
       const sectorsByIndustry: Record<string, string[]> = {};
+      const sectorObjectsByIndustry: Record<string, MasterSector[]> = {};
       await Promise.all(
         industries.map(async ind => {
           try {
             const sRes = await fetch(`/api/master-data?industryId=${encodeURIComponent(ind.id)}`);
             const sData = await sRes.json();
-            sectorsByIndustry[ind.name] = (sData.sectors || []).map((s: MasterSector) => s.name);
+            const sectors: MasterSector[] = sData.sectors || [];
+            sectorsByIndustry[ind.name] = sectors.map((s: MasterSector) => s.name);
+            sectorObjectsByIndustry[ind.name] = sectors;
           } catch {
             sectorsByIndustry[ind.name] = SECTORS_BY_INDUSTRY[ind.name] || [];
+            sectorObjectsByIndustry[ind.name] = (SECTORS_BY_INDUSTRY[ind.name] || []).map(name => ({ id: name, name }));
           }
         })
       );
 
       const allSectors = Object.values(sectorsByIndustry).flat();
-      const result = { industries, sectorsByIndustry, allSectors };
+      const result = { industries, sectorsByIndustry, sectorObjectsByIndustry, allSectors };
       setState({ ...result, loading: false });
       writeCache(result);
     } catch {

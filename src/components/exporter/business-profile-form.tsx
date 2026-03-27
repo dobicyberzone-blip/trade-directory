@@ -152,7 +152,10 @@ export function BusinessProfileForm({
   const [currentSection, setCurrentSection] = useState(0);
   const [completionPercentage, setCompletionPercentage] = useState(0);
   // Master data from DB (falls back to constants if DB empty)
-  const { industries: dbIndustries, sectorsByIndustry: dbSectorsByIndustry } = useMasterData();
+  const { industries: dbIndustries, sectorsByIndustry: dbSectorsByIndustry, sectorObjectsByIndustry: dbSectorObjectsByIndustry } = useMasterData();
+
+  // Organizations filtered by selected sector (populated after form is initialized)
+  const [orgOptions, setOrgOptions] = useState<string[]>([]);
   const [certifications, setCertifications] = useState<CertificationFormData[]>([]);
   const [isCertDialogOpen, setIsCertDialogOpen] = useState(false);
   const [editingCertIndex, setEditingCertIndex] = useState<number | null>(null);
@@ -274,6 +277,20 @@ export function BusinessProfileForm({
   // "Other" means user selected it and needs to type a custom value
   const STANDARD_BUSINESS_TYPES = BUSINESS_TYPES.filter(t => t !== 'Other');
   const typeOfBusinessIsCustom = typeOfBusinessVal !== '' && !STANDARD_BUSINESS_TYPES.includes(typeOfBusinessVal);
+
+  // Fetch organizations when sector changes
+  const watchedSector = form.watch('sector');
+  const watchedIndustry = form.watch('industry');
+  useEffect(() => {
+    const sectorName = watchedSector || '';
+    const industryName = watchedIndustry || '';
+    const sectorObj = (dbSectorObjectsByIndustry[industryName] || []).find(s => s.name === sectorName);
+    if (!sectorObj?.id) { setOrgOptions([]); return; }
+    fetch(`/api/master-data?sectorId=${encodeURIComponent(sectorObj.id)}`)
+      .then(r => r.json())
+      .then(d => setOrgOptions((d.organizations || []).map((o: { name: string }) => o.name)))
+      .catch(() => setOrgOptions([]));
+  }, [watchedSector, watchedIndustry, dbSectorObjectsByIndustry]);
 
   // Debounced autosave — fires 500ms after the user stops typing/changing fields
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -709,8 +726,9 @@ export function BusinessProfileForm({
                   value={form.watch('industry') || ''}
                   onChange={(value) => {
                     form.setValue('industry', value, { shouldDirty: true });
-                    // Clear sector when industry changes
+                    // Clear sector and organisation when industry changes
                     form.setValue('sector', '', { shouldDirty: true });
+                    form.setValue('businessUserOrganisation', '', { shouldDirty: true });
                   }}
                   placeholder="Select industry"
                 />
@@ -725,7 +743,11 @@ export function BusinessProfileForm({
                     <SearchableSelect
                       options={sectorList}
                       value={form.watch('sector') || ''}
-                      onChange={(value) => form.setValue('sector', value, { shouldDirty: true })}
+                      onChange={(value) => {
+                        form.setValue('sector', value, { shouldDirty: true });
+                        // Clear organisation when sector changes
+                        form.setValue('businessUserOrganisation', '', { shouldDirty: true });
+                      }}
                       placeholder={selectedIndustry ? 'Select sector' : 'Select an industry first'}
                     />
                   ) : (
@@ -774,13 +796,22 @@ export function BusinessProfileForm({
               </div>
 
               <div>
-                <Label htmlFor="businessUserOrganisation">Business User Organisation</Label>
-                <Input
-                  id="businessUserOrganisation"
-                  {...form.register('businessUserOrganisation')}
-                  placeholder="e.g., KAM, KNCCI"
-                  className="mt-1"
-                />
+                <Label htmlFor="businessUserOrganisation">Business Organisation</Label>
+                {orgOptions.length > 0 ? (
+                  <SearchableSelect
+                    options={orgOptions}
+                    value={form.watch('businessUserOrganisation') || ''}
+                    onChange={(value) => form.setValue('businessUserOrganisation', value, { shouldDirty: true })}
+                    placeholder="Select organisation"
+                  />
+                ) : (
+                  <Input
+                    id="businessUserOrganisation"
+                    {...form.register('businessUserOrganisation')}
+                    placeholder={watchedSector ? 'No organisations for this sector' : 'Select a sector first'}
+                    className="mt-1"
+                  />
+                )}
               </div>
             </div>
 
