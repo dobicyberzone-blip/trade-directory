@@ -33,6 +33,51 @@ export default function MasterDataPage() {
   const [filterIndustry, setFilterIndustry] = useState('');
   const [filterSector, setFilterSector] = useState('');
 
+  // Sort state per tab: field + direction
+  const [industrySort, setIndustrySort] = useState<{ field: string; dir: 'asc' | 'desc' }>({ field: 'sortOrder', dir: 'asc' });
+  const [sectorSort, setSectorSort] = useState<{ field: string; dir: 'asc' | 'desc' }>({ field: 'sortOrder', dir: 'asc' });
+  const [orgSort, setOrgSort] = useState<{ field: string; dir: 'asc' | 'desc' }>({ field: 'sortOrder', dir: 'asc' });
+
+  // Active filter per tab: 'all' | 'active' | 'inactive'
+  const [industryActiveFilter, setIndustryActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [sectorActiveFilter, setSectorActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [orgActiveFilter, setOrgActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
+
+  /** Toggle sort: same field flips dir, new field defaults to asc */
+  const toggleSort = (
+    current: { field: string; dir: 'asc' | 'desc' },
+    set: (s: { field: string; dir: 'asc' | 'desc' }) => void,
+    field: string
+  ) => {
+    set(current.field === field ? { field, dir: current.dir === 'asc' ? 'desc' : 'asc' } : { field, dir: 'asc' });
+  };
+
+  /** Sort icon indicator */
+  const SortIcon = ({ sort, field }: { sort: { field: string; dir: string }; field: string }) => (
+    <span style={{ marginLeft: 4, opacity: sort.field === field ? 1 : 0.3, fontSize: 11 }}>
+      {sort.field === field && sort.dir === 'desc' ? '▼' : '▲'}
+    </span>
+  );
+
+  /** Sortable header cell */
+  const SortCell = ({ label, field, sort, onSort, align = 'left' }: { label: string; field: string; sort: { field: string; dir: 'asc' | 'desc' }; onSort: (f: string) => void; align?: 'left' | 'center' }) => (
+    <TableCell align={align} sx={{ cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }} onClick={() => onSort(field)}>
+      {label}<SortIcon sort={sort} field={field} />
+    </TableCell>
+  );
+
+  /** Apply sort to an array */
+  function applySort<T extends Record<string, any>>(arr: T[], sort: { field: string; dir: 'asc' | 'desc' }): T[] {
+    return [...arr].sort((a, b) => {
+      // Support dot-notation for nested fields e.g. '_count.sectors'
+      const get = (obj: any, path: string) => path.split('.').reduce((o, k) => o?.[k], obj) ?? '';
+      const av = get(a, sort.field);
+      const bv = get(b, sort.field);
+      const cmp = typeof av === 'number' && typeof bv === 'number' ? av - bv : String(av).localeCompare(String(bv));
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
+  }
+
   // Pagination — 10 rows per page, one page state per tab
   const PAGE_SIZE = 10;
   const [industryPage, setIndustryPage] = useState(1);
@@ -121,16 +166,24 @@ export default function MasterDataPage() {
     return <Box p={3}><Typography color="error">Access Denied</Typography></Box>;
   }
 
-  const filteredIndustries = industries.filter(i => i.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredIndustries = industries
+    .filter(i => i.name.toLowerCase().includes(search.toLowerCase()))
+    .filter(i => industryActiveFilter === 'all' ? true : industryActiveFilter === 'active' ? i.isActive : !i.isActive);
   const filteredSectors = sectors
-    .filter(s => (!filterIndustry || s.industryId === filterIndustry) && s.name.toLowerCase().includes(search.toLowerCase()));
+    .filter(s => (!filterIndustry || s.industryId === filterIndustry) && s.name.toLowerCase().includes(search.toLowerCase()))
+    .filter(s => sectorActiveFilter === 'all' ? true : sectorActiveFilter === 'active' ? s.isActive : !s.isActive);
   const filteredOrgs = orgs
-    .filter(o => (!filterSector || o.sectorId === filterSector) && o.name.toLowerCase().includes(search.toLowerCase()));
+    .filter(o => (!filterSector || o.sectorId === filterSector) && o.name.toLowerCase().includes(search.toLowerCase()))
+    .filter(o => orgActiveFilter === 'all' ? true : orgActiveFilter === 'active' ? o.isActive : !o.isActive);
 
-  // Paginated slices
-  const pagedIndustries = filteredIndustries.slice((industryPage - 1) * PAGE_SIZE, industryPage * PAGE_SIZE);
-  const pagedSectors    = filteredSectors.slice((sectorPage - 1) * PAGE_SIZE, sectorPage * PAGE_SIZE);
-  const pagedOrgs       = filteredOrgs.slice((orgPage - 1) * PAGE_SIZE, orgPage * PAGE_SIZE);
+  // Sorted then paginated
+  const sortedIndustries = applySort(filteredIndustries, industrySort);
+  const sortedSectors    = applySort(filteredSectors, sectorSort);
+  const sortedOrgs       = applySort(filteredOrgs, orgSort);
+
+  const pagedIndustries = sortedIndustries.slice((industryPage - 1) * PAGE_SIZE, industryPage * PAGE_SIZE);
+  const pagedSectors    = sortedSectors.slice((sectorPage - 1) * PAGE_SIZE, sectorPage * PAGE_SIZE);
+  const pagedOrgs       = sortedOrgs.slice((orgPage - 1) * PAGE_SIZE, orgPage * PAGE_SIZE);
 
   const totalIndustryPages = Math.max(1, Math.ceil(filteredIndustries.length / PAGE_SIZE));
   const totalSectorPages   = Math.max(1, Math.ceil(filteredSectors.length / PAGE_SIZE));
@@ -206,18 +259,27 @@ export default function MasterDataPage() {
             {/* ── INDUSTRIES ── */}
             {tab === 0 && (
               <Box sx={{ p: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {(['all', 'active', 'inactive'] as const).map(f => (
+                      <Chip key={f} label={f.charAt(0).toUpperCase() + f.slice(1)} size="small"
+                        color={industryActiveFilter === f ? 'primary' : 'default'}
+                        variant={industryActiveFilter === f ? 'filled' : 'outlined'}
+                        onClick={() => { setIndustryActiveFilter(f); setIndustryPage(1); }}
+                        sx={{ cursor: 'pointer' }} />
+                    ))}
+                  </Box>
                   <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => openCreate('industry')}>Add Industry</Button>
                 </Box>
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Name</TableCell>
+                        <SortCell label="Name" field="name" sort={industrySort} onSort={f => { toggleSort(industrySort, setIndustrySort, f); setIndustryPage(1); }} />
                         <TableCell>Description</TableCell>
-                        <TableCell align="center">Sectors</TableCell>
-                        <TableCell align="center">Order</TableCell>
-                        <TableCell align="center">Active</TableCell>
+                        <SortCell label="Sectors" field="_count.sectors" sort={industrySort} onSort={f => { toggleSort(industrySort, setIndustrySort, f); setIndustryPage(1); }} align="center" />
+                        <SortCell label="Order" field="sortOrder" sort={industrySort} onSort={f => { toggleSort(industrySort, setIndustrySort, f); setIndustryPage(1); }} align="center" />
+                        <SortCell label="Active" field="isActive" sort={industrySort} onSort={f => { toggleSort(industrySort, setIndustrySort, f); setIndustryPage(1); }} align="center" />
                         <TableCell align="center">Actions</TableCell>
                       </TableRow>
                     </TableHead>
@@ -261,17 +323,27 @@ export default function MasterDataPage() {
                       {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                     </Select>
                   </FormControl>
-                  <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => openCreate('sector')} sx={{ ml: 'auto' }}>Add Sector</Button>                </Box>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {(['all', 'active', 'inactive'] as const).map(f => (
+                      <Chip key={f} label={f.charAt(0).toUpperCase() + f.slice(1)} size="small"
+                        color={sectorActiveFilter === f ? 'primary' : 'default'}
+                        variant={sectorActiveFilter === f ? 'filled' : 'outlined'}
+                        onClick={() => { setSectorActiveFilter(f); setSectorPage(1); }}
+                        sx={{ cursor: 'pointer' }} />
+                    ))}
+                  </Box>
+                  <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => openCreate('sector')} sx={{ ml: 'auto' }}>Add Sector</Button>
+                </Box>
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Industry</TableCell>
+                        <SortCell label="Name" field="name" sort={sectorSort} onSort={f => { toggleSort(sectorSort, setSectorSort, f); setSectorPage(1); }} />
+                        <SortCell label="Industry" field="industry.name" sort={sectorSort} onSort={f => { toggleSort(sectorSort, setSectorSort, f); setSectorPage(1); }} />
                         <TableCell>Description</TableCell>
-                        <TableCell align="center">Orgs</TableCell>
-                        <TableCell align="center">Order</TableCell>
-                        <TableCell align="center">Active</TableCell>
+                        <SortCell label="Orgs" field="_count.businessOrganizations" sort={sectorSort} onSort={f => { toggleSort(sectorSort, setSectorSort, f); setSectorPage(1); }} align="center" />
+                        <SortCell label="Order" field="sortOrder" sort={sectorSort} onSort={f => { toggleSort(sectorSort, setSectorSort, f); setSectorPage(1); }} align="center" />
+                        <SortCell label="Active" field="isActive" sort={sectorSort} onSort={f => { toggleSort(sectorSort, setSectorSort, f); setSectorPage(1); }} align="center" />
                         <TableCell align="center">Actions</TableCell>
                       </TableRow>
                     </TableHead>
@@ -324,18 +396,27 @@ export default function MasterDataPage() {
                       {sectors.filter(s => !filterIndustry || s.industryId === filterIndustry).map(s => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
                     </Select>
                   </FormControl>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {(['all', 'active', 'inactive'] as const).map(f => (
+                      <Chip key={f} label={f.charAt(0).toUpperCase() + f.slice(1)} size="small"
+                        color={orgActiveFilter === f ? 'primary' : 'default'}
+                        variant={orgActiveFilter === f ? 'filled' : 'outlined'}
+                        onClick={() => { setOrgActiveFilter(f); setOrgPage(1); }}
+                        sx={{ cursor: 'pointer' }} />
+                    ))}
+                  </Box>
                   <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => openCreate('organization')} sx={{ ml: 'auto' }}>Add Organization</Button>
                 </Box>
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Sector</TableCell>
-                        <TableCell>Industry</TableCell>
+                        <SortCell label="Name" field="name" sort={orgSort} onSort={f => { toggleSort(orgSort, setOrgSort, f); setOrgPage(1); }} />
+                        <SortCell label="Sector" field="sector.name" sort={orgSort} onSort={f => { toggleSort(orgSort, setOrgSort, f); setOrgPage(1); }} />
+                        <SortCell label="Industry" field="sector.industry.name" sort={orgSort} onSort={f => { toggleSort(orgSort, setOrgSort, f); setOrgPage(1); }} />
                         <TableCell>Description</TableCell>
-                        <TableCell align="center">Order</TableCell>
-                        <TableCell align="center">Active</TableCell>
+                        <SortCell label="Order" field="sortOrder" sort={orgSort} onSort={f => { toggleSort(orgSort, setOrgSort, f); setOrgPage(1); }} align="center" />
+                        <SortCell label="Active" field="isActive" sort={orgSort} onSort={f => { toggleSort(orgSort, setOrgSort, f); setOrgPage(1); }} align="center" />
                         <TableCell align="center">Actions</TableCell>
                       </TableRow>
                     </TableHead>
