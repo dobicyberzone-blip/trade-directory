@@ -189,7 +189,28 @@ export default function MasterDataPage() {
   const totalSectorPages   = Math.max(1, Math.ceil(filteredSectors.length / PAGE_SIZE));
   const totalOrgPages      = Math.max(1, Math.ceil(filteredOrgs.length / PAGE_SIZE));
 
-  /** Reusable pagination row */
+  /** Shared MenuProps matching the business-verification advanced filter style */
+  const filterMenuProps = {
+    PaperProps: {
+      sx: {
+        maxHeight: 400,
+        '& .MuiMenuItem-root': {
+          px: 2,
+          py: 1.5,
+          '&:hover': { backgroundColor: 'action.hover' },
+          '&.Mui-selected': {
+            backgroundColor: 'primary.light',
+            color: 'primary.main',
+            fontWeight: 600,
+            '&:hover': { backgroundColor: 'primary.light' },
+          },
+        },
+      },
+    },
+    anchorOrigin: { vertical: 'bottom' as const, horizontal: 'left' as const },
+    transformOrigin: { vertical: 'top' as const, horizontal: 'left' as const },
+    sx: { zIndex: 10000 },
+  };
   const PaginationRow = ({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) => {
     if (total <= 1) return null;
     return (
@@ -315,8 +336,8 @@ export default function MasterDataPage() {
                   <FormControl size="small" sx={{ minWidth: 220 }}>
                     <InputLabel>Filter by Industry</InputLabel>
                     <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setSectorPage(1); }}
-                      MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
-                      <MenuItem value="">All Industries</MenuItem>
+                      MenuProps={filterMenuProps}>
+                      <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>All Industries</MenuItem>
                       {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                     </Select>
                   </FormControl>
@@ -380,16 +401,16 @@ export default function MasterDataPage() {
                   <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by Industry</InputLabel>
                     <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setFilterSector(''); setOrgPage(1); }}
-                      MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
-                      <MenuItem value="">All Industries</MenuItem>
+                      MenuProps={filterMenuProps}>
+                      <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>All Industries</MenuItem>
                       {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                   <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by Sector</InputLabel>
                     <Select value={filterSector} label="Filter by Sector" onChange={e => { setFilterSector(e.target.value); setOrgPage(1); }}
-                      MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
-                      <MenuItem value="">All Sectors</MenuItem>
+                      MenuProps={filterMenuProps}>
+                      <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>All Sectors</MenuItem>
                       {sectors.filter(s => !filterIndustry || s.industryId === filterIndustry).map(s => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
                     </Select>
                   </FormControl>
@@ -469,7 +490,7 @@ export default function MasterDataPage() {
             <FormControl fullWidth size="small" required>
               <InputLabel>Industry *</InputLabel>
               <Select value={form.industryId} label="Industry *" onChange={e => setForm(f => ({ ...f, industryId: e.target.value }))}
-                MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
+                MenuProps={filterMenuProps}>
                 {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
               </Select>
             </FormControl>
@@ -479,7 +500,7 @@ export default function MasterDataPage() {
               <FormControl fullWidth size="small">
                 <InputLabel>Industry (filter)</InputLabel>
                 <Select value={filterIndustry} label="Industry (filter)" onChange={e => { setFilterIndustry(e.target.value); setForm(f => ({ ...f, sectorId: '' })); }}
-                  MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
+                  MenuProps={filterMenuProps}>
                   <MenuItem value="">All</MenuItem>
                   {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                 </Select>
@@ -487,7 +508,7 @@ export default function MasterDataPage() {
               <FormControl fullWidth size="small" required>
                 <InputLabel>Sector *</InputLabel>
                 <Select value={form.sectorId} label="Sector *" onChange={e => setForm(f => ({ ...f, sectorId: e.target.value }))}
-                  MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
+                  MenuProps={filterMenuProps}>
                   {sectors.filter(s => !filterIndustry || s.industryId === filterIndustry).map(s => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
                 </Select>
               </FormControl>
