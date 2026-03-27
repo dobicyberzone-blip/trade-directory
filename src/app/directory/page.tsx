@@ -433,7 +433,7 @@ function PublicDirectoryView() {
 
   // Fetch a larger set once to populate filter options
   useEffect(() => {
-    fetch('/api/businesses?verified=true&limit=500')
+    fetch('/api/businesses?limit=500')
       .then(r => r.json())
       .then(d => setAllBusinesses(d.businesses || []))
       .catch(() => {});
@@ -456,7 +456,7 @@ function PublicDirectoryView() {
   const fetchPublic = useCallback(async () => {
     setIsLoading(true);
     try {
-      const params = new URLSearchParams({ verified: 'true', page: String(currentPage - 1), limit: String(PER_PAGE) });
+      const params = new URLSearchParams({ page: String(currentPage - 1), limit: String(PER_PAGE) });
       if (searchTerm) params.set('search', searchTerm);
       if (sectorFilter) params.set('sector', sectorFilter);
       const res = await fetch(`/api/businesses?${params}`);
