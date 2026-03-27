@@ -235,9 +235,9 @@ export function BusinessProfileForm({
       sector: registrationData?.sector || '',
       industry: registrationData?.industry || '',
       serviceOffering: registrationData?.serviceOffering || '',
-      goods: registrationData?.goods || '',
-      services: registrationData?.services || '',
-      subSector: registrationData?.subSector || '',
+      goods: initialData?.goods || registrationData?.goods || '',
+      services: initialData?.services || registrationData?.services || '',
+      subSector: initialData?.subSector || registrationData?.subSector || '',
       businessUserOrganisation: '',
       registrationCertificateUrl: '',
       pinCertificateUrl: '',
@@ -271,7 +271,7 @@ export function BusinessProfileForm({
       currentExportMarkets: [],
       productionCapacityPast3: '',
       companyStory: '',
-      ...initialData
+      ...initialData,
     }
   });
 
@@ -286,10 +286,16 @@ export function BusinessProfileForm({
   const watchedIndustry = form.watch('industry');
   useEffect(() => {
     const sectorName = watchedSector || '';
+    if (!sectorName) { setOrgOptions([]); return; }
+
+    // Try by sector name directly (works even before dbSectorObjectsByIndustry loads)
     const industryName = watchedIndustry || '';
     const sectorObj = (dbSectorObjectsByIndustry[industryName] || []).find(s => s.name === sectorName);
-    if (!sectorObj?.id) { setOrgOptions([]); return; }
-    fetch(`/api/master-data?sectorId=${encodeURIComponent(sectorObj.id)}`)
+    const url = sectorObj?.id
+      ? `/api/master-data?sectorId=${encodeURIComponent(sectorObj.id)}`
+      : `/api/master-data?sectorName=${encodeURIComponent(sectorName)}`;
+
+    fetch(url)
       .then(r => r.json())
       .then(d => setOrgOptions((d.organizations || []).map((o: { name: string }) => o.name)))
       .catch(() => setOrgOptions([]));
