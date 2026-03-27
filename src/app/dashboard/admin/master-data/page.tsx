@@ -255,7 +255,8 @@ export default function MasterDataPage() {
                 <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', flexWrap: 'wrap' }}>
                   <FormControl size="small" sx={{ minWidth: 220 }}>
                     <InputLabel>Filter by Industry</InputLabel>
-                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setSectorPage(1); }}>
+                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setSectorPage(1); }}
+                      MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
                       <MenuItem value="">All Industries</MenuItem>
                       {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                     </Select>
@@ -309,14 +310,16 @@ export default function MasterDataPage() {
                 <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', flexWrap: 'wrap' }}>
                   <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by Industry</InputLabel>
-                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setFilterSector(''); setOrgPage(1); }}>
+                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setFilterSector(''); setOrgPage(1); }}
+                      MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
                       <MenuItem value="">All Industries</MenuItem>
                       {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                   <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by Sector</InputLabel>
-                    <Select value={filterSector} label="Filter by Sector" onChange={e => { setFilterSector(e.target.value); setOrgPage(1); }}>
+                    <Select value={filterSector} label="Filter by Sector" onChange={e => { setFilterSector(e.target.value); setOrgPage(1); }}
+                      MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
                       <MenuItem value="">All Sectors</MenuItem>
                       {sectors.filter(s => !filterIndustry || s.industryId === filterIndustry).map(s => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
                     </Select>
@@ -369,14 +372,26 @@ export default function MasterDataPage() {
       </Paper>
 
       {/* ── Create / Edit Dialog ── */}
-      <Dialog open={dialog.open} onClose={() => setDialog({ open: false, type: 'industry' })} maxWidth="sm" fullWidth sx={{ zIndex: 9999 }}>
+      <Dialog
+        open={dialog.open}
+        onClose={() => setDialog({ open: false, type: 'industry' })}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': { m: { xs: 2, sm: 3 }, maxHeight: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 64px)' }, zIndex: 9999 },
+          '& .MuiBackdrop-root': { zIndex: 9998 },
+          zIndex: 9998,
+        }}
+        slotProps={{ backdrop: { sx: { zIndex: 9998 } } }}
+      >
         <DialogTitle>{dialog.item ? 'Edit' : 'Add'} {dialog.type === 'industry' ? 'Industry' : dialog.type === 'sector' ? 'Sector' : 'Business Organization'}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
           {/* Parent selectors */}
           {dialog.type === 'sector' && (
             <FormControl fullWidth size="small" required>
               <InputLabel>Industry *</InputLabel>
-              <Select value={form.industryId} label="Industry *" onChange={e => setForm(f => ({ ...f, industryId: e.target.value }))}>
+              <Select value={form.industryId} label="Industry *" onChange={e => setForm(f => ({ ...f, industryId: e.target.value }))}
+                MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
                 {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
               </Select>
             </FormControl>
@@ -385,14 +400,16 @@ export default function MasterDataPage() {
             <>
               <FormControl fullWidth size="small">
                 <InputLabel>Industry (filter)</InputLabel>
-                <Select value={filterIndustry} label="Industry (filter)" onChange={e => { setFilterIndustry(e.target.value); setForm(f => ({ ...f, sectorId: '' })); }}>
+                <Select value={filterIndustry} label="Industry (filter)" onChange={e => { setFilterIndustry(e.target.value); setForm(f => ({ ...f, sectorId: '' })); }}
+                  MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
                   <MenuItem value="">All</MenuItem>
                   {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                 </Select>
               </FormControl>
               <FormControl fullWidth size="small" required>
                 <InputLabel>Sector *</InputLabel>
-                <Select value={form.sectorId} label="Sector *" onChange={e => setForm(f => ({ ...f, sectorId: e.target.value }))}>
+                <Select value={form.sectorId} label="Sector *" onChange={e => setForm(f => ({ ...f, sectorId: e.target.value }))}
+                  MenuProps={{ sx: { zIndex: 10000 }, disablePortal: false }}>
                   {sectors.filter(s => !filterIndustry || s.industryId === filterIndustry).map(s => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
                 </Select>
               </FormControl>
@@ -410,7 +427,18 @@ export default function MasterDataPage() {
       </Dialog>
 
       {/* ── Delete Confirm ── */}
-      <Dialog open={deleteConfirm.open} onClose={() => setDeleteConfirm({ open: false, type: 'industry' })} maxWidth="xs" fullWidth sx={{ zIndex: 9999 }}>
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, type: 'industry' })}
+        maxWidth="xs"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': { m: { xs: 2, sm: 3 }, maxHeight: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 64px)' }, zIndex: 9999 },
+          '& .MuiBackdrop-root': { zIndex: 9998 },
+          zIndex: 9998,
+        }}
+        slotProps={{ backdrop: { sx: { zIndex: 9998 } } }}
+      >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>
