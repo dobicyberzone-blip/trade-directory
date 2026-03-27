@@ -2,95 +2,80 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
-interface DropdownPortalProps {
-  anchorRef: React.RefObject<HTMLElement>;
-  onClose: () => void;
-  children: React.ReactNode;
+export interface SelectOption {
+  value: string;
+  label: string;
 }
 
-/** Renders children into document.body, positioned below the anchor element. */
-function DropdownPortal({ anchorRef, onClose, children }: DropdownPortalProps) {
+interface SearchableSelectProps {
+  options: string[] | SelectOption[];
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  label?: string;
+}
+
+/** Normalise string[] or SelectOption[] to SelectOption[] */
+function toOptions(raw: string[] | SelectOption[]): SelectOption[] {
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+  if (typeof raw[0] === 'string') return (raw as string[]).map(s => ({ value: s, label: s }));
+  return raw as SelectOption[];
+}
+
+export function SearchableSelect({ options, value, onChange, placeholder, label }: SearchableSelectProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [otherValue, setOtherValue] = useState('');
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const normalised = toOptions(options);
+  const baseOptions = normalised.filter(o => o.value !== 'Other');
+  const allOptions = normalised.some(o => o.value === 'Other') ? [...baseOptions, { value: 'Other', label: 'Other' }] : baseOptions;
+  const filtered = allOptions.filter(o => o.label.toLowerCase().includes(search.toLowerCase()));
+
+  const isOther = value && !normalised.some(o => o.value === value) && value !== 'Other';
+  const displayValue = isOther ? `Other: ${value}` : (normalised.find(o => o.value === value)?.label ?? value);
+
+  useEffect(() => { if (isOther) setOtherValue(value); }, []);
 
   const reposition = useCallback(() => {
-    if (!anchorRef.current) return;
-    const r = anchorRef.current.getBoundingClientRect();
-    setCoords({
-      top: r.bottom + window.scrollY + 4,
-      left: r.left + window.scrollX,
-      width: r.width,
-    });
-  }, [anchorRef]);
+    if (!btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setCoords({ top: r.bottom + window.scrollY + 4, left: r.left + window.scrollX, width: r.width });
+  }, []);
 
   useEffect(() => {
-    reposition();
+    if (open) reposition();
     window.addEventListener('resize', reposition);
     window.addEventListener('scroll', reposition, true);
     return () => {
       window.removeEventListener('resize', reposition);
       window.removeEventListener('scroll', reposition, true);
     };
-  }, [reposition]);
+  }, [open, reposition]);
 
+  // Close on outside click
   useEffect(() => {
+    if (!open) return;
     function handleClick(e: MouseEvent) {
-      if (anchorRef.current && !anchorRef.current.contains(e.target as Node)) {
-        onClose();
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [anchorRef, onClose]);
-
-  if (typeof document === 'undefined') return null;
-
-  return createPortal(
-    <div
-      style={{ position: 'absolute', top: coords.top, left: coords.left, width: coords.width, zIndex: 9999 }}
-    >
-      {children}
-    </div>,
-    document.body
-  );
-}
-
-export function SearchableSelect({
-  options,
-  value,
-  onChange,
-  placeholder,
-}: {
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [otherValue, setOtherValue] = useState('');
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const safeOptions: string[] = Array.isArray(options) ? options : [];
-  const isOther = value && !safeOptions.includes(value) && value !== 'Other';
-
-  useEffect(() => {
-    if (isOther) setOtherValue(value);
-  }, []);
-
-  const baseOptions = safeOptions.filter(o => o !== 'Other');
-  const allOptions = safeOptions.some(o => o === 'Other') ? [...baseOptions, 'Other'] : baseOptions;
-  const filtered = allOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()));
-
-  const displayValue = isOther ? `Other: ${value}` : value;
+  }, [open]);
 
   return (
     <div className="relative mt-1" ref={wrapperRef}>
+      {/* Trigger button */}
       <button
-        ref={buttonRef}
+        ref={btnRef}
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="flex items-center justify-between w-full h-10 px-3 border border-input rounded-md bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        className="flex items-center justify-between w-full h-12 px-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
         <span className={value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}>
           {displayValue || placeholder}
@@ -100,59 +85,61 @@ export function SearchableSelect({
         </svg>
       </button>
 
-      {open && (
-        <DropdownPortal anchorRef={buttonRef as React.RefObject<HTMLElement>} onClose={() => setOpen(false)}>
-          <div className="bg-white dark:bg-gray-800 rounded-md shadow-xl border dark:border-gray-700 max-h-64 overflow-hidden flex flex-col">
+      {/* Portal dropdown */}
+      {open && typeof document !== 'undefined' && createPortal(
+        <div style={{ position: 'absolute', top: coords.top, left: coords.left, width: coords.width, zIndex: 9999 }}>
+          <div className="bg-white dark:bg-gray-800 rounded-md shadow-xl border dark:border-gray-700 max-h-72 overflow-hidden flex flex-col">
             <div className="p-2 border-b dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0">
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={`Search ${label ?? ''}...`}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                onChange={e => setSearch(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 autoFocus
               />
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 px-1">{filtered.length} of {allOptions.length}</p>
             </div>
             <div className="overflow-y-auto flex-1">
-              {filtered.map(option => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => {
-                    if (option === 'Other') {
-                      onChange('Other');
-                    } else {
-                      onChange(option);
-                      setOtherValue('');
-                    }
-                    setOpen(false);
-                    setSearch('');
-                  }}
-                  className={`w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between ${(value === option || (option === 'Other' && isOther)) ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium' : 'text-gray-900 dark:text-gray-100'}`}
-                >
-                  <span>{option}</span>
-                  {(value === option || (option === 'Other' && isOther)) && <span className="text-green-600 dark:text-green-400">✓</span>}
-                </button>
-              ))}
+              {filtered.map(option => {
+                const selected = value === option.value || (option.value === 'Other' && isOther);
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      if (option.value !== 'Other') setOtherValue('');
+                      onChange(option.value);
+                      setOpen(false);
+                      setSearch('');
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between ${selected ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium' : 'text-gray-900 dark:text-gray-100'}`}
+                  >
+                    <span>{option.label}</span>
+                    {selected && <span className="text-green-600 dark:text-green-400">✓</span>}
+                  </button>
+                );
+              })}
               {filtered.length === 0 && (
                 <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">No results found.</div>
               )}
             </div>
           </div>
-        </DropdownPortal>
+        </div>,
+        document.body
       )}
 
+      {/* "Other" free-text input */}
       {(value === 'Other' || isOther) && (
         <input
           type="text"
           placeholder="Please specify..."
           value={otherValue}
-          onChange={(e) => {
+          onChange={e => {
             setOtherValue(e.target.value);
             if (e.target.value.trim()) onChange(e.target.value.trim());
           }}
-          className="mt-2 w-full h-10 px-3 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          className="mt-2 w-full h-10 px-3 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         />
       )}
     </div>
