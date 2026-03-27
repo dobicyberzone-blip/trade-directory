@@ -202,6 +202,14 @@ export function DocumentPreviewDialog({
     services: business?.services || null,
     subSector: business?.subSector || null,
     typeOfBusiness: business?.typeOfBusiness || business?.legalStructure || 'N/A',
+    // Social media
+    facebookUrl: business?.facebookUrl || null,
+    linkedInUrl: business?.linkedInUrl || null,
+    youtubeUrl: business?.youtubeUrl || null,
+    tiktokUrl: business?.tiktokUrl || null,
+    pinterestUrl: business?.pinterestUrl || null,
+    snapchatUrl: business?.snapchatUrl || null,
+    telegramUrl: business?.telegramUrl || null,
   };
 
   return (
@@ -301,12 +309,6 @@ export function DocumentPreviewDialog({
                     <span className="font-medium truncate">{businessData.productHsCode}</span>
                   </div>
                 )}
-                {businessData.serviceOffering && (
-                  <div className="flex gap-1">
-                    <span className="text-gray-500 dark:text-gray-400 shrink-0">Service Offering:</span>
-                    <span className="font-medium truncate">{businessData.serviceOffering}</span>
-                  </div>
-                )}
                 {businessData.subSector && (
                   <div className="flex gap-1">
                     <span className="text-gray-500 dark:text-gray-400 shrink-0">Sub-sector:</span>
@@ -403,21 +405,36 @@ export function DocumentPreviewDialog({
             </div>
 
             {/* Social Media */}
-            {(businessData.instagramUrl || businessData.twitterUrl) && (
+            {(businessData.instagramUrl || businessData.twitterUrl || businessData.facebookUrl || businessData.linkedInUrl || businessData.youtubeUrl || businessData.tiktokUrl || businessData.pinterestUrl || businessData.snapchatUrl || businessData.telegramUrl) && (
               <div className="bg-gray-50 dark:bg-gray-800 rounded p-2 sm:p-2.5">
                 <h3 className="font-semibold mb-1.5 text-xs sm:text-sm">Social Media</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-1 sm:gap-y-1.5 text-[10px] sm:text-xs">
-                  {businessData.instagramUrl && (
-                    <div className="flex gap-1">
-                      <span className="text-gray-500 dark:text-gray-400 shrink-0">Instagram:</span>
-                      <span className="font-medium truncate">{businessData.instagramUrl}</span>
-                    </div>
-                  )}
                   {businessData.twitterUrl && (
-                    <div className="flex gap-1">
-                      <span className="text-gray-500 dark:text-gray-400 shrink-0">Twitter:</span>
-                      <span className="font-medium truncate">{businessData.twitterUrl}</span>
-                    </div>
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">Twitter/X:</span><span className="font-medium truncate">{businessData.twitterUrl}</span></div>
+                  )}
+                  {businessData.instagramUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">Instagram:</span><span className="font-medium truncate">{businessData.instagramUrl}</span></div>
+                  )}
+                  {businessData.facebookUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">Facebook:</span><span className="font-medium truncate">{businessData.facebookUrl}</span></div>
+                  )}
+                  {businessData.linkedInUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">LinkedIn:</span><span className="font-medium truncate">{businessData.linkedInUrl}</span></div>
+                  )}
+                  {businessData.youtubeUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">YouTube:</span><span className="font-medium truncate">{businessData.youtubeUrl}</span></div>
+                  )}
+                  {businessData.tiktokUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">TikTok:</span><span className="font-medium truncate">{businessData.tiktokUrl}</span></div>
+                  )}
+                  {businessData.pinterestUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">Pinterest:</span><span className="font-medium truncate">{businessData.pinterestUrl}</span></div>
+                  )}
+                  {businessData.snapchatUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">Snapchat:</span><span className="font-medium truncate">{businessData.snapchatUrl}</span></div>
+                  )}
+                  {businessData.telegramUrl && (
+                    <div className="flex gap-1"><span className="text-gray-500 dark:text-gray-400 shrink-0">Telegram:</span><span className="font-medium truncate">{businessData.telegramUrl}</span></div>
                   )}
                 </div>
               </div>
