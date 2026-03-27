@@ -29,8 +29,10 @@ import {
   PublishedWithChanges,
   UnpublishedOutlined,
   DeleteForever,
+  Email,
 } from '@mui/icons-material';
 import { toast } from '@/hooks/use-toast';
+import { AdminEmailDialog } from '@/components/admin/admin-email-dialog';
 import { ALL_SECTORS, COUNTIES, RATING_FILTERS } from '@/lib/constants';
 
 export default function BusinessVerificationPage() {
@@ -69,6 +71,7 @@ export default function BusinessVerificationPage() {
   const [availableSectors, setAvailableSectors] = useState<string[]>([]);
   const [featureConfirmOpen, setFeatureConfirmOpen] = useState(false);
   const [businessToFeature, setBusinessToFeature] = useState<string | null>(null);
+  const [emailDialogBiz, setEmailDialogBiz] = useState<{ email: string; name: string } | null>(null);
   const [hardDeleteConfirmOpen, setHardDeleteConfirmOpen] = useState(false);
   const [businessToHardDelete, setBusinessToHardDelete] = useState<string | null>(null);
 
@@ -313,12 +316,19 @@ export default function BusinessVerificationPage() {
               <IconButton 
                 size="small" 
                 color="warning"
+                disabled={row?.verificationStatus !== 'VERIFIED'}
                 onClick={() => {
                   setBusinessToFeature(row.id);
                   setFeatureConfirmOpen(true);
                 }}
+                sx={{ opacity: row?.verificationStatus !== 'VERIFIED' ? 0.3 : 1 }}
               >
                 {row.featured ? <Star sx={{ fontSize: 18 }} /> : <StarBorder sx={{ fontSize: 18 }} />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={`Send email to ${row.contactEmail || row.companyEmail || 'owner'}`}>
+              <IconButton size="small" color="info" onClick={() => setEmailDialogBiz({ email: row.contactEmail || row.companyEmail || '', name: row.name })}>
+                <Email sx={{ fontSize: 18 }} />
               </IconButton>
             </Tooltip>
             {(row?.verificationStatus === 'PENDING' || row?.verificationStatus === 'REJECTED') && (
@@ -1716,6 +1726,16 @@ export default function BusinessVerificationPage() {
             </Button>
           </DialogActions>
         </Dialog>
+      )}
+
+      {/* Admin Email Dialog */}
+      {emailDialogBiz && (
+        <AdminEmailDialog
+          open={!!emailDialogBiz}
+          onClose={() => setEmailDialogBiz(null)}
+          recipientEmail={emailDialogBiz.email}
+          recipientName={emailDialogBiz.name}
+        />
       )}
     </Box>
   );

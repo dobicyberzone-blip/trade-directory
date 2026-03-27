@@ -40,11 +40,13 @@ import {
   FilterList,
   Shield,
   Block,
-  LockOpen
+  LockOpen,
+  Email as EmailIcon,
 } from '@mui/icons-material';
 
 import { UserDetailsDialog } from '@/components/admin/user-details-dialog';
 import { CreateUserDialog } from '@/components/admin/create-user-dialog';
+import { AdminEmailDialog } from '@/components/admin/admin-email-dialog';
 import { toast } from '@/hooks/use-toast';
 
 export default function UserManagementPage() {
@@ -65,6 +67,7 @@ export default function UserManagementPage() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [emailDialogUser, setEmailDialogUser] = useState<{ email: string; name: string } | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
@@ -257,6 +260,11 @@ export default function UserManagementPage() {
               </IconButton>
             </Tooltip>
           )}
+          <Tooltip title={`Send email to ${params.row.email}`}>
+            <IconButton size="small" color="info" onClick={() => setEmailDialogUser({ email: params.row.email, name: `${params.row.firstName} ${params.row.lastName}`.trim() })}>
+              <EmailIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },
@@ -969,6 +977,16 @@ export default function UserManagementPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Admin Email Dialog */}
+      {emailDialogUser && (
+        <AdminEmailDialog
+          open={!!emailDialogUser}
+          onClose={() => setEmailDialogUser(null)}
+          recipientEmail={emailDialogUser.email}
+          recipientName={emailDialogUser.name}
+        />
+      )}
     </Box>
   );
 }
