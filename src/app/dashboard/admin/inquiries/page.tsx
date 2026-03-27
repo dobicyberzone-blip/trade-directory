@@ -71,6 +71,17 @@ export default function AdminInquiriesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
+  const [sort, setSort] = useState<{ field: string; dir: 'asc' | 'desc' }>({ field: 'createdAt', dir: 'desc' });
+
+  const toggleSort = (field: string) => {
+    setSort(s => s.field === field ? { field, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { field, dir: 'asc' });
+  };
+  const SortIcon = ({ field }: { field: string }) => (
+    <span style={{ marginLeft: 4, opacity: sort.field === field ? 1 : 0.3, fontSize: 11 }}>
+      {sort.field === field && sort.dir === 'desc' ? '▼' : '▲'}
+    </span>
+  );
+  const thStyle = { cursor: 'pointer', userSelect: 'none' as const, whiteSpace: 'nowrap' as const };
 
   const fetchInquiries = async () => {
     try {
@@ -154,13 +165,20 @@ export default function AdminInquiriesPage() {
     fetchInquiries();
   }, []);
 
-  const filteredInquiries = inquiries.filter(inquiry => {
-    const matchesSearch = inquiry.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          inquiry.senderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          inquiry.recipientBusiness.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredInquiries = inquiries
+    .filter(inquiry => {
+      const matchesSearch = inquiry.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            inquiry.senderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            inquiry.recipientBusiness.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      const av = (a as any)[sort.field] ?? '';
+      const bv = (b as any)[sort.field] ?? '';
+      const cmp = String(av).localeCompare(String(bv));
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
 
   const inquiryCounts = {
     total: inquiries.length,
@@ -315,12 +333,12 @@ export default function AdminInquiriesPage() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Sender</TableCell>
-              <TableCell>Subject</TableCell>
-              <TableCell>Recipient Business</TableCell>
-              <TableCell>Product</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Date</TableCell>
+              <TableCell sx={thStyle} onClick={() => toggleSort('senderName')}>Sender<SortIcon field="senderName" /></TableCell>
+              <TableCell sx={thStyle} onClick={() => toggleSort('subject')}>Subject<SortIcon field="subject" /></TableCell>
+              <TableCell sx={thStyle} onClick={() => toggleSort('recipientBusiness')}>Recipient Business<SortIcon field="recipientBusiness" /></TableCell>
+              <TableCell sx={thStyle} onClick={() => toggleSort('productName')}>Product<SortIcon field="productName" /></TableCell>
+              <TableCell sx={thStyle} onClick={() => toggleSort('status')}>Status<SortIcon field="status" /></TableCell>
+              <TableCell sx={thStyle} onClick={() => toggleSort('createdAt')}>Date<SortIcon field="createdAt" /></TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>

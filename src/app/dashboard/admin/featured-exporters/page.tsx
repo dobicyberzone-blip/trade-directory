@@ -45,6 +45,19 @@ export default function FeaturedExportersPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [featuredIds, setFeaturedIds] = useState<string[]>([]);
+  const [verificationFilter, setVerificationFilter] = useState<'all' | 'VERIFIED' | 'PENDING'>('all');
+  const [featuredFilter, setFeaturedFilter] = useState<'all' | 'featured' | 'unfeatured'>('all');
+  const [sort, setSort] = useState<{ field: string; dir: 'asc' | 'desc' }>({ field: 'featured', dir: 'desc' });
+
+  const toggleSort = (field: string) => {
+    setSort(s => s.field === field ? { field, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { field, dir: 'asc' });
+  };
+  const SortIcon = ({ field }: { field: string }) => (
+    <span style={{ marginLeft: 4, opacity: sort.field === field ? 1 : 0.3, fontSize: 11, color: 'white' }}>
+      {sort.field === field && sort.dir === 'desc' ? '▼' : '▲'}
+    </span>
+  );
+  const thStyle = { cursor: 'pointer', userSelect: 'none' as const, color: 'white', fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: { xs: 1.5, sm: 2 }, whiteSpace: 'nowrap' as const };
 
   useEffect(() => {
     loadData();
@@ -132,18 +145,23 @@ export default function FeaturedExportersPage() {
 
   const filteredBusinesses = businesses.filter(business => {
     const searchLower = searchTerm.toLowerCase();
-    return (
-      business.name.toLowerCase().includes(searchLower) ||
+    const matchesSearch = business.name.toLowerCase().includes(searchLower) ||
       business.location.toLowerCase().includes(searchLower) ||
-      business.sector.toLowerCase().includes(searchLower)
-    );
+      business.sector.toLowerCase().includes(searchLower);
+    const matchesVerification = verificationFilter === 'all' || business.verificationStatus === verificationFilter;
+    const matchesFeatured = featuredFilter === 'all' ||
+      (featuredFilter === 'featured' ? business.featured : !business.featured);
+    return matchesSearch && matchesVerification && matchesFeatured;
   });
 
-  // Sort: featured first, then by name
+  // Sort by selected field
   const sortedBusinesses = [...filteredBusinesses].sort((a, b) => {
-    if (a.featured && !b.featured) return -1;
-    if (!a.featured && b.featured) return 1;
-    return a.name.localeCompare(b.name);
+    const av = (a as any)[sort.field] ?? '';
+    const bv = (b as any)[sort.field] ?? '';
+    const cmp = typeof av === 'boolean'
+      ? (av === bv ? 0 : av ? -1 : 1)
+      : String(av).localeCompare(String(bv));
+    return sort.dir === 'asc' ? cmp : -cmp;
   });
 
   if (!user || user.role !== 'ADMIN') {
@@ -236,6 +254,24 @@ export default function FeaturedExportersPage() {
         />
       </Box>
 
+      {/* Filters */}
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>Verification:</Typography>
+        {(['all', 'VERIFIED', 'PENDING'] as const).map(f => (
+          <Chip key={f} label={f === 'all' ? 'All' : f} size="small"
+            color={verificationFilter === f ? 'primary' : 'default'}
+            variant={verificationFilter === f ? 'filled' : 'outlined'}
+            onClick={() => setVerificationFilter(f)} sx={{ cursor: 'pointer' }} />
+        ))}
+        <Typography variant="caption" color="text.secondary" sx={{ ml: 2, mr: 1 }}>Featured:</Typography>
+        {(['all', 'featured', 'unfeatured'] as const).map(f => (
+          <Chip key={f} label={f.charAt(0).toUpperCase() + f.slice(1)} size="small"
+            color={featuredFilter === f ? 'success' : 'default'}
+            variant={featuredFilter === f ? 'filled' : 'outlined'}
+            onClick={() => setFeaturedFilter(f)} sx={{ cursor: 'pointer' }} />
+        ))}
+      </Box>
+
       {/* Table */}
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
@@ -255,38 +291,11 @@ export default function FeaturedExportersPage() {
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: 'primary.main' }}>
-                <TableCell sx={{ 
-                  color: 'white', 
-                  fontWeight: 600,
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  py: { xs: 1.5, sm: 2 }
-                }}>Business</TableCell>
-                <TableCell sx={{ 
-                  color: 'white', 
-                  fontWeight: 600,
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  py: { xs: 1.5, sm: 2 },
-                  display: { xs: 'none', sm: 'table-cell' }
-                }}>Location</TableCell>
-                <TableCell sx={{ 
-                  color: 'white', 
-                  fontWeight: 600,
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  py: { xs: 1.5, sm: 2 }
-                }}>Sector</TableCell>
-                <TableCell sx={{ 
-                  color: 'white', 
-                  fontWeight: 600,
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  py: { xs: 1.5, sm: 2 },
-                  display: { xs: 'none', md: 'table-cell' }
-                }}>Status</TableCell>
-                <TableCell sx={{ 
-                  color: 'white', 
-                  fontWeight: 600,
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  py: { xs: 1.5, sm: 2 }
-                }} align="center">Featured</TableCell>
+                <TableCell sx={thStyle} onClick={() => toggleSort('name')}>Business<SortIcon field="name" /></TableCell>
+                <TableCell sx={{ ...thStyle, display: { xs: 'none', sm: 'table-cell' } }} onClick={() => toggleSort('location')}>Location<SortIcon field="location" /></TableCell>
+                <TableCell sx={thStyle} onClick={() => toggleSort('sector')}>Sector<SortIcon field="sector" /></TableCell>
+                <TableCell sx={{ ...thStyle, display: { xs: 'none', md: 'table-cell' } }} onClick={() => toggleSort('verificationStatus')}>Status<SortIcon field="verificationStatus" /></TableCell>
+                <TableCell sx={{ ...thStyle, textAlign: 'center' }} onClick={() => toggleSort('featured')}>Featured<SortIcon field="featured" /></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
