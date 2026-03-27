@@ -39,7 +39,6 @@ const superAdminMenuItems: MenuItem[] = [
       { id: 'admin-business-verifications', title: 'Manage Businesses', type: 'item', icon: 'building-check', url: '/dashboard/admin/business-verification' },
       { id: 'admin-products', title: 'Manage Products', type: 'item', icon: 'package-check', url: '/dashboard/admin/products-management' },
       { id: 'admin-ratings', title: 'Manage Ratings', type: 'item', icon: 'star', url: '/dashboard/admin/ratings' },
-      { id: 'admin-featured-exporters', title: 'Featured Exporters', type: 'item', icon: 'trophy', url: '/dashboard/admin/featured-exporters' },
     ],
   },
   {
