@@ -548,7 +548,7 @@ export function BusinessProfileForm({
 
     toast({
       title: editingCertIndex !== null ? 'Certification Updated' : 'Certification Added',
-      description: 'Certification saved. Click "Save Profile" to finalize.',
+      description: 'Certification saved. Click "Submit & Finish" to finalize.',
     });
   };
 
@@ -566,7 +566,7 @@ export function BusinessProfileForm({
     setCertifications(certifications.filter((_, i) => i !== index));
     toast({
       title: "Certification Removed",
-      description: "Click \"Save Profile\" to save your changes.",
+      description: 'Click "Submit & Finish" to save your changes.',
     });
   };
 
@@ -1408,7 +1408,7 @@ export function BusinessProfileForm({
                       <span>Business Certifications</span>
                     </CardTitle>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      Add your business certifications. Changes will be saved when you click "Save Profile" below.
+                      Add your business certifications. Changes will be saved when you click "Submit & Finish" below.
                     </p>
                   </div>
                   <Dialog 
@@ -1690,7 +1690,7 @@ export function BusinessProfileForm({
               className="flex items-center space-x-2"
             >
               <Save className="w-4 h-4" />
-              <span>{isLoading ? 'Saving...' : certifications.length > 0 ? 'Save & Finish' : 'Save Profile'}</span>
+              <span>{isLoading ? 'Saving...' : 'Submit & Finish'}</span>
             </Button>
           </div>
         </div>
