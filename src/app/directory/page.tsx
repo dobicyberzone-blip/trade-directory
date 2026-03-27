@@ -410,58 +410,71 @@ function PublicBusinessCard({ biz }: { biz: PublicBusiness }) {
   );
 }
 
+// ── sessionStorage cache for public directory ─────────────────────────────
+const PUB_CACHE_KEY = 'pub_dir_v2';
+const PUB_CACHE_TTL = 60_000; // 60 s
+
+function readPubCache(): { businesses: PublicBusiness[]; total: number; ts: number } | null {
+  try { const r = sessionStorage.getItem(PUB_CACHE_KEY); return r ? JSON.parse(r) : null; } catch { return null; }
+}
+function writePubCache(businesses: PublicBusiness[], total: number) {
+  try { sessionStorage.setItem(PUB_CACHE_KEY, JSON.stringify({ businesses, total, ts: Date.now() })); } catch { /* quota */ }
+}
+
 function PublicDirectoryView() {
   const searchParams = useSearchParams();
-  const [businesses, setBusinesses] = useState<PublicBusiness[]>([]);
-  const [allBusinesses, setAllBusinesses] = useState<PublicBusiness[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Seed state from cache immediately — zero spinner on repeat visits
+  const [businesses, setBusinesses] = useState<PublicBusiness[]>(() => {
+    if (typeof window === 'undefined') return [];
+    return readPubCache()?.businesses || [];
+  });
+  const [totalCount, setTotalCount] = useState<number>(() => {
+    if (typeof window === 'undefined') return 0;
+    return readPubCache()?.total || 0;
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return !readPubCache();
+  });
+  const [isRevalidating, setIsRevalidating] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [sectorFilter, setSectorFilter] = useState(searchParams.get('sector') || '');
   const [productFilter, setProductFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
   const PER_PAGE = 24;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prefetchRef = useRef<AbortController | null>(null);
 
-  // Debounce search
+  // Debounce search — 300 ms
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => { setSearchTerm(searchInput); setCurrentPage(1); }, 250);
+    debounceRef.current = setTimeout(() => { setSearchTerm(searchInput); setCurrentPage(1); }, 300);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchInput]);
 
-  // Fetch a larger set once to populate filter options
-  useEffect(() => {
-    fetch('/api/businesses?limit=500')
-      .then(r => r.json())
-      .then(d => setAllBusinesses(d.businesses || []))
-      .catch(() => {});
-  }, []);
+  // Derive filter options from current businesses — no extra fetch needed
+  const sectorOptions = useMemo(() => Array.from(
+    new Set(businesses.map(b => b.sector).filter(Boolean))
+  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })), [businesses]);
 
-  // Unique sectors from loaded businesses (case-insensitive alphabetical sort)
-  const sectorOptions = Array.from(
-    new Set(allBusinesses.map(b => b.sector).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  const productOptions = useMemo(() => Array.from(
+    new Set(businesses.flatMap(b =>
+      b.products?.map(p => p.name) || (b.serviceOffering ? [b.serviceOffering] : [])
+    ).filter(Boolean))
+  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).slice(0, 80), [businesses]);
 
-  // Unique products from loaded businesses (case-insensitive alphabetical sort)
-  const productOptions = Array.from(
-    new Set(
-      allBusinesses.flatMap(b =>
-        b.products?.map(p => p.name) || (b.serviceOffering ? [b.serviceOffering] : [])
-      ).filter(Boolean)
-    )
-  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).slice(0, 80); // cap at 80
+  const isDefaultQuery = currentPage === 1 && !searchTerm && !sectorFilter && !productFilter;
 
-  const fetchPublic = useCallback(async () => {
-    setIsLoading(true);
+  const fetchPublic = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true); else setIsRevalidating(true);
     try {
       const params = new URLSearchParams({ page: String(currentPage - 1), limit: String(PER_PAGE) });
       if (searchTerm) params.set('search', searchTerm);
       if (sectorFilter) params.set('sector', sectorFilter);
       const res = await fetch(`/api/businesses?${params}`);
       const data = await res.json();
-      // Client-side product filter (API doesn't support it directly)
       let biz: PublicBusiness[] = data.businesses || [];
       if (productFilter) {
         const pf = productFilter.toLowerCase();
@@ -471,11 +484,30 @@ function PublicDirectoryView() {
         );
       }
       setBusinesses(biz);
-      setTotalCount(productFilter ? biz.length : (data.pagination?.total ?? biz.length));
-    } catch { setBusinesses([]); } finally { setIsLoading(false); }
-  }, [currentPage, searchTerm, sectorFilter, productFilter]);
+      const total = productFilter ? biz.length : (data.pagination?.total ?? biz.length);
+      setTotalCount(total);
+      if (isDefaultQuery && biz.length > 0) writePubCache(biz, total);
+      // Prefetch page 2 silently
+      if (isDefaultQuery && (data.pagination?.total ?? 0) > PER_PAGE) {
+        if (prefetchRef.current) prefetchRef.current.abort();
+        const ctrl = new AbortController();
+        prefetchRef.current = ctrl;
+        fetch(`/api/businesses?page=1&limit=${PER_PAGE}`, { signal: ctrl.signal }).catch(() => {});
+      }
+    } catch { /* keep showing cached */ }
+    finally { setIsLoading(false); setIsRevalidating(false); }
+  }, [currentPage, searchTerm, sectorFilter, productFilter, isDefaultQuery]);
 
-  useEffect(() => { fetchPublic(); }, [fetchPublic]);
+  useEffect(() => {
+    const cache = readPubCache();
+    const fresh = cache && Date.now() - cache.ts < PUB_CACHE_TTL;
+    if (isDefaultQuery && fresh) {
+      // Instant — already seeded from cache in useState initialiser
+      setIsLoading(false);
+      return;
+    }
+    fetchPublic(isDefaultQuery && !!cache); // silent if we have stale cache to show
+  }, [fetchPublic, isDefaultQuery]);
 
   const clearAll = () => {
     setSearchInput(''); setSearchTerm('');
@@ -604,13 +636,42 @@ function PublicDirectoryView() {
             </div>
           )}
 
+          {/* Revalidating indicator — subtle, non-blocking */}
+          {isRevalidating && (
+            <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+              <div className="w-3 h-3 border border-gray-300 border-t-green-500 rounded-full animate-spin" />
+              Refreshing…
+            </div>
+          )}
+
           {totalCount > 0 && !isLoading && (
-            <p className="text-sm text-gray-500 mb-4">{totalCount.toLocaleString()} verified {totalCount === 1 ? 'exporter' : 'exporters'} found</p>
+            <p className="text-sm text-gray-500 mb-4">{totalCount.toLocaleString()} {totalCount === 1 ? 'exporter' : 'exporters'} found</p>
           )}
 
           {isLoading ? (
+            // Skeleton — matches card shape exactly so layout doesn't shift
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-64 bg-white rounded-2xl animate-pulse border border-gray-100" />)}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                  <div className="p-5 pb-3 flex items-start justify-between">
+                    <div className="w-16 h-16 rounded-full bg-gray-200 animate-pulse" />
+                    <div className="w-16 h-4 rounded bg-gray-200 animate-pulse" />
+                  </div>
+                  <div className="px-5 pb-4 space-y-2">
+                    <div className="h-5 w-3/4 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-3 w-1/2 bg-gray-100 rounded animate-pulse" />
+                    <div className="h-3 w-1/3 bg-gray-100 rounded animate-pulse" />
+                  </div>
+                  <div className="mx-5 border-t border-gray-100" />
+                  <div className="px-5 py-4 space-y-2">
+                    <div className="h-3 w-full bg-gray-100 rounded animate-pulse" />
+                    <div className="h-3 w-2/3 bg-gray-100 rounded animate-pulse" />
+                  </div>
+                  <div className="px-5 pb-5">
+                    <div className="h-9 w-full bg-gray-200 rounded-lg animate-pulse" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : businesses.length === 0 ? (
             <div className="text-center py-20">
