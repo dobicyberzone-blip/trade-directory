@@ -70,7 +70,7 @@ const sortOptions = [
 // Filters component — memoized to prevent re-render when parent state changes
 // ---------------------------------------------------------------------------
 const Filters = ({
-  selectedFilters, onFilterChange, onTextFilterChange, sortOrder, onSortChange, clearFilters, viewMode, filterCategories: dynamicCategories,
+  selectedFilters, onFilterChange, onTextFilterChange, sortOrder, onSortChange, clearFilters, viewMode, filterCategories: dynamicCategories, businessOrgOptions,
 }: {
   selectedFilters: Record<string, string[]>;
   onFilterChange: (category: string, option: string) => void;
@@ -80,6 +80,7 @@ const Filters = ({
   clearFilters: () => void;
   viewMode?: 'grid' | 'map';
   filterCategories?: typeof filterCategories;
+  businessOrgOptions?: string[];
 }) => {
   const activeFilterCount = Object.values(selectedFilters).flat().length;
   const categoriesToUse = dynamicCategories || filterCategories;
@@ -205,6 +206,29 @@ const Filters = ({
               </ScrollArea>
             </AccordionContent>
           </AccordionItem>
+
+          {/* Business Organization — dynamic from loaded businesses */}
+          {businessOrgOptions && businessOrgOptions.length > 0 && (
+            <AccordionItem value="businessUserOrganisation">
+              <AccordionTrigger className="font-semibold hover:no-underline px-4 py-3 sm:py-3">Business Organization</AccordionTrigger>
+              <AccordionContent className="pt-2">
+                <ScrollArea className="h-60 px-4">
+                  <div className="space-y-2 pb-2">
+                    {businessOrgOptions.map(org => (
+                      <div key={org} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
+                        <Checkbox
+                          id={`org-${org}`}
+                          checked={selectedFilters['businessUserOrganisation']?.includes(org) || false}
+                          onCheckedChange={() => onFilterChange('businessUserOrganisation', org)}
+                        />
+                        <Label htmlFor={`org-${org}`} className="font-normal cursor-pointer flex-grow py-1">{org}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </AccordionContent>
+            </AccordionItem>
+          )}
 
           {availableCategories.map(category => {
             const useScrollArea = category.options.length > 8;
@@ -1228,6 +1252,7 @@ function DirectoryPageContentClient() {
                     clearFilters={handleClearFilters}
                     viewMode={viewMode}
                     filterCategories={dynamicFilterCategories}
+                    businessOrgOptions={dynamicFilterOptions.businessUserOrganisation}
                   />
                 </CardContent>
               </Card>
@@ -1273,6 +1298,7 @@ function DirectoryPageContentClient() {
                         clearFilters={handleClearFilters}
                         viewMode={viewMode}
                         filterCategories={dynamicFilterCategories}
+                        businessOrgOptions={dynamicFilterOptions.businessUserOrganisation}
                       />
                       <SheetClose asChild>
                         <Button className="m-4">Apply</Button>

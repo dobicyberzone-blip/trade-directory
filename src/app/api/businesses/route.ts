@@ -97,6 +97,10 @@ export async function GET(request: NextRequest) {
         conditions.push({ OR: filters.typeOfBusiness.map(t => ({ typeOfBusiness: { equals: t, mode: 'insensitive' } })) });
       }
 
+      if (filters.businessUserOrganisation?.length) {
+        conditions.push({ OR: filters.businessUserOrganisation.map(o => ({ businessUserOrganisation: { contains: o, mode: 'insensitive' } })) });
+      }
+
       if (filters.exportMarkets?.length) {
         conditions.push({
           OR: filters.exportMarkets.map(m => ({ currentExportMarkets: { contains: m, mode: 'insensitive' } })),
@@ -187,6 +191,7 @@ export async function GET(request: NextRequest) {
       ownerId: true,
       productHsCode: true,
       serviceOffering: true,
+      businessUserOrganisation: true,
       // Nested — minimal fields only
       products: {
         take: 4,
