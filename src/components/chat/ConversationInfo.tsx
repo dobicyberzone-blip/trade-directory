@@ -250,7 +250,7 @@ export function ConversationInfo({ conversation, currentUserId, onClose }: Conve
                   variant="outline"
                   className="w-full justify-start"
                   onClick={() => {
-                    window.open(`/directory/${otherParticipant.user.business?.id}`, '_blank');
+                    window.open(`/directory?business=${otherParticipant.user.business?.id}`, '_blank');
                   }}
                 >
                   <Building className="h-4 w-4 mr-2" />

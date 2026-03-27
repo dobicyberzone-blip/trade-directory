@@ -921,6 +921,14 @@ function DirectoryPageContentClient() {
     if (sector) setSelectedFilters({ sector: [sector] });
   }, [searchParams]);
 
+  // Auto-open profile modal when ?business=<id> is in the URL
+  useEffect(() => {
+    const businessId = searchParams.get('business');
+    if (!businessId || !businesses.length) return;
+    const match = businesses.find(b => b.id === businessId);
+    if (match) setModalBusiness(match);
+  }, [searchParams, businesses]);
+
   // FIX #3 + #8: fetchBusinesses wrapped in useCallback for stable reference
   // FIX #5: API limit now matches ITEMS_PER_PAGE; uses server pagination total
   const fetchBusinesses = useCallback(async () => {
