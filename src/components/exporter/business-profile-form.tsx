@@ -1054,15 +1054,15 @@ export function BusinessProfileForm({
                   </div>
                   <FileUploader
                     label=""
-                    description="PDF, JPG, PNG — max 5MB"
+                    description="PDF only — max 1MB"
                     value={doc.url}
                     onChange={(url) => {
                       const updated = [...otherDocs];
                       updated[index] = { ...updated[index], url };
                       setOtherDocs(updated);
                     }}
-                    validationOptions={{ ...DEFAULT_DOCUMENT_OPTIONS, maxSize: 5 * 1024 * 1024 }}
-                    accept="application/pdf,image/jpeg,image/png"
+                    validationOptions={DEFAULT_DOCUMENT_OPTIONS}
+                    accept="application/pdf"
                   />
                 </div>
               ))}
