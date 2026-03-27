@@ -181,6 +181,7 @@ export function LanguageSelector() {
   return (
     <div className="relative w-full sm:w-auto" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center justify-between w-full sm:w-auto space-x-2 px-3 py-2.5 rounded-md transition-colors border border-border",
@@ -202,7 +203,7 @@ export function LanguageSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-64 bg-white dark:bg-gray-900 rounded-md shadow-xl border dark:border-gray-700 z-[100] max-h-[60vh] sm:max-h-96 overflow-hidden flex flex-col">
+        <div className="absolute left-0 right-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-64 bg-white dark:bg-gray-900 rounded-md shadow-xl border dark:border-gray-700 z-[9999] max-h-[60vh] sm:max-h-96 overflow-hidden flex flex-col">
           {/* Search Input */}
           <div className="p-3 border-b dark:border-gray-700 bg-muted/30 sticky top-0 bg-white dark:bg-gray-800">
             <input
@@ -224,7 +225,9 @@ export function LanguageSelector() {
               filteredLanguages.map((lang) => (
                 <button
                   key={lang.code}
-                  onClick={() => handleLanguageSelect(lang)}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={(e) => { e.stopPropagation(); handleLanguageSelect(lang); }}
                   className={cn(
                     "w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between",
                     selectedLang.code === lang.code && "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-medium"
@@ -242,7 +245,7 @@ export function LanguageSelector() {
               ))
             ) : (
               <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                No languages found matching &quot;{searchQuery}quot;
+                No languages found matching &quot;{searchQuery}&quot;
               </div>
             )}
           </div>
