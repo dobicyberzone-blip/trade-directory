@@ -260,6 +260,8 @@ export default function BusinessProfilePage() {
             certifications: business.certifications || [],
             // Directors
             managementTeam: (business as any).managementTeam || '',
+            // Other documents — parsed by the form's useEffect
+            otherDocuments: (business as any).otherDocuments || '',
           } : undefined}
           onSubmit={handleSubmit}
           onAutoSave={handleAutoSave}

@@ -325,6 +325,7 @@ export function BusinessProfileForm({
   // Track previous serialized form values to avoid firing autosave on every render
   const prevFormValuesRef = useRef<string>('');
   const prevDirectorsRef = useRef<string>('');
+  const prevOtherDocsRef = useRef<string>('');
 
   const runSave = useCallback(async (data: any) => {
     if (!onAutoSave) return;
@@ -352,7 +353,7 @@ export function BusinessProfileForm({
         otherDocuments: otherDocs.length > 0 ? JSON.stringify(otherDocs) : null,
       });
     }, 500);
-  }, [onAutoSave, form, runSave, directors]);
+  }, [onAutoSave, form, runSave, directors, otherDocs]);
 
   useEffect(() => {
     // Skip the very first render (initial population from initialData)
@@ -364,19 +365,22 @@ export function BusinessProfileForm({
     // (avoids infinite loop caused by setBusiness in parent re-rendering this component)
     const currentFormValues = JSON.stringify(form.getValues());
     const currentDirectors = JSON.stringify(directors);
+    const currentOtherDocs = JSON.stringify(otherDocs);
     if (
       currentFormValues === prevFormValuesRef.current &&
-      currentDirectors === prevDirectorsRef.current
+      currentDirectors === prevDirectorsRef.current &&
+      currentOtherDocs === prevOtherDocsRef.current
     ) {
       return;
     }
     prevFormValuesRef.current = currentFormValues;
     prevDirectorsRef.current = currentDirectors;
+    prevOtherDocsRef.current = currentOtherDocs;
     triggerDebouncedSave();
     return () => {
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     };
-  }, [watchedValues, directors]);
+  }, [watchedValues, directors, otherDocs]);
 
   // Calculate completion percentage
   useEffect(() => {
