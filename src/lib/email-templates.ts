@@ -1622,3 +1622,81 @@ export async function sendAdminVerificationCompletedEmail(
     return false;
   }
 }
+
+/**
+ * Send company logo upload reminder email to exporters without a logo
+ */
+export async function sendLogoReminderEmail(
+  email: string,
+  firstName: string,
+  businessName: string
+): Promise<boolean> {
+  try {
+    const transporter = getTransporter();
+    if (!transporter) return false;
+
+    await transporter.sendMail({
+      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+      to: email,
+      subject: 'Action Required: Upload Your Company Logo – KEPROBA Trade Directory',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+            .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 40px 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 26px; font-weight: 600; }
+            .content { padding: 40px 30px; }
+            .alert-box { background: #fff7ed; border-left: 4px solid #f97316; padding: 20px; margin: 25px 0; border-radius: 4px; }
+            .benefit-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; margin: 20px 0; border-radius: 8px; }
+            .cta-box { text-align: center; margin: 32px 0; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff !important; text-decoration: none; font-size: 16px; font-weight: 700; padding: 14px 36px; border-radius: 8px; letter-spacing: 0.3px; }
+            .footer { background: #f8f9fa; text-align: center; padding: 25px 30px; color: #666; font-size: 13px; border-top: 1px solid #e9ecef; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>📷 Your Profile Needs a Logo</h1>
+            </div>
+            <div class="content">
+              <p style="font-size: 16px;">Hello ${firstName},</p>
+              <p>We noticed that your business <strong>${businessName}</strong> on the KEPROBA Trade Directory does not yet have a company logo.</p>
+              <div class="alert-box">
+                <strong>⚠️ Your profile is incomplete</strong>
+                <p style="margin: 8px 0 0 0;">Businesses with a logo receive significantly more views and inquiries from international buyers. A professional logo builds trust and makes your listing stand out.</p>
+              </div>
+              <div class="benefit-box">
+                <p style="margin: 0 0 10px 0; font-weight: 600; color: #15803d;">Why upload your logo?</p>
+                <ul style="margin: 0; padding-left: 20px;">
+                  <li>Increase visibility to international buyers</li>
+                  <li>Build credibility and brand recognition</li>
+                  <li>Improve your profile completion score</li>
+                  <li>Stand out in search results</li>
+                </ul>
+              </div>
+              <p>It only takes a minute — upload a JPG or JPEG image (recommended size: 400×400px).</p>
+              <div class="cta-box">
+                <a href="${dashboardUrl}/dashboard/exporter/business-profile" class="cta-button">Upload Logo Now</a>
+                <p style="margin: 14px 0 0 0; font-size: 12px; color: #888;">Or copy this link: <a href="${dashboardUrl}/dashboard/exporter/business-profile" style="color: #16a34a;">${dashboardUrl}/dashboard/exporter/business-profile</a></p>
+              </div>
+            </div>
+            <div class="footer">
+              <p style="margin: 0 0 10px 0;"><strong>Kenya Export Promotion and Branding Agency (KEPROBA)</strong></p>
+              <p style="margin: 0;">Need help? <a href="${dashboardUrl}/contact" style="color: #16a34a;">Contact Support</a></p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    });
+
+    console.log(`[Email] Logo reminder sent to ${email} (${businessName})`);
+    return true;
+  } catch (error) {
+    console.error('[Email] Failed to send logo reminder email:', error);
+    return false;
+  }
+}

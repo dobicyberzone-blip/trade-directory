@@ -51,7 +51,7 @@ const businessFormSchema = z.object({
   // Basic Details
   kenyanNationalId: z.string().min(1, 'Kenyan National ID is required'),
   name: z.string().optional(),                  // read-only (from registration)
-  logoUrl: z.string().min(1, 'Company logo is required'),
+  logoUrl: z.string().optional(),
   
   // Business Details
   typeOfBusiness: z.string().optional(),        // not rendered as editable input
@@ -365,13 +365,14 @@ export function BusinessProfileForm({
   useEffect(() => {
     // Canonical required fields — must match dashboard and backend
     const requiredFields = [
-      'kenyanNationalId', 'name', 'logoUrl',
+      'kenyanNationalId', 'name',
       'numberOfEmployees', 'kraPin', 'sector',
       'registrationCertificateUrl', 'pinCertificateUrl',
       'town', 'county', 'physicalAddress', 'contactPhone', 'companyEmail'
     ];
     
     const optionalFields = [
+      'logoUrl',
       'exportLicense',
       'website', 'whatsappNumber', 'twitterUrl', 'instagramUrl',
       'exportVolumePast3Years', 'currentExportMarkets', 'productionCapacityPast3',
@@ -397,7 +398,7 @@ export function BusinessProfileForm({
     {
       title: 'Basic Details',
       icon: Building2,
-      fields: ['kenyanNationalId', 'name', 'logoUrl']
+      fields: ['kenyanNationalId', 'name']
     },
     {
       title: 'Business Details',
@@ -453,7 +454,7 @@ export function BusinessProfileForm({
   };
 
   const sectionRequiredFields: Record<number, string[]> = {
-    0: ['kenyanNationalId', 'logoUrl'],          // name is read-only
+    0: ['kenyanNationalId'],          // name is read-only, logo is optional
     1: ['numberOfEmployees', 'kraPin'],           // sector/typeOfBusiness are read-only
     2: ['registrationCertificateUrl', 'pinCertificateUrl'],
     3: [],                                        // editable — no hard required validation on nav
@@ -641,13 +642,12 @@ export function BusinessProfileForm({
             </div>
 
             <FileUploader
-              label="Company Logo"
+              label="Company Logo (Optional)"
               description="Upload your company logo or provide a URL. Recommended size: 400x400px"
               value={form.watch('logoUrl')}
               onChange={(url) => form.setValue('logoUrl', url)}
               validationOptions={DEFAULT_IMAGE_OPTIONS}
               accept="image/jpeg"
-              required
             />
             {form.formState.errors.logoUrl && (
               <p className="text-sm text-red-600">
