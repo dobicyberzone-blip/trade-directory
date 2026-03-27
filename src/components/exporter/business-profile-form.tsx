@@ -128,6 +128,9 @@ interface BusinessProfileFormProps {
     registrationNumber?: string;
     legalStructure?: string;
     serviceOffering?: string;
+    goods?: string;
+    services?: string;
+    subSector?: string;
     companyEmail?: string;
     contactPhone?: string;
     town?: string;
@@ -232,9 +235,9 @@ export function BusinessProfileForm({
       sector: registrationData?.sector || '',
       industry: registrationData?.industry || '',
       serviceOffering: registrationData?.serviceOffering || '',
-      goods: '',
-      services: '',
-      subSector: '',
+      goods: registrationData?.goods || '',
+      services: registrationData?.services || '',
+      subSector: registrationData?.subSector || '',
       businessUserOrganisation: '',
       registrationCertificateUrl: '',
       pinCertificateUrl: '',
