@@ -21,11 +21,15 @@ async function uploadToCloudinary(buffer: Buffer, filename: string, mimeType: st
   const timestamp = Math.round(Date.now() / 1000);
   const folder = 'business-documents';
 
-  // Build signature
-  const paramsToSign = `folder=${folder}&timestamp=${timestamp}`;
+  // Cloudinary signature: params sorted alphabetically, joined as key=value&key=value, then SHA-1 hash
+  const params: Record<string, string | number> = { folder, timestamp };
+  const paramString = Object.keys(params)
+    .sort()
+    .map(k => `${k}=${params[k]}`)
+    .join('&');
   const signature = crypto
-    .createHash('sha256')
-    .update(paramsToSign + CLOUDINARY_API_SECRET)
+    .createHash('sha1')
+    .update(paramString + CLOUDINARY_API_SECRET)
     .digest('hex');
 
   const formData = new FormData();
@@ -38,7 +42,7 @@ async function uploadToCloudinary(buffer: Buffer, filename: string, mimeType: st
   formData.append('signature', signature);
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
     { method: 'POST', body: formData }
   );
 
