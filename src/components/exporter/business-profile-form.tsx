@@ -459,7 +459,7 @@ export function BusinessProfileForm({
       await onSubmit(dataWithCertifications as any);
       toast({
         title: "Success",
-        description: "Business profile saved successfully!",
+        description: "Business profile submitted successfully!",
       });
     } catch (error) {
       toast({
