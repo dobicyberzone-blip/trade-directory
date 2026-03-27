@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Plus, Pencil, Trash2, Search, ChevronRight, Building2, Layers, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { bustMasterDataCache } from '@/hooks/use-master-data';
 
 interface Industry { id: string; name: string; description?: string; isActive: boolean; sortOrder: number; _count?: { sectors: number } }
 interface Sector { id: string; name: string; description?: string; isActive: boolean; sortOrder: number; industryId: string; industry?: { id: string; name: string }; _count?: { businessOrganizations: number } }
@@ -84,6 +85,7 @@ export default function MasterDataPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       toast({ title: isEdit ? 'Updated successfully' : 'Created successfully' });
+      bustMasterDataCache();
       setDialog({ open: false, type: 'industry' });
       load();
     } catch (e: any) {
@@ -98,6 +100,7 @@ export default function MasterDataPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       toast({ title: 'Deleted successfully' });
+      bustMasterDataCache();
       setDeleteConfirm({ open: false, type: 'industry' });
       load();
     } catch (e: any) {

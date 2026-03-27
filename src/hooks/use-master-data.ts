@@ -1,8 +1,12 @@
 /**
- * useMasterData — fetches Industries and Sectors from the DB via /api/master-data.
+ * useMasterData — fetches active Industries and Sectors from the DB via /api/master-data.
  * Falls back to constants.ts if the DB is empty or unreachable.
- * Results are cached in sessionStorage for 5 minutes so every component
- * that calls this hook gets instant data on repeat renders.
+ *
+ * Cache strategy:
+ *  - sessionStorage TTL: 60 seconds
+ *  - localStorage 'master_data_version' is bumped by the admin master-data page on every
+ *    create/update/delete. If the cached version doesn't match, the cache is busted
+ *    immediately so disabled/renamed items disappear without waiting for TTL.
  */
 'use client';
 
@@ -14,31 +18,44 @@ interface MasterSector   { id: string; name: string }
 
 interface MasterDataState {
   industries: MasterIndustry[];
-  /** Map of industryName → sector names (same shape as SECTORS_BY_INDUSTRY) */
   sectorsByIndustry: Record<string, string[]>;
-  /** Flat list of all active sector names */
   allSectors: string[];
   loading: boolean;
 }
 
-const CACHE_KEY = 'master_data_v1';
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_KEY   = 'master_data_v2';
+const VERSION_KEY = 'master_data_version';
+const CACHE_TTL   = 60 * 1000; // 60 seconds
+
+/** Bump this from the admin page after any create/update/delete */
+export function bustMasterDataCache() {
+  try {
+    const v = String(Date.now());
+    localStorage.setItem(VERSION_KEY, v);
+    sessionStorage.removeItem(CACHE_KEY);
+  } catch { /* quota / SSR */ }
+}
 
 function readCache(): MasterDataState | null {
   try {
     const raw = sessionStorage.getItem(CACHE_KEY);
     if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
+    const { data, ts, version } = JSON.parse(raw);
     if (Date.now() - ts > CACHE_TTL) return null;
+    // Bust if admin has made a change since this was cached
+    const currentVersion = localStorage.getItem(VERSION_KEY) ?? '0';
+    if (version !== currentVersion) return null;
     return data;
   } catch { return null; }
 }
 
 function writeCache(data: Omit<MasterDataState, 'loading'>) {
-  try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch { /* quota */ }
+  try {
+    const version = localStorage.getItem(VERSION_KEY) ?? '0';
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now(), version }));
+  } catch { /* quota */ }
 }
 
-// Build the constants fallback shape
 function constantsFallback(): Omit<MasterDataState, 'loading'> {
   const sectorsByIndustry: Record<string, string[]> = {};
   for (const [ind, sectors] of Object.entries(SECTORS_BY_INDUSTRY)) {
@@ -61,12 +78,10 @@ export function useMasterData(): MasterDataState {
 
   const fetch_ = useCallback(async () => {
     try {
-      // Fetch industries
       const iRes = await fetch('/api/master-data');
       const iData = await iRes.json();
 
       if (!iData.industries?.length) {
-        // DB empty — use constants
         const fb = constantsFallback();
         setState({ ...fb, loading: false });
         writeCache(fb);
@@ -75,7 +90,6 @@ export function useMasterData(): MasterDataState {
 
       const industries: MasterIndustry[] = iData.industries;
 
-      // Fetch sectors for each industry in parallel (batched)
       const sectorsByIndustry: Record<string, string[]> = {};
       await Promise.all(
         industries.map(async ind => {
@@ -84,7 +98,6 @@ export function useMasterData(): MasterDataState {
             const sData = await sRes.json();
             sectorsByIndustry[ind.name] = (sData.sectors || []).map((s: MasterSector) => s.name);
           } catch {
-            // fallback for this industry
             sectorsByIndustry[ind.name] = SECTORS_BY_INDUSTRY[ind.name] || [];
           }
         })
@@ -95,7 +108,6 @@ export function useMasterData(): MasterDataState {
       setState({ ...result, loading: false });
       writeCache(result);
     } catch {
-      // Network error — keep constants
       const fb = constantsFallback();
       setState({ ...fb, loading: false });
     }
