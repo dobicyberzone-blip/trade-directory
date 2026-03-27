@@ -49,9 +49,9 @@ export function ExporterProfileExportLayoutSimple({
 
   const InfoRow = ({ label, value }: { label: string; value?: string | null }) =>
     value ? (
-      <div style={{ display: 'flex', gap: '4px', marginBottom: '5px', fontSize: '11px', lineHeight: '1.4' }}>
-        <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap' }}>{label}:</span>
-        <span style={{ color: '#111827' }}>{value}</span>
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', fontSize: '11px', lineHeight: '1.5', borderBottom: '1px solid #f3f4f6', paddingBottom: '4px' }}>
+        <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap', minWidth: '110px' }}>{label}:</span>
+        <span style={{ color: '#111827', flex: 1 }}>{value}</span>
       </div>
     ) : null;
 
@@ -178,6 +178,10 @@ export function ExporterProfileExportLayoutSimple({
                 <InfoRow label="KRA PIN" value={business.kraPin} />
                 <InfoRow label="Company Size" value={business.companySize} />
                 <InfoRow label="Employees" value={business.numberOfEmployees} />
+                <InfoRow label="Sub-sector" value={(business as any).subSector} />
+                <InfoRow label="Goods" value={(business as any).goods} />
+                <InfoRow label="Services" value={(business as any).services} />
+                <InfoRow label="Organisation" value={(business as any).businessUserOrganisation} />
                 <InfoRow label="Export Markets" value={business.currentExportMarkets} />
                 <InfoRow label="Export Volume (3 yrs)" value={business.exportVolumePast3Years} />
                 <InfoRow label="Production Capacity (3 yrs)" value={business.productionCapacityPast3} />
@@ -198,6 +202,30 @@ export function ExporterProfileExportLayoutSimple({
               <InfoRow label="Website" value={business.websiteUrl || business.website} />
               <InfoRow label="Address" value={business.physicalAddress} />
             </div>
+
+            {/* Social Media */}
+            {(() => {
+              const socials = [
+                { label: 'Twitter/X', value: (business as any).twitterUrl },
+                { label: 'Instagram', value: (business as any).instagramUrl },
+                { label: 'Facebook', value: (business as any).facebookUrl },
+                { label: 'LinkedIn', value: (business as any).linkedInUrl },
+                { label: 'YouTube', value: (business as any).youtubeUrl },
+                { label: 'TikTok', value: (business as any).tiktokUrl },
+                { label: 'Pinterest', value: (business as any).pinterestUrl },
+                { label: 'Snapchat', value: (business as any).snapchatUrl },
+                { label: 'Telegram', value: (business as any).telegramUrl },
+              ].filter(s => s.value);
+              if (!socials.length) return null;
+              return (
+                <div>
+                  <SectionTitle>Social Media</SectionTitle>
+                  {socials.map((s, i) => (
+                    <InfoRow key={i} label={s.label} value={s.value} />
+                  ))}
+                </div>
+              );
+            })()}
 
             {/* About — stretches to fill, capped at 80 words */}
             <div style={stretchStyle}>
