@@ -217,9 +217,9 @@ export default function BusinessProfilePage() {
             industry: business.industry || '',
             productHsCode: business.productHsCode || '',
             serviceOffering: business.serviceOffering || (business as any).productCatalog || '',
-            goods: '',
-            services: '',
-            subSector: '',
+            goods: (business as any).goods || '',
+            services: (business as any).services || '',
+            subSector: (business as any).subSector || '',
             businessUserOrganisation: business.businessUserOrganisation || '',
             // Documents
             registrationCertificateUrl: business.registrationCertificateUrl || '',
