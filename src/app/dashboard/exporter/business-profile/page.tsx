@@ -742,7 +742,7 @@ export default function BusinessProfilePage() {
               {[
                 { label: 'Registration Certificate', url: business.registrationCertificateUrl },
                 { label: 'PIN Certificate', url: business.pinCertificateUrl },
-                { label: 'Kenyan National ID', url: business.kenyanNationalIdUrl },
+                { label: 'National ID / Passport', url: business.kenyanNationalIdUrl },
                 { label: 'Certificate of Incorporation', url: (business as any).incorporationCertificateUrl },
                 { label: 'Export License', url: business.exportLicenseUrl },
               ].map(({ label, url }) => (
@@ -757,6 +757,35 @@ export default function BusinessProfilePage() {
                   )}
                 </div>
               ))}
+
+              {/* Other Documents */}
+              {(() => {
+                let otherDocs: { label: string; url: string }[] = [];
+                try {
+                  const raw = (business as any).otherDocuments;
+                  if (raw) otherDocs = JSON.parse(raw);
+                } catch { /* ignore */ }
+                if (!otherDocs.length) return null;
+                return (
+                  <>
+                    <div className="border-t pt-3 mt-1">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Other Documents</p>
+                      {otherDocs.map((doc, i) => (
+                        <div key={i} className="flex items-center justify-between py-1">
+                          <span className="text-sm truncate max-w-[60%]">{doc.label || `Document ${i + 1}`}</span>
+                          {doc.url ? (
+                            <Button size="sm" variant="outline" onClick={() => openPdfInNewWindow(doc.url, doc.label || `Document ${i + 1}`)}>
+                              <Eye className="w-3 h-3 mr-1" /> View
+                            </Button>
+                          ) : (
+                            <Badge variant="secondary" className="text-xs">No file</Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
