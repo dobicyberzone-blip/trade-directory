@@ -809,28 +809,6 @@ export function BusinessProfileForm({
               </div>
 
               <div>
-                <Label htmlFor="goods">Goods</Label>
-                <Input
-                  id="goods"
-                  {...form.register('goods')}
-                  placeholder="e.g., Fresh Produce, Coffee, Tea"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="services">Services</Label>
-                <Input
-                  id="services"
-                  {...form.register('services')}
-                  placeholder="e.g., Logistics, Export Trading, Consulting"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
                 <Label htmlFor="businessUserOrganisation">Business Organisation</Label>
                 {orgOptions.length > 0 ? (
                   <SearchableSelect
@@ -847,6 +825,28 @@ export function BusinessProfileForm({
                     className="mt-1"
                   />
                 )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="goods">Goods</Label>
+                <Input
+                  id="goods"
+                  {...form.register('goods')}
+                  placeholder="e.g., Fresh Produce, Coffee, Tea"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="services">Services</Label>
+                <Input
+                  id="services"
+                  {...form.register('services')}
+                  placeholder="e.g., Logistics, Export Trading, Consulting"
+                  className="mt-1"
+                />
               </div>
             </div>
 
