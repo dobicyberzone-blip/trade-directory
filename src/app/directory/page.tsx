@@ -28,7 +28,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { kenyanCounties } from '@/lib/kenyan-counties';
 import { ExporterProfileCard } from '@/components/exporter-profile-card';
 import { EXPORT_MARKETS, BUSINESS_SECTORS } from '@/types/business';
-import { INDUSTRIES, SECTORS_BY_INDUSTRY, COUNTIES, KENYAN_CITIES } from '@/lib/constants';
+import { COUNTIES, KENYAN_CITIES } from '@/lib/constants';
+import { useMasterData } from '@/hooks/use-master-data';
 
 // FIX #7: sessionStorage cache keys
 const PRODUCT_OPTIONS_CACHE_KEY = 'dir_product_options_v1';
@@ -87,11 +88,12 @@ const Filters = ({
     ? categoriesToUse.filter(cat => cat.id !== 'rating')
     : categoriesToUse;
 
-  // Derive sector options based on selected industries
+  // Derive sector options from DB master data (active only)
+  const { industries: dbIndustries, sectorsByIndustry: dbSectorsByIndustry } = useMasterData();
   const selectedIndustries = selectedFilters['industry'] || [];
   const sectorOptions: string[] = selectedIndustries.length > 0
-    ? selectedIndustries.flatMap(ind => SECTORS_BY_INDUSTRY[ind] || [])
-    : Object.values(SECTORS_BY_INDUSTRY).flat();
+    ? selectedIndustries.flatMap(ind => dbSectorsByIndustry[ind] || [])
+    : Object.values(dbSectorsByIndustry).flat();
 
   return (
     <div className="h-full flex flex-col">
@@ -158,14 +160,14 @@ const Filters = ({
             <AccordionContent className="pt-2">
               <ScrollArea className="h-60 px-4">
                 <div className="space-y-2 pb-2">
-                  {INDUSTRIES.map(industry => (
-                    <div key={industry} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
+                  {dbIndustries.map(industry => (
+                    <div key={industry.id} className="flex items-center space-x-2 py-1.5 sm:py-1 hover:bg-gray-50 rounded-md px-2 -mx-2 transition-colors">
                       <Checkbox
-                        id={`industry-${industry}`}
-                        checked={selectedFilters['industry']?.includes(industry) || false}
-                        onCheckedChange={() => onFilterChange('industry', industry)}
+                        id={`industry-${industry.id}`}
+                        checked={selectedFilters['industry']?.includes(industry.name) || false}
+                        onCheckedChange={() => onFilterChange('industry', industry.name)}
                       />
-                      <Label htmlFor={`industry-${industry}`} className="font-normal cursor-pointer flex-grow py-1">{industry}</Label>
+                      <Label htmlFor={`industry-${industry.id}`} className="font-normal cursor-pointer flex-grow py-1">{industry.name}</Label>
                     </div>
                   ))}
                 </div>

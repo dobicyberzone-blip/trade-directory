@@ -38,7 +38,8 @@ import {
   KENYAN_COUNTIES,
   EXPORT_MARKETS 
 } from '@/types/business';
-import { INDUSTRIES, INDUSTRY_CATEGORIES, SECTORS_BY_INDUSTRY } from '@/lib/constants';
+
+import { useMasterData } from '@/hooks/use-master-data';
 import { SearchableMultiSelect } from '@/components/exporter/_searchable-multi-select';
 import { 
   DEFAULT_IMAGE_OPTIONS, 
@@ -147,6 +148,8 @@ export function BusinessProfileForm({
 }: BusinessProfileFormProps) {
   const [currentSection, setCurrentSection] = useState(0);
   const [completionPercentage, setCompletionPercentage] = useState(0);
+  // Master data from DB (falls back to constants if DB empty)
+  const { industries: dbIndustries, sectorsByIndustry: dbSectorsByIndustry } = useMasterData();
   const [certifications, setCertifications] = useState<CertificationFormData[]>([]);
   const [isCertDialogOpen, setIsCertDialogOpen] = useState(false);
   const [editingCertIndex, setEditingCertIndex] = useState<number | null>(null);
@@ -696,21 +699,38 @@ export function BusinessProfileForm({
               <div>
                 <Label htmlFor="industry">Industry</Label>
                 <SearchableSelect
-                  options={[...INDUSTRIES]}
+                  options={dbIndustries.map(i => i.name)}
                   value={form.watch('industry') || ''}
-                  onChange={(value) => form.setValue('industry', value, { shouldDirty: true })}
+                  onChange={(value) => {
+                    form.setValue('industry', value, { shouldDirty: true });
+                    // Clear sector when industry changes
+                    form.setValue('sector', '', { shouldDirty: true });
+                  }}
                   placeholder="Select industry"
                 />
               </div>
 
               <div>
                 <Label htmlFor="sector">Business Sector</Label>
-                <Input
-                  id="sector"
-                  {...form.register('sector')}
-                  placeholder="e.g., Agriculture, Manufacturing"
-                  className="mt-1"
-                />
+                {(() => {
+                  const selectedIndustry = form.watch('industry') || '';
+                  const sectorList = dbSectorsByIndustry[selectedIndustry] || [];
+                  return sectorList.length > 0 ? (
+                    <SearchableSelect
+                      options={sectorList}
+                      value={form.watch('sector') || ''}
+                      onChange={(value) => form.setValue('sector', value, { shouldDirty: true })}
+                      placeholder={selectedIndustry ? 'Select sector' : 'Select an industry first'}
+                    />
+                  ) : (
+                    <Input
+                      id="sector"
+                      {...form.register('sector')}
+                      placeholder="e.g., Agriculture, Manufacturing"
+                      className="mt-1"
+                    />
+                  );
+                })()}
               </div>
             </div>
 

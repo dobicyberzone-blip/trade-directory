@@ -21,8 +21,6 @@ import { cn } from '@/lib/utils';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { 
-  INDUSTRY_OPTIONS, 
-  SECTORS_BY_INDUSTRY,
   PARTNER_TYPE_OPTIONS, 
   COUNTY_OPTIONS, 
   CITY_OPTIONS, 
@@ -30,6 +28,7 @@ import {
   SERVICE_OFFERING_OPTIONS,
   PRODUCT_CATEGORY_OPTIONS
 } from '@/lib/constants';
+import { useMasterData } from '@/hooks/use-master-data';
 
 type FormValues = RegisterFormValues;
 
@@ -159,6 +158,8 @@ function RegisterPageContent({
   const { register, isLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  // Master data from DB — active industries/sectors only
+  const { industries: dbIndustries, sectorsByIndustry: dbSectorsByIndustry } = useMasterData();
   
   // Wizard state - always start at role step (ignore any saved state)
   const [currentStep, setCurrentStep] = useState<WizardStep>('role');
@@ -968,7 +969,7 @@ function RegisterPageContent({
                                     setSectorSearch('');
                                     setSectorOtherText('');
                                   }}
-                                  options={[...INDUSTRY_OPTIONS, { value: 'Other', label: 'Other' }]}
+                                  options={[...dbIndustries.map(i => ({ value: i.name, label: i.name })), { value: 'Other', label: 'Other' }]}
                                   placeholder="Select industry"
                                   search={industrySearch}
                                   setSearch={setIndustrySearch}
@@ -1000,8 +1001,8 @@ function RegisterPageContent({
                           render={({ field }) => {
                             const selectedIndustry = form.watch('industry');
                             const baseIndustry = selectedIndustry?.startsWith('Other:') ? 'Other' : selectedIndustry;
-                            const sectorOptions = baseIndustry && SECTORS_BY_INDUSTRY[baseIndustry]
-                              ? SECTORS_BY_INDUSTRY[baseIndustry].map(s => ({ value: s, label: s }))
+                            const sectorOptions = baseIndustry && dbSectorsByIndustry[baseIndustry]
+                              ? dbSectorsByIndustry[baseIndustry].map(s => ({ value: s, label: s }))
                               : [];
                             const allSectorOptions = [...sectorOptions, { value: 'Other', label: 'Other' }];
                             return (
