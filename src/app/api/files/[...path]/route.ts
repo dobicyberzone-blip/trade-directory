@@ -27,6 +27,8 @@ function getUploadRoots(): string[] {
     join(process.cwd(), 'public', 'uploads'),  // legacy location
     '/app/uploads',
     '/app/public/uploads',
+    '/data/uploads',                           // Docker volume mount (survives redeploys)
+    '/var/uploads',
   );
 
   return roots;

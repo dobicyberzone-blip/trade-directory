@@ -15,13 +15,27 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// Helper function to upload to Cloudinary
+// Helper function to upload to Cloudinary using signed upload
 async function uploadToCloudinary(buffer: Buffer, filename: string, mimeType: string): Promise<string> {
+  const crypto = await import('crypto');
+  const timestamp = Math.round(Date.now() / 1000);
+  const folder = 'business-documents';
+
+  // Build signature
+  const paramsToSign = `folder=${folder}&timestamp=${timestamp}`;
+  const signature = crypto
+    .createHash('sha256')
+    .update(paramsToSign + CLOUDINARY_API_SECRET)
+    .digest('hex');
+
   const formData = new FormData();
   const uint8Array = new Uint8Array(buffer);
   const blob = new Blob([uint8Array], { type: mimeType });
   formData.append('file', blob, filename);
-  formData.append('upload_preset', process.env.CLOUDINARY_UPLOAD_PRESET || 'unsigned_preset');
+  formData.append('api_key', CLOUDINARY_API_KEY!);
+  formData.append('timestamp', String(timestamp));
+  formData.append('folder', folder);
+  formData.append('signature', signature);
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
@@ -30,18 +44,22 @@ async function uploadToCloudinary(buffer: Buffer, filename: string, mimeType: st
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Cloudinary upload failed: ${error}`);
+    throw new Error(`Cloudinary upload failed (${response.status}): ${error}`);
   }
 
   const data = await response.json();
+  if (!data.secure_url) throw new Error('Cloudinary returned no URL');
   return data.secure_url;
 }
 
 // Helper function to handle local upload (filesystem or base64)
 async function handleLocalUpload(buffer: Buffer, file: File): Promise<string> {
   try {
-    // Store uploads OUTSIDE public/ so npm run build never wipes them
-    const uploadDir = process.env.UPLOAD_DIR || join(process.cwd(), 'uploads', 'business-documents');
+    // Prefer /data/uploads (Docker persistent volume) over /app/uploads (wiped on redeploy)
+    const persistentDir = existsSync('/data') ? '/data/uploads/business-documents' : null;
+    const uploadDir = process.env.UPLOAD_DIR
+      || persistentDir
+      || join(process.cwd(), 'uploads', 'business-documents');
     if (!existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
     }
@@ -135,8 +153,11 @@ export async function POST(request: NextRequest) {
     if (USE_CLOUDINARY) {
       try {
         publicUrl = await uploadToCloudinary(buffer, file.name, file.type);
+        console.log(`[upload] Cloudinary OK: ${publicUrl}`);
       } catch (cloudinaryError) {
+        console.error('[upload] Cloudinary failed, falling back to local:', cloudinaryError);
         publicUrl = await handleLocalUpload(buffer, file);
+        console.log(`[upload] Local fallback: ${publicUrl}`);
       }
     } else {
       publicUrl = await handleLocalUpload(buffer, file);
