@@ -9,7 +9,7 @@ import {
   TextField, FormControlLabel, Switch, Select, MenuItem, FormControl,
   InputLabel, Chip, Tooltip, InputAdornment,
 } from '@mui/material';
-import { Plus, Pencil, Trash2, Search, ChevronRight, Building2, Layers, Tag } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, ChevronRight, Building2, Layers, Tag, ChevronLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { bustMasterDataCache } from '@/hooks/use-master-data';
 
@@ -32,6 +32,12 @@ export default function MasterDataPage() {
   const [search, setSearch] = useState('');
   const [filterIndustry, setFilterIndustry] = useState('');
   const [filterSector, setFilterSector] = useState('');
+
+  // Pagination — 10 rows per page, one page state per tab
+  const PAGE_SIZE = 10;
+  const [industryPage, setIndustryPage] = useState(1);
+  const [sectorPage, setSectorPage] = useState(1);
+  const [orgPage, setOrgPage] = useState(1);
 
   // Dialog state
   const [dialog, setDialog] = useState<{ open: boolean; type: EntityType; item?: any }>({ open: false, type: 'industry' });
@@ -118,6 +124,29 @@ export default function MasterDataPage() {
   const filteredOrgs = orgs
     .filter(o => (!filterSector || o.sectorId === filterSector) && o.name.toLowerCase().includes(search.toLowerCase()));
 
+  // Paginated slices
+  const pagedIndustries = filteredIndustries.slice((industryPage - 1) * PAGE_SIZE, industryPage * PAGE_SIZE);
+  const pagedSectors    = filteredSectors.slice((sectorPage - 1) * PAGE_SIZE, sectorPage * PAGE_SIZE);
+  const pagedOrgs       = filteredOrgs.slice((orgPage - 1) * PAGE_SIZE, orgPage * PAGE_SIZE);
+
+  const totalIndustryPages = Math.max(1, Math.ceil(filteredIndustries.length / PAGE_SIZE));
+  const totalSectorPages   = Math.max(1, Math.ceil(filteredSectors.length / PAGE_SIZE));
+  const totalOrgPages      = Math.max(1, Math.ceil(filteredOrgs.length / PAGE_SIZE));
+
+  /** Reusable pagination row */
+  const PaginationRow = ({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) => {
+    if (total <= 1) return null;
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, px: 2, py: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+        <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+          Page {page} of {total}
+        </Typography>
+        <IconButton size="small" disabled={page <= 1} onClick={() => onChange(page - 1)}><ChevronLeft size={16} /></IconButton>
+        <IconButton size="small" disabled={page >= total} onClick={() => onChange(page + 1)}><ChevronRight size={16} /></IconButton>
+      </Box>
+    );
+  };
+
   const tabData = [
     { label: 'Industries', icon: <Layers size={16} />, count: industries.length },
     { label: 'Sectors', icon: <Tag size={16} />, count: sectors.length },
@@ -150,13 +179,13 @@ export default function MasterDataPage() {
       {/* Search */}
       <TextField
         size="small" placeholder="Search by name…" value={search}
-        onChange={e => setSearch(e.target.value)} sx={{ mb: 2, width: 320 }}
+        onChange={e => { setSearch(e.target.value); setIndustryPage(1); setSectorPage(1); setOrgPage(1); }} sx={{ mb: 2, width: 320 }}
         InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> }}
       />
 
       {/* Tabs */}
       <Paper sx={{ mb: 0 }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tab} onChange={(_, v) => { setTab(v); setSearch(''); setIndustryPage(1); setSectorPage(1); setOrgPage(1); }} sx={{ borderBottom: 1, borderColor: 'divider' }}>
           {tabData.map((t, i) => (
             <Tab key={i} label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -190,7 +219,7 @@ export default function MasterDataPage() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {filteredIndustries.map(row => (
+                      {pagedIndustries.map(row => (
                         <TableRow key={row.id} hover>
                           <TableCell><Typography variant="body2" fontWeight={600}>{row.name}</Typography></TableCell>
                           <TableCell><Typography variant="caption" color="text.secondary">{row.description || '—'}</Typography></TableCell>
@@ -213,6 +242,7 @@ export default function MasterDataPage() {
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <PaginationRow page={industryPage} total={totalIndustryPages} onChange={setIndustryPage} />
               </Box>
             )}
 
@@ -222,13 +252,12 @@ export default function MasterDataPage() {
                 <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', flexWrap: 'wrap' }}>
                   <FormControl size="small" sx={{ minWidth: 220 }}>
                     <InputLabel>Filter by Industry</InputLabel>
-                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => setFilterIndustry(e.target.value)}>
+                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setSectorPage(1); }}>
                       <MenuItem value="">All Industries</MenuItem>
                       {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                     </Select>
                   </FormControl>
-                  <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => openCreate('sector')} sx={{ ml: 'auto' }}>Add Sector</Button>
-                </Box>
+                  <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => openCreate('sector')} sx={{ ml: 'auto' }}>Add Sector</Button>                </Box>
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
@@ -243,7 +272,7 @@ export default function MasterDataPage() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {filteredSectors.map(row => (
+                      {pagedSectors.map(row => (
                         <TableRow key={row.id} hover>
                           <TableCell><Typography variant="body2" fontWeight={600}>{row.name}</Typography></TableCell>
                           <TableCell><Chip label={row.industry?.name || '—'} size="small" color="primary" variant="outlined" /></TableCell>
@@ -267,6 +296,7 @@ export default function MasterDataPage() {
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <PaginationRow page={sectorPage} total={totalSectorPages} onChange={p => { setSectorPage(p); }} />
               </Box>
             )}
 
@@ -276,14 +306,14 @@ export default function MasterDataPage() {
                 <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', flexWrap: 'wrap' }}>
                   <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by Industry</InputLabel>
-                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setFilterSector(''); }}>
+                    <Select value={filterIndustry} label="Filter by Industry" onChange={e => { setFilterIndustry(e.target.value); setFilterSector(''); setOrgPage(1); }}>
                       <MenuItem value="">All Industries</MenuItem>
                       {industries.map(i => <MenuItem key={i.id} value={i.id}>{i.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                   <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter by Sector</InputLabel>
-                    <Select value={filterSector} label="Filter by Sector" onChange={e => setFilterSector(e.target.value)}>
+                    <Select value={filterSector} label="Filter by Sector" onChange={e => { setFilterSector(e.target.value); setOrgPage(1); }}>
                       <MenuItem value="">All Sectors</MenuItem>
                       {sectors.filter(s => !filterIndustry || s.industryId === filterIndustry).map(s => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
                     </Select>
@@ -304,7 +334,7 @@ export default function MasterDataPage() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {filteredOrgs.map(row => (
+                      {pagedOrgs.map(row => (
                         <TableRow key={row.id} hover>
                           <TableCell><Typography variant="body2" fontWeight={600}>{row.name}</Typography></TableCell>
                           <TableCell><Chip label={row.sector?.name || '—'} size="small" color="secondary" variant="outlined" /></TableCell>
@@ -328,6 +358,7 @@ export default function MasterDataPage() {
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <PaginationRow page={orgPage} total={totalOrgPages} onChange={setOrgPage} />
               </Box>
             )}
           </>
