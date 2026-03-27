@@ -217,8 +217,8 @@ export default function BusinessProfilePage() {
             industry: business.industry || '',
             productHsCode: business.productHsCode || '',
             serviceOffering: business.serviceOffering || (business as any).productCatalog || '',
-            goods: (business as any).goods || '',
-            services: (business as any).services || '',
+            goods: (business as any).goods || business.serviceOffering?.split(',')[0]?.trim() || '',
+            services: (business as any).services || business.serviceOffering?.split(',').slice(1).join(',').trim() || '',
             subSector: (business as any).subSector || '',
             businessUserOrganisation: business.businessUserOrganisation || '',
             // Documents
@@ -270,8 +270,8 @@ export default function BusinessProfilePage() {
             registrationNumber: business?.registrationNumber || '',
             legalStructure: business?.legalStructure || '',
             serviceOffering: business?.serviceOffering || (business as any)?.productCatalog || '',
-            goods: (business as any)?.goods || '',
-            services: (business as any)?.services || '',
+            goods: (business as any)?.goods || business?.serviceOffering?.split(',')[0]?.trim() || '',
+            services: (business as any)?.services || business?.serviceOffering?.split(',').slice(1).join(',').trim() || '',
             subSector: (business as any)?.subSector || '',
             companyEmail: business?.companyEmail || user?.email || '',
             contactPhone: business?.contactPhone || user?.phoneNumber || '',
@@ -497,21 +497,25 @@ export default function BusinessProfilePage() {
                 )}
               </div>
 
-              {business.serviceOffering && (
+              {((business as any).goods || (business as any).services || (business as any).subSector || business.serviceOffering) && (
                 <>
                   <Separator />
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Goods</p>
-                      <p className="text-sm leading-relaxed">{business.serviceOffering.split(',')[0]?.trim() || '—'}</p>
+                      <p className="text-sm leading-relaxed">
+                        {(business as any).goods || business.serviceOffering?.split(',')[0]?.trim() || '—'}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Services</p>
-                      <p className="text-sm leading-relaxed">{business.serviceOffering.split(',').slice(1).join(',').trim() || '—'}</p>
+                      <p className="text-sm leading-relaxed">
+                        {(business as any).services || business.serviceOffering?.split(',').slice(1).join(',').trim() || '—'}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Sub-sector</p>
-                      <p className="text-sm leading-relaxed">—</p>
+                      <p className="text-sm leading-relaxed">{(business as any).subSector || '—'}</p>
                     </div>
                   </div>
                 </>
