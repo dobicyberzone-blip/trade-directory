@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { z } from 'zod';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -522,62 +523,86 @@ function RegisterPageContent({
     setIsOpen, 
     ref,
     label
-  }: any) => (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full h-12 px-3 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-      >
-        <span className={value ? 'text-gray-900' : 'text-gray-400'}>
-          {value || placeholder}
-        </span>
-        <svg className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-      {isOpen && (
-        <div className="absolute left-0 right-0 mt-1 bg-white rounded-md shadow-xl border z-[100] max-h-72 overflow-hidden flex flex-col">
-          <div className="p-2 border-b bg-white sticky top-0">
-            <input
-              type="text"
-              placeholder={`Search ${label}...`}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              autoFocus
-            />
-            <p className="text-xs text-gray-400 mt-1 px-1">
-              {options.filter((o: any) => o.label.toLowerCase().includes(search.toLowerCase())).length} of {options.length}
-            </p>
-          </div>
-          <div className="overflow-y-auto flex-1">
-            {options
-              .filter((o: any) => o.label.toLowerCase().includes(search.toLowerCase()))
-              .map((option: any) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => {
-                    onChange(option.value);
-                    setIsOpen(false);
-                    setSearch('');
-                  }}
-                  className={`w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 transition-colors flex items-center justify-between ${value === option.value ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-900'}`}
-                >
-                  <span>{option.label}</span>
-                  {value === option.value && <span className="text-green-600">✓</span>}
-                </button>
-              ))
-            }
-            {options.filter((o: any) => o.label.toLowerCase().includes(search.toLowerCase())).length === 0 && (
-              <div className="px-4 py-6 text-center text-sm text-gray-400">No {label.toLowerCase()} found.</div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  }: any) => {
+    const btnRef = useRef<HTMLButtonElement>(null);
+    const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+
+    const reposition = useCallback(() => {
+      if (!btnRef.current) return;
+      const r = btnRef.current.getBoundingClientRect();
+      setCoords({ top: r.bottom + window.scrollY + 4, left: r.left + window.scrollX, width: r.width });
+    }, []);
+
+    useEffect(() => {
+      if (isOpen) reposition();
+      window.addEventListener('resize', reposition);
+      window.addEventListener('scroll', reposition, true);
+      return () => {
+        window.removeEventListener('resize', reposition);
+        window.removeEventListener('scroll', reposition, true);
+      };
+    }, [isOpen, reposition]);
+
+    const filteredOptions = options.filter((o: any) => o.label.toLowerCase().includes(search.toLowerCase()));
+
+    return (
+      <div className="relative" ref={ref}>
+        <button
+          ref={btnRef}
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-between w-full h-12 px-3 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        >
+          <span className={value ? 'text-gray-900' : 'text-gray-400'}>
+            {value || placeholder}
+          </span>
+          <svg className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {isOpen && typeof document !== 'undefined' && createPortal(
+          <div style={{ position: 'absolute', top: coords.top, left: coords.left, width: coords.width, zIndex: 9999 }}>
+            <div className="bg-white rounded-md shadow-xl border max-h-72 overflow-hidden flex flex-col">
+              <div className="p-2 border-b bg-white sticky top-0">
+                <input
+                  type="text"
+                  placeholder={`Search ${label}...`}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  autoFocus
+                />
+                <p className="text-xs text-gray-400 mt-1 px-1">
+                  {filteredOptions.length} of {options.length}
+                </p>
+              </div>
+              <div className="overflow-y-auto flex-1">
+                {filteredOptions.map((option: any) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      onChange(option.value);
+                      setIsOpen(false);
+                      setSearch('');
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 transition-colors flex items-center justify-between ${value === option.value ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-900'}`}
+                  >
+                    <span>{option.label}</span>
+                    {value === option.value && <span className="text-green-600">✓</span>}
+                  </button>
+                ))}
+                {filteredOptions.length === 0 && (
+                  <div className="px-4 py-6 text-center text-sm text-gray-400">No {label.toLowerCase()} found.</div>
+                )}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+      </div>
+    );
+  };
 
   // Multi-select for products/services
   const toggleProduct = (product: string) => {
