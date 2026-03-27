@@ -45,16 +45,19 @@ export default function MasterDataPage() {
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; type: EntityType; item?: any }>({ open: false, type: 'industry' });
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  const getHeaders = () => {
+    const t = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    return { 'Content-Type': 'application/json', Authorization: `Bearer ${t}` };
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      const h = getHeaders();
       const [iRes, sRes, oRes] = await Promise.all([
-        fetch(`${BASE}?type=industries`, { headers }),
-        fetch(`${BASE}?type=sectors`, { headers }),
-        fetch(`${BASE}?type=organizations`, { headers }),
+        fetch(`${BASE}?type=industries`, { headers: h }),
+        fetch(`${BASE}?type=sectors`, { headers: h }),
+        fetch(`${BASE}?type=organizations`, { headers: h }),
       ]);
       const [iData, sData, oData] = await Promise.all([iRes.json(), sRes.json(), oRes.json()]);
       setIndustries(iData.data || []);
@@ -87,7 +90,7 @@ export default function MasterDataPage() {
       const body = isEdit
         ? { type: dialog.type, id: dialog.item.id, ...form }
         : { type: dialog.type, ...form };
-      const res = await fetch(BASE, { method: isEdit ? 'PUT' : 'POST', headers, body: JSON.stringify(body) });
+      const res = await fetch(BASE, { method: isEdit ? 'PUT' : 'POST', headers: getHeaders(), body: JSON.stringify(body) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       toast({ title: isEdit ? 'Updated successfully' : 'Created successfully' });
@@ -102,7 +105,7 @@ export default function MasterDataPage() {
   const remove = async () => {
     if (!deleteConfirm.item) return;
     try {
-      const res = await fetch(`${BASE}?type=${deleteConfirm.type}&id=${deleteConfirm.item.id}`, { method: 'DELETE', headers });
+      const res = await fetch(`${BASE}?type=${deleteConfirm.type}&id=${deleteConfirm.item.id}`, { method: 'DELETE', headers: getHeaders() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       toast({ title: 'Deleted successfully' });
