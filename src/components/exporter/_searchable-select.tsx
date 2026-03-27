@@ -1,6 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useEffect, useRef } from 'react';
 
 export function SearchableSelect({
   options,
@@ -16,52 +15,38 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [otherValue, setOtherValue] = useState('');
-  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
-  const btnRef = useRef<HTMLButtonElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
+  // Guard against undefined/non-array options
   const safeOptions: string[] = Array.isArray(options) ? options : [];
+
+  // Determine if current value is a custom "Other" entry
   const isOther = value && !safeOptions.includes(value) && value !== 'Other';
 
-  useEffect(() => { if (isOther) setOtherValue(value); }, []);
-
-  const reposition = useCallback(() => {
-    if (!btnRef.current) return;
-    const r = btnRef.current.getBoundingClientRect();
-    setCoords({ top: r.bottom + window.scrollY + 4, left: r.left + window.scrollX, width: r.width });
+  useEffect(() => {
+    if (isOther) setOtherValue(value);
   }, []);
 
   useEffect(() => {
-    if (open) reposition();
-    window.addEventListener('resize', reposition);
-    window.addEventListener('scroll', reposition, true);
-    return () => {
-      window.removeEventListener('resize', reposition);
-      window.removeEventListener('scroll', reposition, true);
-    };
-  }, [open, reposition]);
-
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setOpen(false);
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const baseOptions = safeOptions.filter(o => o !== 'Other');
+  // Ensure "Other" is always last
+  const baseOptions = (safeOptions).filter(o => o !== 'Other');
   const allOptions = safeOptions.some(o => o === 'Other') ? [...baseOptions, 'Other'] : baseOptions;
   const filtered = allOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()));
+
   const displayValue = isOther ? `Other: ${value}` : value;
 
   return (
-    <div className="relative mt-1" ref={wrapperRef}>
+    <div className="relative mt-1" ref={ref}>
       <button
-        ref={btnRef}
         type="button"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={(e) => { e.stopPropagation(); setOpen(v => !v); }}
+        onClick={() => setOpen(!open)}
         className="flex items-center justify-between w-full h-10 px-3 border border-input rounded-md bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
         <span className={value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}>
@@ -71,49 +56,46 @@ export function SearchableSelect({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-
-      {open && typeof document !== 'undefined' && createPortal(
-        <div style={{ position: 'absolute', top: coords.top, left: coords.left, width: coords.width, zIndex: 9999 }}>
-          <div className="bg-white dark:bg-gray-800 rounded-md shadow-xl border dark:border-gray-700 max-h-64 overflow-hidden flex flex-col">
-            <div className="p-2 border-b dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                autoFocus
-              />
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 px-1">{filtered.length} of {allOptions.length}</p>
-            </div>
-            <div className="overflow-y-auto flex-1">
-              {filtered.map(option => (
-                <button
-                  key={option}
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (option === 'Other') { onChange('Other'); }
-                    else { onChange(option); setOtherValue(''); }
-                    setOpen(false);
-                    setSearch('');
-                  }}
-                  className={`w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between ${(value === option || (option === 'Other' && isOther)) ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium' : 'text-gray-900 dark:text-gray-100'}`}
-                >
-                  <span>{option}</span>
-                  {(value === option || (option === 'Other' && isOther)) && <span className="text-green-600 dark:text-green-400">✓</span>}
-                </button>
-              ))}
-              {filtered.length === 0 && (
-                <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">No results found.</div>
-              )}
-            </div>
+      {open && (
+        <div className="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-md shadow-xl border dark:border-gray-700 z-[100] max-h-64 overflow-hidden flex flex-col">
+          <div className="p-2 border-b dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              autoFocus
+            />
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 px-1">{filtered.length} of {allOptions.length}</p>
           </div>
-        </div>,
-        document.body
+          <div className="overflow-y-auto flex-1">
+            {filtered.map(option => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  if (option === 'Other') {
+                    onChange('Other');
+                  } else {
+                    onChange(option);
+                    setOtherValue('');
+                  }
+                  setOpen(false);
+                  setSearch('');
+                }}
+                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between ${(value === option || (option === 'Other' && isOther)) ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium' : 'text-gray-900 dark:text-gray-100'}`}
+              >
+                <span>{option}</span>
+                {(value === option || (option === 'Other' && isOther)) && <span className="text-green-600 dark:text-green-400">✓</span>}
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">No results found.</div>
+            )}
+          </div>
+        </div>
       )}
-
       {(value === 'Other' || isOther) && (
         <input
           type="text"

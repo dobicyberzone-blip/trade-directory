@@ -526,8 +526,7 @@ function RegisterPageContent({
     <div className="relative" ref={ref}>
       <button
         type="button"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
+        onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full h-12 px-3 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
         <span className={value ? 'text-gray-900' : 'text-gray-400'}>
