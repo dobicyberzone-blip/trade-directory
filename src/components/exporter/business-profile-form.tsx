@@ -49,7 +49,7 @@ import { resolveFileUrl } from '@/lib/pdf-viewer';
 
 const businessFormSchema = z.object({
   // Basic Details
-  kenyanNationalId: z.string().min(1, 'Kenyan National ID is required'),
+  kenyanNationalId: z.string().min(1, 'Kenyan National ID / Passport No is required'),
   name: z.string().optional(),                  // read-only (from registration)
   logoUrl: z.string().min(1, 'Company logo is required'),
   
@@ -610,14 +610,14 @@ export function BusinessProfileForm({
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="kenyanNationalId">Kenyan National ID Number *</Label>
+                <Label htmlFor="kenyanNationalId">Kenyan National ID Number/ Passport No*</Label>
                 <Input
                   id="kenyanNationalId"
                   {...form.register('kenyanNationalId')}
-                  placeholder="Enter your Kenyan National ID number"
+                  placeholder="Enter your Kenyan National ID number/Passport No"
                   className="mt-1"
                 />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your Kenyan National ID number</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your Kenyan National ID number/Passport No</p>
                 {form.formState.errors.kenyanNationalId && (
                   <p className="text-sm text-red-600 mt-1">
                     {form.formState.errors.kenyanNationalId.message}
