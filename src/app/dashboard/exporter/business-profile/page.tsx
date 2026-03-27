@@ -632,6 +632,61 @@ export default function BusinessProfilePage() {
             } catch { /* ignore */ }
             return null;
           })()}
+
+          {/* Business Certifications — in left column below Management Team */}
+          {business.certifications && business.certifications.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="w-5 h-5" />
+                  Business Certifications
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {business.certifications.map((certification, index) => (
+                    <Card key={index} className="relative">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm mb-1">{certification.name}</h4>
+                            <div className="flex items-center text-xs text-gray-600 dark:text-gray-300">
+                              <Building2 className="w-3 h-3 mr-1" />
+                              {certification.issuer}
+                            </div>
+                          </div>
+                          {certification.logoUrl && (
+                            <img
+                              src={certification.logoUrl}
+                              alt={`${certification.name} logo`}
+                              className="w-8 h-8 object-contain ml-2"
+                              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            />
+                          )}
+                        </div>
+                        {certification.validUntil && (
+                          <div className="flex items-center text-xs text-gray-500 mb-2">
+                            <Clock className="w-3 h-3 mr-1" />
+                            Valid until: {formatDate(certification.validUntil)}
+                          </div>
+                        )}
+                        {certification.imageUrl ? (
+                          <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => {
+                            if (!certification.imageUrl) return;
+                            window.open(resolveFileUrl(certification.imageUrl), '_blank', 'noopener,noreferrer');
+                          }}>
+                            <Eye className="w-3 h-3 mr-1" /> View Certificate
+                          </Button>
+                        ) : (
+                          <p className="text-xs text-gray-400 text-center py-1">No image uploaded</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* RIGHT column */}
@@ -793,78 +848,6 @@ export default function BusinessProfilePage() {
         </div>
       </div>
 
-      {/* Certifications Section */}
-      {business.certifications && business.certifications.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Award className="w-5 h-5" />
-              <span>Business Certifications</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {business.certifications.map((certification, index) => (
-                <Card key={index} className="relative">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm mb-1">
-                          {certification.name}
-                        </h4>
-                        <div className="flex items-center text-xs text-gray-600 dark:text-gray-300 mb-2">
-                          <Building2 className="w-3 h-3 mr-1" />
-                          {certification.issuer}
-                        </div>
-                      </div>
-                      
-                      {certification.logoUrl && (
-                        <img
-                          src={certification.logoUrl}
-                          alt={`${certification.name} logo`}
-                          className="w-10 h-10 object-contain"
-                          onError={(e) => {
-                            // Hide image if it fails to load
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      )}
-                    </div>
-
-                    {certification.validUntil && (
-                      <div className="flex items-center text-xs mb-3 text-gray-600 dark:text-gray-300">
-                        <Clock className="w-3 h-3 mr-1" />
-                        <span>Valid until: {formatDate(certification.validUntil)}</span>
-                      </div>
-                    )}
-
-                    {certification.imageUrl && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => {
-                          if (!certification.imageUrl) return;
-                          window.open(resolveFileUrl(certification.imageUrl), '_blank', 'noopener,noreferrer');
-                        }}
-                      >
-                        <Eye className="w-3 h-3 mr-1" />
-                        View Certificate
-                      </Button>
-                    )}
-                    
-                    {!certification.imageUrl && (
-                      <p className="text-xs text-gray-500 text-center py-2">
-                        No certificate image uploaded
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
