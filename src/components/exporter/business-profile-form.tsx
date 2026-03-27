@@ -49,7 +49,7 @@ import { resolveFileUrl } from '@/lib/pdf-viewer';
 
 const businessFormSchema = z.object({
   // Basic Details
-  kenyanNationalId: z.string().min(1, 'Kenyan National ID is required'),
+  kenyanNationalId: z.string().min(1, 'National ID / Passport No is required'),
   name: z.string().optional(),                  // read-only (from registration)
   logoUrl: z.string().optional(),
   
@@ -115,6 +115,23 @@ const businessFormSchema = z.object({
   
   // Company Story
   companyStory: z.string().optional(),
+}).superRefine((data, ctx) => {
+  // National ID / Passport filled → document required
+  if (data.kenyanNationalId && !data.kenyanNationalIdUrl) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please upload your National ID or Passport document',
+      path: ['kenyanNationalIdUrl'],
+    });
+  }
+  // Export License No. filled → document required
+  if (data.exportLicense && !data.exportLicenseUrl) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please upload your Export License/Permit document',
+      path: ['exportLicenseUrl'],
+    });
+  }
 });
 
 interface BusinessProfileFormProps {
@@ -464,7 +481,13 @@ export function BusinessProfileForm({
 
   // Validate current section before moving to next
   const validateCurrentSection = async () => {
-    const requiredFields = sectionRequiredFields[currentSection] || [];
+    let requiredFields = sectionRequiredFields[currentSection] || [];
+
+    // Section 2 (Documents): conditionally require ID/passport doc and export license doc
+    if (currentSection === 2) {
+      if (form.getValues('kenyanNationalId')) requiredFields = [...requiredFields, 'kenyanNationalIdUrl'];
+      if (form.getValues('exportLicense')) requiredFields = [...requiredFields, 'exportLicenseUrl'];
+    }
     
     // Trigger validation for required fields in current section
     const results = await Promise.all(
@@ -620,14 +643,14 @@ export function BusinessProfileForm({
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="kenyanNationalId">Kenyan National ID Number *</Label>
+                <Label htmlFor="kenyanNationalId">National ID Number / Passport No *</Label>
                 <Input
                   id="kenyanNationalId"
                   {...form.register('kenyanNationalId')}
-                  placeholder="Enter your Kenyan National ID number"
+                  placeholder="Enter your National ID number or Passport No"
                   className="mt-1"
                 />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your Kenyan National ID number</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your Kenyan National ID number or Passport No</p>
                 {form.formState.errors.kenyanNationalId && (
                   <p className="text-sm text-red-600 mt-1">
                     {form.formState.errors.kenyanNationalId.message}
@@ -826,7 +849,7 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="exportLicense">Export License No.</Label>
+                <Label htmlFor="exportLicense">Export License No. {form.watch('exportLicense') ? '*' : '(Optional)'}</Label>
                 <Input
                   id="exportLicense"
                   {...form.register('exportLicense')}
@@ -940,13 +963,19 @@ export function BusinessProfileForm({
             )}
 
             <FileUploader
-              label="Kenyan National ID (Optional)"
-              description="Upload your Kenyan National ID document (PDF only, max 1MB)"
+              label={`National ID / Passport${form.watch('kenyanNationalId') ? ' *' : ' (Optional)'}`}
+              description="Upload your National ID or Passport document (PDF only, max 1MB)"
               value={form.watch('kenyanNationalIdUrl')}
               onChange={(url) => form.setValue('kenyanNationalIdUrl', url)}
               validationOptions={DEFAULT_DOCUMENT_OPTIONS}
               accept="application/pdf"
+              required={!!form.watch('kenyanNationalId')}
             />
+            {form.formState.errors.kenyanNationalIdUrl && (
+              <p className="text-sm text-red-600">
+                {form.formState.errors.kenyanNationalIdUrl.message}
+              </p>
+            )}
 
             <FileUploader
               label="Kenya Certificate of Incorporation (Optional)"
@@ -958,12 +987,13 @@ export function BusinessProfileForm({
             />
 
             <FileUploader
-              label="Export License/Permit (Optional)"
+              label={`Export License/Permit${form.watch('exportLicense') ? ' *' : ' (Optional)'}`}
               description="Upload your Export License/Permit document (PDF only, max 1MB)"
               value={form.watch('exportLicenseUrl')}
               onChange={(url) => form.setValue('exportLicenseUrl', url)}
               validationOptions={DEFAULT_DOCUMENT_OPTIONS}
               accept="application/pdf"
+              required={!!form.watch('exportLicense')}
             />
             {form.formState.errors.exportLicenseUrl && (
               <p className="text-sm text-red-600">
