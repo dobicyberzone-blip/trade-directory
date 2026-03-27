@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
         // Business Details
         businessPurpose: businessData.businessPurpose,
         typeOfBusiness: businessData.typeOfBusiness,
-        serviceOffering: businessData.serviceOffering,
+        serviceOffering: [businessData.goods, businessData.services].filter(Boolean).join(', ') || businessData.serviceOffering,
         dateOfIncorporation: businessData.dateOfIncorporation,
         legalStructure: businessData.legalStructure,
         numberOfEmployees: businessData.numberOfEmployees,

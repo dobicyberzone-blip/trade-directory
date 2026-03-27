@@ -65,6 +65,9 @@ const businessFormSchema = z.object({
   industry: z.string().optional(),
   productHsCode: z.string().optional(),
   serviceOffering: z.string().optional(),
+  goods: z.string().optional(),
+  services: z.string().optional(),
+  subSector: z.string().optional(),
   businessUserOrganisation: z.string().optional(),
   
   // Documents
@@ -226,6 +229,9 @@ export function BusinessProfileForm({
       sector: registrationData?.sector || '',
       industry: registrationData?.industry || '',
       serviceOffering: registrationData?.serviceOffering || '',
+      goods: '',
+      services: '',
+      subSector: '',
       businessUserOrganisation: '',
       registrationCertificateUrl: '',
       pinCertificateUrl: '',
@@ -736,11 +742,33 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="serviceOffering">Products/Services</Label>
+                <Label htmlFor="goods">Goods</Label>
                 <Input
-                  id="serviceOffering"
-                  {...form.register('serviceOffering')}
-                  placeholder="e.g., Fresh Produce, Coffee, Logistics"
+                  id="goods"
+                  {...form.register('goods')}
+                  placeholder="e.g., Fresh Produce, Coffee, Tea"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="services">Services</Label>
+                <Input
+                  id="services"
+                  {...form.register('services')}
+                  placeholder="e.g., Logistics, Export Trading, Consulting"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="subSector">Sub-sector</Label>
+                <Input
+                  id="subSector"
+                  {...form.register('subSector')}
+                  placeholder="e.g., Horticulture, Dairy Processing"
                   className="mt-1"
                 />
               </div>

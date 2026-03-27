@@ -217,6 +217,9 @@ export default function BusinessProfilePage() {
             industry: business.industry || '',
             productHsCode: business.productHsCode || '',
             serviceOffering: business.serviceOffering || (business as any).productCatalog || '',
+            goods: '',
+            services: '',
+            subSector: '',
             businessUserOrganisation: business.businessUserOrganisation || '',
             // Documents
             registrationCertificateUrl: business.registrationCertificateUrl || '',
@@ -494,9 +497,19 @@ export default function BusinessProfilePage() {
               {business.serviceOffering && (
                 <>
                   <Separator />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Products / Services</p>
-                    <p className="text-sm leading-relaxed">{business.serviceOffering}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Goods</p>
+                      <p className="text-sm leading-relaxed">{business.serviceOffering.split(',')[0]?.trim() || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Services</p>
+                      <p className="text-sm leading-relaxed">{business.serviceOffering.split(',').slice(1).join(',').trim() || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Sub-sector</p>
+                      <p className="text-sm leading-relaxed">—</p>
+                    </div>
                   </div>
                 </>
               )}
