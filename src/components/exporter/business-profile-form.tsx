@@ -621,6 +621,9 @@ export function BusinessProfileForm({
     </div>
   );
 
+  // Helper: red required asterisk
+  const Req = () => <span className="text-red-500 ml-0.5">*</span>;
+
   const COMMON_CERTIFICATIONS = [
     'Made in Kenya Certification',
     'ISO 9001 - Quality Management',
@@ -643,7 +646,7 @@ export function BusinessProfileForm({
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="kenyanNationalId">National ID Number / Passport No *</Label>
+                <Label htmlFor="kenyanNationalId">National ID Number / Passport No <Req /></Label>
                 <Input
                   id="kenyanNationalId"
                   {...form.register('kenyanNationalId')}
@@ -659,7 +662,7 @@ export function BusinessProfileForm({
               </div>
 
               <div>
-                <Label htmlFor="name">Business Name *</Label>
+                <Label htmlFor="name">Business Name <Req /></Label>
                 <FromRegField value={form.watch('name') || ''} />
               </div>
             </div>
@@ -713,7 +716,7 @@ export function BusinessProfileForm({
               </div>
 
               <div>
-                <Label htmlFor="numberOfEmployees">Number of Employees *</Label>
+                <Label htmlFor="numberOfEmployees">Number of Employees <Req /></Label>
                 <Input
                   id="numberOfEmployees"
                   {...form.register('numberOfEmployees')}
@@ -732,7 +735,7 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="kraPin">KRA PIN *</Label>
+                <Label htmlFor="kraPin">KRA PIN <Req /></Label>
                 <Input
                   id="kraPin"
                   {...form.register('kraPin')}
@@ -849,7 +852,7 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="exportLicense">Export License No. {form.watch('exportLicense') ? '*' : '(Optional)'}</Label>
+                <Label htmlFor="exportLicense">Export License No. {form.watch('exportLicense') ? <Req /> : <span className="text-gray-400 font-normal text-xs">(Optional)</span>}</Label>
                 <Input
                   id="exportLicense"
                   {...form.register('exportLicense')}
@@ -963,7 +966,7 @@ export function BusinessProfileForm({
             )}
 
             <FileUploader
-              label={`National ID / Passport${form.watch('kenyanNationalId') ? ' *' : ' (Optional)'}`}
+              label={`National ID / Passport${form.watch('kenyanNationalId') ? '' : ' (Optional)'}`}
               description="Upload your National ID or Passport document (PDF only, max 1MB)"
               value={form.watch('kenyanNationalIdUrl')}
               onChange={(url) => form.setValue('kenyanNationalIdUrl', url)}
@@ -987,7 +990,7 @@ export function BusinessProfileForm({
             />
 
             <FileUploader
-              label={`Export License/Permit${form.watch('exportLicense') ? ' *' : ' (Optional)'}`}
+              label={`Export License/Permit${form.watch('exportLicense') ? '' : ' (Optional)'}`}
               description="Upload your Export License/Permit document (PDF only, max 1MB)"
               value={form.watch('exportLicenseUrl')}
               onChange={(url) => form.setValue('exportLicenseUrl', url)}
@@ -1096,7 +1099,7 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="town">City/Town *</Label>
+                <Label htmlFor="town">City/Town <Req /></Label>
                 <Input
                   id="town"
                   {...form.register('town')}
@@ -1106,7 +1109,7 @@ export function BusinessProfileForm({
               </div>
 
               <div>
-                <Label htmlFor="county">County *</Label>
+                <Label htmlFor="county">County <Req /></Label>
                 <SearchableSelect
                   options={KENYAN_COUNTIES}
                   value={form.watch('county') || ''}
@@ -1117,7 +1120,7 @@ export function BusinessProfileForm({
             </div>
 
             <div>
-              <Label htmlFor="physicalAddress">Physical Address *</Label>
+              <Label htmlFor="physicalAddress">Physical Address <Req /></Label>
               <Input
                 id="physicalAddress"
                 {...form.register('physicalAddress')}
@@ -1128,7 +1131,7 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="contactPhone">Company Phone *</Label>
+                <Label htmlFor="contactPhone">Company Phone <Req /></Label>
                 <Input
                   id="contactPhone"
                   {...form.register('contactPhone')}
@@ -1151,7 +1154,7 @@ export function BusinessProfileForm({
             </div>
 
             <div>
-              <Label htmlFor="companyEmail">Company Email *</Label>
+              <Label htmlFor="companyEmail">Company Email <Req /></Label>
               <Input
                 id="companyEmail"
                 {...form.register('companyEmail')}
@@ -1487,7 +1490,7 @@ export function BusinessProfileForm({
                           </div>
 
                           <div>
-                            <Label htmlFor="cert-name">Certification Name *</Label>
+                            <Label htmlFor="cert-name">Certification Name <Req /></Label>
                             <Input
                               id="cert-name"
                               value={certFormData.name}
@@ -1500,7 +1503,7 @@ export function BusinessProfileForm({
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="cert-issuer">Issuing Authority *</Label>
+                            <Label htmlFor="cert-issuer">Issuing Authority <Req /></Label>
                             <Input
                               id="cert-issuer"
                               value={certFormData.issuer}
