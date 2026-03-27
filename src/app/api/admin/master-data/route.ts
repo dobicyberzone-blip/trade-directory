@@ -145,7 +145,7 @@ export async function PUT(req: NextRequest) {
 // ── DELETE ───────────────────────────────────────────────────────────────────
 export async function DELETE(req: NextRequest) {
   const token = await verifyToken(req);
-  if (!token || !isAdmin(token.role)) return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: cors });
+  if (!token || token.role !== 'SUPER_ADMIN') return NextResponse.json({ error: 'Forbidden — Super Admin only' }, { status: 403, headers: cors });
 
   const { searchParams } = req.nextUrl;
   const type = searchParams.get('type');

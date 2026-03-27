@@ -199,9 +199,11 @@ export default function MasterDataPage() {
                           <TableCell align="center"><Chip label={row.isActive ? 'Active' : 'Inactive'} size="small" color={row.isActive ? 'success' : 'default'} /></TableCell>
                           <TableCell align="center">
                             <Tooltip title="Edit"><IconButton size="small" onClick={() => openEdit('industry', row)}><Pencil size={14} /></IconButton></Tooltip>
-                            <Tooltip title="Delete (cascades to sectors & organizations)">
-                              <IconButton size="small" color="error" onClick={() => setDeleteConfirm({ open: true, type: 'industry', item: row })}><Trash2 size={14} /></IconButton>
-                            </Tooltip>
+                            {user?.isSuperAdmin && (
+                              <Tooltip title="Delete (cascades to sectors & organizations)">
+                                <IconButton size="small" color="error" onClick={() => setDeleteConfirm({ open: true, type: 'industry', item: row })}><Trash2 size={14} /></IconButton>
+                              </Tooltip>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -251,9 +253,11 @@ export default function MasterDataPage() {
                           <TableCell align="center"><Chip label={row.isActive ? 'Active' : 'Inactive'} size="small" color={row.isActive ? 'success' : 'default'} /></TableCell>
                           <TableCell align="center">
                             <Tooltip title="Edit"><IconButton size="small" onClick={() => openEdit('sector', row)}><Pencil size={14} /></IconButton></Tooltip>
-                            <Tooltip title="Delete (cascades to organizations)">
-                              <IconButton size="small" color="error" onClick={() => setDeleteConfirm({ open: true, type: 'sector', item: row })}><Trash2 size={14} /></IconButton>
-                            </Tooltip>
+                            {user?.isSuperAdmin && (
+                              <Tooltip title="Delete (cascades to organizations)">
+                                <IconButton size="small" color="error" onClick={() => setDeleteConfirm({ open: true, type: 'sector', item: row })}><Trash2 size={14} /></IconButton>
+                              </Tooltip>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -310,7 +314,11 @@ export default function MasterDataPage() {
                           <TableCell align="center"><Chip label={row.isActive ? 'Active' : 'Inactive'} size="small" color={row.isActive ? 'success' : 'default'} /></TableCell>
                           <TableCell align="center">
                             <Tooltip title="Edit"><IconButton size="small" onClick={() => openEdit('organization', row)}><Pencil size={14} /></IconButton></Tooltip>
-                            <Tooltip title="Delete"><IconButton size="small" color="error" onClick={() => setDeleteConfirm({ open: true, type: 'organization', item: row })}><Trash2 size={14} /></IconButton></Tooltip>
+                            {user?.isSuperAdmin && (
+                              <Tooltip title="Delete">
+                                <IconButton size="small" color="error" onClick={() => setDeleteConfirm({ open: true, type: 'organization', item: row })}><Trash2 size={14} /></IconButton>
+                              </Tooltip>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
