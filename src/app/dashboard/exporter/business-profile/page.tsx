@@ -444,12 +444,8 @@ export default function BusinessProfilePage() {
                   <p className="font-semibold">{business.name}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Type of Business</p>
-                  <p className="font-semibold">{business.typeOfBusiness || business.legalStructure || 'Not specified'}</p>
-                </div>
-                <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Legal Structure</p>
-                  <p className="font-semibold">{business.legalStructure || 'Not specified'}</p>
+                  <p className="font-semibold">{business.legalStructure || business.typeOfBusiness || 'Not specified'}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Sector</p>

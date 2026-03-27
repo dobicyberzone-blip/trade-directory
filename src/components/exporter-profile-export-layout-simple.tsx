@@ -49,9 +49,9 @@ export function ExporterProfileExportLayoutSimple({
 
   const InfoRow = ({ label, value }: { label: string; value?: string | null }) =>
     value ? (
-      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', fontSize: '11px', lineHeight: '1.5', borderBottom: '1px solid #f3f4f6', paddingBottom: '4px' }}>
-        <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap', minWidth: '110px' }}>{label}:</span>
-        <span style={{ color: '#111827', flex: 1 }}>{value}</span>
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '4px', fontSize: '10px', lineHeight: '1.4', borderBottom: '1px solid #f3f4f6', paddingBottom: '3px' }}>
+        <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap', minWidth: '100px' }}>{label}:</span>
+        <span style={{ color: '#111827', flex: 1, wordBreak: 'break-word' }}>{value}</span>
       </div>
     ) : null;
 
@@ -78,12 +78,14 @@ export function ExporterProfileExportLayoutSimple({
     fontFamily: 'Arial, sans-serif',
   };
 
+  // Always use 2-column layout for PDF — portrait just uses narrower columns
   const mainStyle: React.CSSProperties = {
     flex: 1,
     display: 'grid',
-    gridTemplateColumns: isPortrait ? '1fr' : '1fr 1fr',
-    gap: '24px',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '20px',
     minHeight: 0,
+    overflow: 'hidden',
   };
 
   const colStyle: React.CSSProperties = {
@@ -167,25 +169,22 @@ export function ExporterProfileExportLayoutSimple({
               )}
             </div>
 
-            {/* Business Information — stretches to fill remaining left column */}
-            <div style={stretchStyle}>
+            {/* Business Information */}
+            <div>
               <SectionTitle>Business Information</SectionTitle>
-              <div style={{ flex: 1 }}>
-                <InfoRow label="Type of Business" value={business.typeOfBusiness} />
-                <InfoRow label="Legal Structure" value={(business as any).legalStructure} />
-                <InfoRow label="Date of Incorporation" value={business.dateOfIncorporation} />
-                <InfoRow label="Registration No." value={business.registrationNumber} />
-                <InfoRow label="KRA PIN" value={business.kraPin} />
-                <InfoRow label="Company Size" value={business.companySize} />
-                <InfoRow label="Employees" value={business.numberOfEmployees} />
-                <InfoRow label="Sub-sector" value={(business as any).subSector} />
-                <InfoRow label="Goods" value={(business as any).goods} />
-                <InfoRow label="Services" value={(business as any).services} />
-                <InfoRow label="Organisation" value={(business as any).businessUserOrganisation} />
-                <InfoRow label="Export Markets" value={business.currentExportMarkets} />
-                <InfoRow label="Export Volume (3 yrs)" value={business.exportVolumePast3Years} />
-                <InfoRow label="Production Capacity (3 yrs)" value={business.productionCapacityPast3} />
-              </div>
+              <InfoRow label="Legal Structure" value={(business as any).legalStructure || business.typeOfBusiness} />
+              <InfoRow label="Date of Incorporation" value={business.dateOfIncorporation} />
+              <InfoRow label="Registration No." value={business.registrationNumber} />
+              <InfoRow label="KRA PIN" value={business.kraPin} />
+              <InfoRow label="Company Size" value={business.companySize} />
+              <InfoRow label="Employees" value={business.numberOfEmployees} />
+              <InfoRow label="Sub-sector" value={(business as any).subSector} />
+              <InfoRow label="Goods" value={(business as any).goods} />
+              <InfoRow label="Services" value={(business as any).services} />
+              <InfoRow label="Organisation" value={(business as any).businessUserOrganisation} />
+              <InfoRow label="Export Markets" value={business.currentExportMarkets} />
+              <InfoRow label="Export Volume (3 yrs)" value={business.exportVolumePast3Years} />
+              <InfoRow label="Production Capacity (3 yrs)" value={business.productionCapacityPast3} />
             </div>
           </div>
 
@@ -227,12 +226,12 @@ export function ExporterProfileExportLayoutSimple({
               );
             })()}
 
-            {/* About — stretches to fill, capped at 80 words */}
-            <div style={stretchStyle}>
+            {/* About — capped at 60 words to leave room for certifications */}
+            <div>
               <SectionTitle>About</SectionTitle>
-              <p style={{ fontSize: '11px', color: '#374151', lineHeight: '1.6', flex: 1 }}>
+              <p style={{ fontSize: '11px', color: '#374151', lineHeight: '1.6' }}>
                 {business.companyStory
-                  ? truncate(business.companyStory, 80)
+                  ? truncate(business.companyStory, 60)
                   : 'No company description provided.'}
               </p>
             </div>
@@ -241,9 +240,9 @@ export function ExporterProfileExportLayoutSimple({
             {business.certifications && business.certifications.length > 0 && (
               <div>
                 <SectionTitle>Certifications</SectionTitle>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                   {business.certifications.map((cert: any, i: number) => (
-                    <span key={i} style={{ fontSize: '10px', fontWeight: 600, color: '#111827', border: '1px solid #374151', padding: '2px 6px' }}>
+                    <span key={i} style={{ fontSize: '9px', fontWeight: 600, color: '#111827', border: '1px solid #374151', padding: '2px 5px', lineHeight: '1.4' }}>
                       {cert.name}
                     </span>
                   ))}

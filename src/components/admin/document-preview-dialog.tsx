@@ -216,7 +216,7 @@ export function DocumentPreviewDialog({
     <>
       <Dialog open={open} onOpenChange={onClose}>
         <DialogContent 
-          className="max-w-5xl w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[80vw] max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6"
+          className="max-w-5xl w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[80vw] max-h-[95vh] overflow-y-auto p-3 sm:p-4 md:p-6"
           style={{
             ...dialogStyle,
             left: '50%',
@@ -262,7 +262,7 @@ export function DocumentPreviewDialog({
                   <span className="font-medium truncate">{businessData.sector}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-gray-500 dark:text-gray-400 shrink-0">Type of Business:</span>
+                  <span className="text-gray-500 dark:text-gray-400 shrink-0">Legal Structure:</span>
                   <span className="font-medium truncate">{businessData.typeOfBusiness}</span>
                 </div>
                 <div className="flex gap-1">
