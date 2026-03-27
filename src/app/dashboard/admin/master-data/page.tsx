@@ -366,7 +366,7 @@ export default function MasterDataPage() {
       </Paper>
 
       {/* ── Create / Edit Dialog ── */}
-      <Dialog open={dialog.open} onClose={() => setDialog({ open: false, type: 'industry' })} maxWidth="sm" fullWidth>
+      <Dialog open={dialog.open} onClose={() => setDialog({ open: false, type: 'industry' })} maxWidth="sm" fullWidth sx={{ zIndex: 9999 }}>
         <DialogTitle>{dialog.item ? 'Edit' : 'Add'} {dialog.type === 'industry' ? 'Industry' : dialog.type === 'sector' ? 'Sector' : 'Business Organization'}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
           {/* Parent selectors */}
@@ -407,7 +407,7 @@ export default function MasterDataPage() {
       </Dialog>
 
       {/* ── Delete Confirm ── */}
-      <Dialog open={deleteConfirm.open} onClose={() => setDeleteConfirm({ open: false, type: 'industry' })} maxWidth="xs" fullWidth>
+      <Dialog open={deleteConfirm.open} onClose={() => setDeleteConfirm({ open: false, type: 'industry' })} maxWidth="xs" fullWidth sx={{ zIndex: 9999 }}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>
