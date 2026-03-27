@@ -42,10 +42,15 @@ export function SearchableMultiSelect({
     };
   }, [open, reposition]);
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
     function handleClick(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      const inWrapper = wrapperRef.current?.contains(target);
+      const inDropdown = dropdownRef.current?.contains(target);
+      if (!inWrapper && !inDropdown) setOpen(false);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -111,7 +116,7 @@ export function SearchableMultiSelect({
       </button>
 
       {open && typeof document !== 'undefined' && createPortal(
-        <div style={{ position: 'absolute', top: coords.top, left: coords.left, width: coords.width, zIndex: 9999 }}>
+        <div ref={dropdownRef} style={{ position: 'absolute', top: coords.top, left: coords.left, width: coords.width, zIndex: 9999 }}>
           <div className="bg-white dark:bg-gray-800 rounded-md shadow-xl border dark:border-gray-700 max-h-72 overflow-hidden flex flex-col">
             <div className="p-2 border-b dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0">
               <input
