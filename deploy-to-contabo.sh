@@ -221,8 +221,18 @@ server {
 
     location /_next/static {
         proxy_pass http://nextjs_upstream;
-        proxy_cache_valid 200 60m;
-        add_header Cache-Control "public, max-age=3600, immutable";
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location /api/files/ {
+        proxy_pass http://nextjs_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        add_header Cache-Control "no-store";
+        expires off;
     }
 }
 EOF
