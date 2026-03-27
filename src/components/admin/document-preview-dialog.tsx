@@ -198,6 +198,9 @@ export function DocumentPreviewDialog({
     industry: business?.industry || null,
     productHsCode: business?.productHsCode || null,
     serviceOffering: business?.serviceOffering || null,
+    goods: business?.goods || null,
+    services: business?.services || null,
+    subSector: business?.subSector || null,
     typeOfBusiness: business?.typeOfBusiness || business?.legalStructure || 'N/A',
   };
 
@@ -304,6 +307,24 @@ export function DocumentPreviewDialog({
                     <span className="font-medium truncate">{businessData.serviceOffering}</span>
                   </div>
                 )}
+                {businessData.subSector && (
+                  <div className="flex gap-1">
+                    <span className="text-gray-500 dark:text-gray-400 shrink-0">Sub-sector:</span>
+                    <span className="font-medium truncate">{businessData.subSector}</span>
+                  </div>
+                )}
+                {businessData.goods && (
+                  <div className="flex gap-1">
+                    <span className="text-gray-500 dark:text-gray-400 shrink-0">Goods:</span>
+                    <span className="font-medium truncate">{businessData.goods}</span>
+                  </div>
+                )}
+                {businessData.services && (
+                  <div className="flex gap-1">
+                    <span className="text-gray-500 dark:text-gray-400 shrink-0">Services:</span>
+                    <span className="font-medium truncate">{businessData.services}</span>
+                  </div>
+                )}
               </div>
               {businessData.description && (
                 <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -375,7 +396,7 @@ export function DocumentPreviewDialog({
                   <span className="font-medium truncate">{businessData.productionCapacityPast3}</span>
                 </div>
                 <div className="flex gap-1 sm:col-span-2">
-                  <span className="text-gray-500 dark:text-gray-400 shrink-0">Organization:</span>
+                  <span className="text-gray-500 dark:text-gray-400 shrink-0">Business Organisation:</span>
                   <span className="font-medium truncate">{businessData.businessUserOrganisation}</span>
                 </div>
               </div>
