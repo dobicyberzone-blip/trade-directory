@@ -26,7 +26,10 @@ export interface BusinessFormData {
   sector?: string;         // read-only from registration
   industry?: string;       // read-only from registration
   productHsCode?: string;
-  serviceOffering?: string; // read-only from registration
+  serviceOffering?: string;
+  goods?: string;
+  services?: string;
+  subSector?: string;
   businessUserOrganisation?: string;
   shareholders?: string;
   managementTeam?: string;

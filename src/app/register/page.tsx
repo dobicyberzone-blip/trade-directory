@@ -1054,6 +1054,24 @@ function RegisterPageContent({
 
                         <FormField
                           control={form.control}
+                          name="subSector"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-900 font-medium">Sub-sector</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="e.g. Horticulture, Dairy Processing"
+                                  {...field}
+                                  className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
                           name="goods"
                           render={({ field }) => (
                             <FormItem>
@@ -1079,24 +1097,6 @@ function RegisterPageContent({
                               <FormControl>
                                 <Input
                                   placeholder="e.g. Logistics, Export Trading, Consulting"
-                                  {...field}
-                                  className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="subSector"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-900 font-medium">Sub-sector</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="e.g. Horticulture, Dairy Processing"
                                   {...field}
                                   className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
                                 />

@@ -742,6 +742,16 @@ export function BusinessProfileForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+                <Label htmlFor="subSector">Sub-sector</Label>
+                <Input
+                  id="subSector"
+                  {...form.register('subSector')}
+                  placeholder="e.g., Horticulture, Dairy Processing"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="goods">Goods</Label>
                 <Input
                   id="goods"
@@ -750,25 +760,15 @@ export function BusinessProfileForm({
                   className="mt-1"
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="services">Services</Label>
                 <Input
                   id="services"
                   {...form.register('services')}
                   placeholder="e.g., Logistics, Export Trading, Consulting"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="subSector">Sub-sector</Label>
-                <Input
-                  id="subSector"
-                  {...form.register('subSector')}
-                  placeholder="e.g., Horticulture, Dairy Processing"
                   className="mt-1"
                 />
               </div>
