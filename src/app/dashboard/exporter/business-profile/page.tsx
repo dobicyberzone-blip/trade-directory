@@ -555,13 +555,13 @@ export default function BusinessProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Export Capacity */}
+          {/* Export Trading Capacity */}
           {(business.exportVolumePast3Years || business.productionCapacityPast3 || business.currentExportMarkets) && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  Export Capacity
+                  Company Export Trading Capacity
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">

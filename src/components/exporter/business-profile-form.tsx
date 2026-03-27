@@ -442,7 +442,7 @@ export function BusinessProfileForm({
       fields: ['twitterUrl', 'instagramUrl', 'coordinates']
     },
     {
-      title: 'Export Capacity',
+      title: 'Export Trading Capacity',
       icon: Award,
       fields: ['exportVolumePast3Years', 'currentExportMarkets', 'productionCapacityPast3', 'companyStory']
     }
