@@ -227,9 +227,6 @@ export default function MasterDataPage() {
         <Chip label="Sector" size="small" color="secondary" />
         <ChevronRight size={14} />
         <Chip label="Business Organization" size="small" color="default" />
-        <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
-          Cascading deletes enforced — deleting an Industry removes all its Sectors and Organizations.
-        </Typography>
       </Box>
 
       {/* Search */}
