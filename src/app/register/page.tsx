@@ -459,6 +459,9 @@ function RegisterPageContent({
           sector: values.sector,
           industry: values.industry,
           productServices: values.productServices,
+          goods: values.goods,
+          services: values.services,
+          subSector: values.subSector,
           legalStructure: values.legalStructure,
           fullAddress: values.fullAddress,
           county: values.county,
@@ -1051,15 +1054,50 @@ function RegisterPageContent({
 
                         <FormField
                           control={form.control}
-                          name="productServices"
+                          name="goods"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-900 font-medium">Products/Services</FormLabel>
+                              <FormLabel className="text-gray-900 font-medium">Goods</FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="e.g. Fresh Produce, Coffee, Logistics"
-                                  value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
-                                  onChange={(e) => field.onChange(e.target.value ? [e.target.value] : [])}
+                                  placeholder="e.g. Fresh Produce, Coffee, Tea"
+                                  {...field}
+                                  className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="services"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-900 font-medium">Services</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="e.g. Logistics, Export Trading, Consulting"
+                                  {...field}
+                                  className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="subSector"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-900 font-medium">Sub-sector</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="e.g. Horticulture, Dairy Processing"
+                                  {...field}
                                   className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
                                 />
                               </FormControl>

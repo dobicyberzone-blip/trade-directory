@@ -37,6 +37,9 @@ const registerSchema = z.object({
   sector: z.string().optional(),
   productServices: z.array(z.string()).optional(),
   productCategory: z.string().optional(), // legacy alias
+  goods: z.string().optional(),
+  services: z.string().optional(),
+  subSector: z.string().optional(),
 
   // Location
   fullAddress: z.string().optional(),
@@ -111,6 +114,11 @@ export async function POST(request: NextRequest) {
         ? validatedData.productServices.join(', ')
         : undefined;
 
+      // Build combined product/service string from new fields or legacy field
+      const goodsStr = validatedData.goods || '';
+      const servicesStr = validatedData.services || '';
+      const combinedOffering = [goodsStr, servicesStr].filter(Boolean).join(', ') || productServicesStr;
+
       business = await prisma.business.create({
         data: {
           name: validatedData.businessName,
@@ -132,8 +140,8 @@ export async function POST(request: NextRequest) {
           primaryContactLastName: validatedData.primaryContactLastName,
           primaryContactEmail: validatedData.primaryContactEmail,
           primaryContactPhone: validatedData.primaryContactPhone,
-          productCatalog: productServicesStr,   // legacy — keep for existing data
-          serviceOffering: productServicesStr,
+          productCatalog: combinedOffering,
+          serviceOffering: combinedOffering,
           ownerId: user.id,
           verificationStatus: 'PENDING',
         },
