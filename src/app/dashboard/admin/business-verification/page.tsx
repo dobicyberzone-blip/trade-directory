@@ -1112,6 +1112,8 @@ export default function BusinessVerificationPage() {
         }}
         maxWidth="sm"
         fullWidth
+        disableEnforceFocus
+        disableRestoreFocus
         sx={{
           '& .MuiDialog-paper': {
             m: { xs: 2, sm: 3 },
@@ -1167,6 +1169,8 @@ export default function BusinessVerificationPage() {
         }}
         maxWidth="sm"
         fullWidth
+        disableEnforceFocus
+        disableRestoreFocus
         sx={{
           '& .MuiDialog-paper': {
             m: { xs: 2, sm: 3 },
@@ -1229,6 +1233,8 @@ export default function BusinessVerificationPage() {
         }}
         maxWidth="sm"
         fullWidth
+        disableEnforceFocus
+        disableRestoreFocus
         sx={{
           '& .MuiDialog-paper': {
             m: { xs: 2, sm: 3 },
@@ -1294,6 +1300,8 @@ export default function BusinessVerificationPage() {
         }}
         maxWidth="sm"
         fullWidth
+        disableEnforceFocus
+        disableRestoreFocus
         sx={{
           '& .MuiDialog-paper': {
             m: { xs: 2, sm: 3 },
@@ -1362,6 +1370,8 @@ export default function BusinessVerificationPage() {
         onClose={() => setFilterDialogOpen(false)}
         maxWidth="sm"
         fullWidth
+        disableEnforceFocus
+        disableRestoreFocus
         sx={{
           '& .MuiDialog-paper': {
             m: { xs: 2, sm: 3 },

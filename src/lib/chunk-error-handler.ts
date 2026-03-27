@@ -126,6 +126,22 @@ if (typeof window !== 'undefined') {
   window.addEventListener('error', (event) => {
     const error = event.error;
     
+    // Check for CSS MIME type errors (CSS loaded as script)
+    // This happens when Next.js runtime tries to load a CSS chunk as a script tag
+    const target = event.target as HTMLElement | null;
+    if (target && target.tagName === 'SCRIPT') {
+      const src = (target as HTMLScriptElement).src;
+      if (src && src.includes('/_next/static/css/') && src.endsWith('.css')) {
+        // Silently remove the invalid script tag and reload to fix the issue
+        target.parentElement?.removeChild(target);
+        if (shouldAttemptReload()) {
+          recordReloadAttempt();
+          window.location.reload();
+        }
+        return;
+      }
+    }
+
     if (!error) return;
     
     // Check for chunk loading errors

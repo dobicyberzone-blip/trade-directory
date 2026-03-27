@@ -12,6 +12,15 @@ const MIME_TYPES: Record<string, string> = {
   jfif: 'image/jpeg',
 };
 
+const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'jfif', 'svg']);
+
+// 1x1 transparent PNG placeholder (served when file is missing on disk but exists in DB)
+const PLACEHOLDER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#f3f4f6"/>
+  <text x="50%" y="45%" font-family="Arial" font-size="12" fill="#9ca3af" text-anchor="middle">File not</text>
+  <text x="50%" y="58%" font-family="Arial" font-size="12" fill="#9ca3af" text-anchor="middle">found</text>
+</svg>`;
+
 // All candidate root directories to search for uploaded files
 function getUploadRoots(): string[] {
   const roots: string[] = [];
@@ -88,6 +97,20 @@ export async function GET(
     }
 
     console.error(`[files] Not found: ${relativePath} (cwd: ${process.cwd()}, tried: ${candidates.slice(0, 4).join(', ')})`);
+
+    // For image requests, return a placeholder SVG instead of JSON to avoid broken image icons
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
+    if (IMAGE_EXTENSIONS.has(ext)) {
+      return new NextResponse(PLACEHOLDER_SVG, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=300', // Short cache so real file can be served once available
+          'X-File-Status': 'not-found',
+        },
+      });
+    }
+
     return NextResponse.json(
       { error: 'File not found', path: relativePath, cwd: process.cwd() },
       { status: 404 }

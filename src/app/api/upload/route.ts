@@ -159,11 +159,20 @@ export async function POST(request: NextRequest) {
         publicUrl = await uploadToCloudinary(buffer, file.name, file.type);
         console.log(`[upload] Cloudinary OK: ${publicUrl}`);
       } catch (cloudinaryError) {
-        console.error('[upload] Cloudinary failed, falling back to local:', cloudinaryError);
-        publicUrl = await handleLocalUpload(buffer, file);
-        console.log(`[upload] Local fallback: ${publicUrl}`);
+        console.error('[upload] Cloudinary attempt 1 failed, retrying once:', cloudinaryError);
+        // Retry once after a brief delay (Cloudinary may have transient issues)
+        try {
+          await new Promise(r => setTimeout(r, 1000));
+          publicUrl = await uploadToCloudinary(buffer, file.name, file.type);
+          console.log(`[upload] Cloudinary retry OK: ${publicUrl}`);
+        } catch (cloudinaryRetryError) {
+          console.error('[upload] Cloudinary retry also failed, falling back to local:', cloudinaryRetryError);
+          publicUrl = await handleLocalUpload(buffer, file);
+          console.log(`[upload] Local fallback: ${publicUrl}`);
+        }
       }
     } else {
+      console.warn('[upload] Cloudinary NOT configured — files will be stored locally and may not persist across redeploys. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in .env');
       publicUrl = await handleLocalUpload(buffer, file);
     }
 

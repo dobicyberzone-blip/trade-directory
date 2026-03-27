@@ -86,23 +86,34 @@ export async function POST(req: NextRequest) {
   const token = await verifyToken(req);
   if (!token || !isAdmin(token.role)) return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: cors });
 
-  const body = await req.json();
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400, headers: cors });
+  }
+
   const { type, name, description, industryId, sectorId, sortOrder, isActive } = body;
 
-  if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400, headers: cors });
+  if (!type) {
+    return NextResponse.json({ error: 'Missing required field: type (must be "industry", "sector", or "organization")' }, { status: 400, headers: cors });
+  }
+  if (!name?.trim()) {
+    return NextResponse.json({ error: 'Missing required field: name' }, { status: 400, headers: cors });
+  }
 
   try {
     let data;
     if (type === 'industry') {
       data = await prisma.industry.create({ data: { name: name.trim(), description, sortOrder: sortOrder ?? 0, isActive: isActive ?? true } });
     } else if (type === 'sector') {
-      if (!industryId) return NextResponse.json({ error: 'industryId required' }, { status: 400, headers: cors });
+      if (!industryId) return NextResponse.json({ error: 'Missing required field: industryId (required when creating a sector)' }, { status: 400, headers: cors });
       data = await prisma.sector.create({ data: { name: name.trim(), description, industryId, sortOrder: sortOrder ?? 0, isActive: isActive ?? true } });
     } else if (type === 'organization') {
-      if (!sectorId) return NextResponse.json({ error: 'sectorId required' }, { status: 400, headers: cors });
+      if (!sectorId) return NextResponse.json({ error: 'Missing required field: sectorId (required when creating an organization)' }, { status: 400, headers: cors });
       data = await prisma.businessOrganization.create({ data: { name: name.trim(), description, sectorId, sortOrder: sortOrder ?? 0, isActive: isActive ?? true } });
     } else {
-      return NextResponse.json({ error: 'Invalid type' }, { status: 400, headers: cors });
+      return NextResponse.json({ error: `Invalid type "${type}". Must be one of: industry, sector, organization` }, { status: 400, headers: cors });
     }
     return NextResponse.json({ data }, { status: 201, headers: cors });
   } catch (e: any) {
