@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { z } from 'zod';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -29,7 +30,6 @@ import {
   PRODUCT_CATEGORY_OPTIONS
 } from '@/lib/constants';
 import { useMasterData } from '@/hooks/use-master-data';
-import { SearchableSelect } from '@/components/exporter/_searchable-select';
 
 type FormValues = RegisterFormValues;
 
@@ -166,7 +166,31 @@ function RegisterPageContent({
   const [currentStep, setCurrentStep] = useState<WizardStep>('role');
   const [selectedRole, setSelectedRole] = useState<'exporter' | 'buyer' | 'partner'>('exporter');
   
-  // Dropdown states — now managed internally by SearchableSelect
+  // Dropdown states
+  const [sectorOpen, setSectorOpen] = useState(false);
+  const [sectorSearch, setSectorSearch] = useState('');
+  const sectorRef = useRef<HTMLDivElement>(null);
+  
+  const [partnerOpen, setPartnerOpen] = useState(false);
+  const [partnerSearch, setPartnerSearch] = useState('');
+  const partnerRef = useRef<HTMLDivElement>(null);
+  
+  const [countyOpen, setCountyOpen] = useState(false);
+  const [countySearch, setCountySearch] = useState('');
+  const countyRef = useRef<HTMLDivElement>(null);
+  
+  const [cityOpen, setCityOpen] = useState(false);
+  const [citySearch, setCitySearch] = useState('');
+  const cityRef = useRef<HTMLDivElement>(null);
+  
+  const [industryOpen, setIndustryOpen] = useState(false);
+  const [industrySearch, setIndustrySearch] = useState('');
+  const industryRef = useRef<HTMLDivElement>(null);
+  
+  const [legalOpen, setLegalOpen] = useState(false);
+  const [legalSearch, setLegalSearch] = useState('');
+  const legalRef = useRef<HTMLDivElement>(null);
+
   // "Other" free-text state for industry and sector
   const [industryOtherText, setIndustryOtherText] = useState('');
   const [sectorOtherText, setSectorOtherText] = useState('');
@@ -216,9 +240,15 @@ function RegisterPageContent({
   // Auto-save to localStorage
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
 
-  // Close product dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
+      if (sectorRef.current && !sectorRef.current.contains(e.target as Node)) setSectorOpen(false);
+      if (partnerRef.current && !partnerRef.current.contains(e.target as Node)) setPartnerOpen(false);
+      if (countyRef.current && !countyRef.current.contains(e.target as Node)) setCountyOpen(false);
+      if (cityRef.current && !cityRef.current.contains(e.target as Node)) setCityOpen(false);
+      if (industryRef.current && !industryRef.current.contains(e.target as Node)) setIndustryOpen(false);
+      if (legalRef.current && !legalRef.current.contains(e.target as Node)) setLegalOpen(false);
       if (productRef.current && !productRef.current.contains(e.target as Node)) setProductDropdownOpen(false);
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -481,16 +511,98 @@ function RegisterPageContent({
     router.push('/login');
   };
 
-  // CustomDropdown — delegates to the shared SearchableSelect (portal-based, same style as registration)
-  const CustomDropdown = ({ value, onChange, options, placeholder, label }: any) => (
-    <SearchableSelect
-      options={options}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      label={label}
-    />
-  );
+  // Custom dropdown component
+  const CustomDropdown = ({ 
+    value, 
+    onChange, 
+    options, 
+    placeholder, 
+    search, 
+    setSearch, 
+    isOpen, 
+    setIsOpen, 
+    ref,
+    label
+  }: any) => {
+    const btnRef = useRef<HTMLButtonElement>(null);
+    const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+
+    const reposition = useCallback(() => {
+      if (!btnRef.current) return;
+      const r = btnRef.current.getBoundingClientRect();
+      setCoords({ top: r.bottom + window.scrollY + 4, left: r.left + window.scrollX, width: r.width });
+    }, []);
+
+    useEffect(() => {
+      if (isOpen) reposition();
+      window.addEventListener('resize', reposition);
+      window.addEventListener('scroll', reposition, true);
+      return () => {
+        window.removeEventListener('resize', reposition);
+        window.removeEventListener('scroll', reposition, true);
+      };
+    }, [isOpen, reposition]);
+
+    const filteredOptions = options.filter((o: any) => o.label.toLowerCase().includes(search.toLowerCase()));
+
+    return (
+      <div className="relative" ref={ref}>
+        <button
+          ref={btnRef}
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-between w-full h-12 px-3 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        >
+          <span className={value ? 'text-gray-900' : 'text-gray-400'}>
+            {value || placeholder}
+          </span>
+          <svg className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {isOpen && typeof document !== 'undefined' && createPortal(
+          <div style={{ position: 'absolute', top: coords.top, left: coords.left, width: coords.width, zIndex: 9999 }}>
+            <div className="bg-white rounded-md shadow-xl border max-h-72 overflow-hidden flex flex-col">
+              <div className="p-2 border-b bg-white sticky top-0">
+                <input
+                  type="text"
+                  placeholder={`Search ${label}...`}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  autoFocus
+                />
+                <p className="text-xs text-gray-400 mt-1 px-1">
+                  {filteredOptions.length} of {options.length}
+                </p>
+              </div>
+              <div className="overflow-y-auto flex-1">
+                {filteredOptions.map((option: any) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      onChange(option.value);
+                      setIsOpen(false);
+                      setSearch('');
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-yellow-50 transition-colors flex items-center justify-between ${value === option.value ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-900'}`}
+                  >
+                    <span>{option.label}</span>
+                    {value === option.value && <span className="text-green-600">✓</span>}
+                  </button>
+                ))}
+                {filteredOptions.length === 0 && (
+                  <div className="px-4 py-6 text-center text-sm text-gray-400">No {label.toLowerCase()} found.</div>
+                )}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+      </div>
+    );
+  };
 
   // Multi-select for products/services
   const toggleProduct = (product: string) => {
