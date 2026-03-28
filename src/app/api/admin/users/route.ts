@@ -60,7 +60,19 @@ export const GET = requirePermission(
       }
 
       if (role) {
-        where.role = role;
+        if (role === 'PARTNER') {
+          // Include both PARTNER role and legacy BUYER+partnerType users
+          where.OR = [
+            { role: 'PARTNER' },
+            { role: 'BUYER', partnerType: { not: null } },
+          ];
+        } else if (role === 'BUYER') {
+          // Exclude legacy partners from buyer filter
+          where.role = 'BUYER';
+          where.partnerType = null;
+        } else {
+          where.role = role;
+        }
       }
 
       if (isVerified !== null && isVerified !== undefined) {
@@ -98,6 +110,7 @@ export const GET = requirePermission(
             createdAt: true,
             updatedAt: true,
             lastLoginAt: true,
+            partnerType: true,
             business: {
               select: {
                 id: true,
@@ -110,8 +123,14 @@ export const GET = requirePermission(
         prisma.user.count({ where }),
       ]);
 
+      // Normalize legacy BUYER+partnerType users to PARTNER
+      const normalizedUsers = users.map(u => ({
+        ...u,
+        role: (u.role === 'BUYER' && u.partnerType) ? 'PARTNER' : u.role,
+      }));
+
       return NextResponse.json({
-        users,
+        users: normalizedUsers,
         total,
         page,
         pageSize,
