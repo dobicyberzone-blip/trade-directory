@@ -395,6 +395,11 @@ export async function POST(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
 
+    // Normalize legacy BUYER+partnerType users to PARTNER role
+    if (userWithoutPassword.role === 'BUYER' && userWithoutPassword.partnerType) {
+      (userWithoutPassword as any).role = 'PARTNER';
+    }
+
     // Send login notification email (async, don't wait)
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'Unknown';
     const userAgent = request.headers.get('user-agent') || undefined;

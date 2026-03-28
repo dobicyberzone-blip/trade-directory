@@ -78,8 +78,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Normalize legacy BUYER+partnerType users to PARTNER role
+    const normalizedUser = (user.role === 'BUYER' && user.partnerType)
+      ? { ...user, role: 'PARTNER' }
+      : user;
+
     return NextResponse.json(
-      { user },
+      { user: normalizedUser },
       { headers: corsHeaders }
     );
   } catch (error) {

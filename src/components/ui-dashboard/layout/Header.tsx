@@ -609,7 +609,7 @@ export default function Header({ drawerOpen, onDrawerToggle, user, onLogout }: H
                   fontSize: downSM ? '0.65rem' : '0.7rem'
                 }}
               >
-                {user?.role === 'PARTNER' && (user as any)?.partnerType ? ((user as any).partnerType.startsWith('Other: ') ? (user as any).partnerType.replace('Other: ', '') : (user as any).partnerType) : user?.role}
+                {(user?.role === 'PARTNER' || (user?.role === 'BUYER' && (user as any)?.partnerType)) && (user as any)?.partnerType ? ((user as any).partnerType.startsWith('Other: ') ? (user as any).partnerType.replace('Other: ', '') : (user as any).partnerType) : user?.role}
               </Typography>
             </Box>
           </Box>
