@@ -102,7 +102,6 @@ export async function GET(request: NextRequest) {
         skipDuplicates: true,
       });
     }
-    }
 
     const { searchParams } = new URL(request.url);
     const role = searchParams.get('role');
