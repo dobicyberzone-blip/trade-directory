@@ -278,7 +278,7 @@ export default function LoginPage() {
             {isVerifyingOtp ? 'Logging you in...' : 'Loading...'}
           </p>
           <p className="text-gray-600 text-sm mt-2">
-            {isVerifyingOtp ? 'Please wait while we set up your dashboard' : 'Checking authentication status'}
+            {isVerifyingOtp ? 'Redirecting you to the directory...' : 'Checking authentication status'}
           </p>
         </div>
       </div>
