@@ -309,16 +309,6 @@ const partnerMenuItems: MenuItem[] = [
     type: 'group',
     children: [
       { id: 'partner-success-stories', title: 'Success Stories', type: 'item', icon: 'star', url: '/dashboard/partner/success-stories' },
-      { id: 'partner-ratings', title: 'My Ratings', type: 'item', icon: 'star-half', url: '/dashboard/partner/ratings' },
-    ],
-  },
-  {
-    id: 'partner-account',
-    title: 'Account',
-    type: 'group',
-    children: [
-      { id: 'partner-analytics', title: 'Analytics', type: 'item', icon: 'bar-chart', url: '/dashboard/partner/analytics' },
-      { id: 'partner-activity', title: 'Activity', type: 'item', icon: 'activity', url: '/dashboard/partner/activity' },
     ],
   },
 ];
