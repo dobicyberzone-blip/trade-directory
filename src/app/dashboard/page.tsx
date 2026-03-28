@@ -23,8 +23,12 @@ export default function DashboardPage() {
       router.push('/dashboard/admin');
     } else if (role === 'exporter') {
       router.push('/dashboard/exporter');
+    } else if (role === 'buyer') {
+      router.push('/dashboard/buyer');
+    } else if (role === 'partner') {
+      router.push('/dashboard/buyer'); // partners use buyer dashboard
     } else {
-      router.push('/directory');
+      router.push('/dashboard/buyer');
     }
   }, [user, isLoading, router]);
 
