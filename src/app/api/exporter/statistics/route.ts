@@ -88,9 +88,9 @@ export async function GET(request: NextRequest) {
         where: { businessId },
       }),
 
-      // Total inquiries
-      prisma.inquiry.count({
-        where: { businessId },
+      // Total inquiries — count chat conversations where this exporter is a participant
+      prisma.chatConversation.count({
+        where: { participants: { some: { userId, role: 'EXPORTER' } } },
       }),
 
       // Total profile views
@@ -118,17 +118,11 @@ export async function GET(request: NextRequest) {
       currentMonthFavorites,
       lastMonthFavorites,
     ] = await Promise.all([
-      prisma.inquiry.count({
-        where: {
-          businessId,
-          createdAt: { gte: currentMonthStart },
-        },
+      prisma.chatConversation.count({
+        where: { participants: { some: { userId, role: 'EXPORTER' } }, createdAt: { gte: currentMonthStart } },
       }),
-      prisma.inquiry.count({
-        where: {
-          businessId,
-          createdAt: { gte: lastMonthStart, lte: lastMonthEnd },
-        },
+      prisma.chatConversation.count({
+        where: { participants: { some: { userId, role: 'EXPORTER' } }, createdAt: { gte: lastMonthStart, lte: lastMonthEnd } },
       }),
       prisma.profileView.count({
         where: {
@@ -175,15 +169,15 @@ export async function GET(request: NextRequest) {
       ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
       : 0;
 
-    // Calculate response rate
-    const respondedInquiries = await prisma.inquiry.count({
+    // Calculate response rate — conversations where exporter has sent at least one message back
+    const respondedConversations = await prisma.chatConversation.count({
       where: {
-        businessId,
-        status: 'RESPONDED',
+        participants: { some: { userId, role: 'EXPORTER' } },
+        messages: { some: { senderId: userId } },
       },
     });
-    const responseRate = totalInquiries > 0 
-      ? Math.round((respondedInquiries / totalInquiries) * 100) 
+    const responseRate = totalInquiries > 0
+      ? Math.round((respondedConversations / totalInquiries) * 100)
       : 0;
 
     // Get monthly activity data for the last 6 months
@@ -194,11 +188,8 @@ export async function GET(request: NextRequest) {
       const monthName = getMonthName(monthStart);
 
       const [monthInquiries, monthViews, monthFavorites] = await Promise.all([
-        prisma.inquiry.count({
-          where: {
-            businessId,
-            createdAt: { gte: monthStart, lte: monthEnd },
-          },
+        prisma.chatConversation.count({
+          where: { participants: { some: { userId, role: 'EXPORTER' } }, createdAt: { gte: monthStart, lte: monthEnd } },
         }),
         prisma.profileView.count({
           where: {
@@ -222,61 +213,18 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get top performing products
+    // Get top performing products (by favorites/views, not inquiries)
     const products = await prisma.product.findMany({
       where: { businessId },
-      select: {
-        id: true,
-        name: true,
-        category: true,
-        _count: {
-          select: {
-            inquiries: true,
-          },
-        },
-      },
-      orderBy: {
-        inquiries: {
-          _count: 'desc',
-        },
-      },
+      select: { id: true, name: true, category: true },
       take: 5,
     });
 
     const topProducts = products.map(p => ({
       name: p.name,
       category: p.category,
-      inquiries: p._count.inquiries,
+      inquiries: 0,
     }));
-
-    // Get inquiry sources (which products get most inquiries)
-    const productInquiries = await prisma.inquiry.groupBy({
-      by: ['productId'],
-      where: { businessId },
-      _count: {
-        productId: true,
-      },
-      orderBy: {
-        _count: {
-          productId: 'desc',
-        },
-      },
-      take: 5,
-    });
-
-    const inquirySourceData = await Promise.all(
-      productInquiries.map(async (item) => {
-        const product = await prisma.product.findUnique({
-          where: { id: item.productId },
-          select: { name: true, category: true },
-        });
-        return {
-          name: product?.name || 'Unknown',
-          category: product?.category || 'Unknown',
-          value: item._count.productId,
-        };
-      })
-    );
 
     // Return statistics
     return NextResponse.json({
@@ -294,7 +242,7 @@ export async function GET(request: NextRequest) {
       },
       monthlyData,
       topProducts,
-      inquirySourceData,
+      inquirySourceData: [],
     });
   } catch (error) {
     console.error('[Exporter Statistics API] Error:', error);

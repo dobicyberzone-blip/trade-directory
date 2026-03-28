@@ -68,37 +68,28 @@ export async function GET(request: NextRequest) {
       prisma.product.count({
         where: { businessId: business.id, verified: true },
       }),
-      prisma.inquiry.count({
-        where: { businessId: business.id },
+      prisma.chatConversation.count({
+        where: { participants: { some: { userId: decoded.userId, role: 'EXPORTER' } } },
       }),
-      prisma.inquiry.count({
-        where: { businessId: business.id, status: 'PENDING' },
+      prisma.chatConversation.count({
+        where: {
+          participants: { some: { userId: decoded.userId, role: 'EXPORTER' } },
+          messages: { none: { senderId: decoded.userId } },
+        },
       }),
       prisma.profileView.count({
         where: { businessId: business.id },
       }),
     ]);
 
-    // Get recent inquiries
-    const recentInquiries = await prisma.inquiry.findMany({
-      where: { businessId: business.id },
+    // Get recent conversations (inquiries)
+    const recentInquiries = await prisma.chatConversation.findMany({
+      where: { participants: { some: { userId: decoded.userId, role: 'EXPORTER' } } },
       include: {
-        product: {
-          select: {
-            id: true,
-            name: true,
-            category: true,
-          },
+        participants: {
+          include: { user: { select: { id: true, firstName: true, lastName: true } } },
         },
-        buyer: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            company: true,
-            country: true,
-          },
-        },
+        messages: { orderBy: { createdAt: 'desc' }, take: 1 },
       },
       orderBy: { createdAt: 'desc' },
       take: 5,
