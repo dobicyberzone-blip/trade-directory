@@ -1,18 +1,35 @@
 /**
- * Centralized email sender — SendGrid
- * All email operations across the app route through this module.
+ * Centralized email sender — Nodemailer (SMTP/Gmail)
+ * Restored from commit 98045a71 — uses SMTP_HOST/USER/PASS env vars.
  */
 
-import sgMail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'omar.ngenge@eiti.tech';
-const FROM_NAME = process.env.FROM_NAME || 'KEPROBA Trade Directory';
-const API_KEY = process.env.SENDGRID_API_KEY;
+let transporter: nodemailer.Transporter | null = null;
 
-// Set at module load — same as 278ca45 which was the last known working config.
-// No throw so Vercel build passes without the key set.
-if (API_KEY) {
-  sgMail.setApiKey(API_KEY);
+function getTransporter() {
+  if (!transporter) {
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('[Mailer] SMTP not configured — missing SMTP_HOST, SMTP_USER or SMTP_PASS');
+      return null;
+    }
+
+    transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true',
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    console.log('[Mailer] SMTP transporter initialized');
+  }
+  return transporter;
 }
 
 export interface MailOptions {
@@ -26,27 +43,28 @@ export interface MailOptions {
 }
 
 /**
- * Send a single email via SendGrid.
+ * Send a single email via SMTP.
  * Returns true on success, false on failure (never throws).
  */
 export async function sendMail(opts: MailOptions): Promise<boolean> {
   try {
-    const toField = typeof opts.to === 'string'
-      ? opts.to
-      : { name: opts.to.name, email: opts.to.email };
+    const t = getTransporter();
+    if (!t) return false;
 
-    const msg: sgMail.MailDataRequired = {
-      to: toField,
-      from: { name: FROM_NAME, email: FROM_EMAIL },
+    const toAddress = typeof opts.to === 'string' ? opts.to : `${opts.to.name} <${opts.to.email}>`;
+    const from = `"${process.env.FROM_NAME || 'KEPROBA Trade Directory'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`;
+
+    await t.sendMail({
+      from,
+      to: toAddress,
       subject: opts.subject,
       html: opts.html,
       ...(opts.text ? { text: opts.text } : {}),
       ...(opts.replyTo ? { replyTo: opts.replyTo } : {}),
       ...(opts.cc ? { cc: opts.cc } : {}),
       ...(opts.bcc ? { bcc: opts.bcc } : {}),
-    };
+    });
 
-    await sgMail.send(msg);
     const recipient = typeof opts.to === 'string' ? opts.to : opts.to.email;
     console.log(`[Mailer] Sent "${opts.subject}" → ${recipient}`);
     return true;
