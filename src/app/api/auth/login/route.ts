@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     // Find user
     const user = await prisma.user.findUnique({
-      where: { email: validatedData.email },
+      where: { email: validatedData.email.toLowerCase() },
       include: {
         business: true,
       },
@@ -340,7 +340,7 @@ export async function POST(request: NextRequest) {
         // Verify EMAIL or SMS OTP
         const otpRecord = await prisma.otpCode.findFirst({
           where: {
-            email: validatedData.email,
+            email: validatedData.email.toLowerCase(),
             code: validatedData.otpCode,
             type: 'LOGIN',
             method: otpMethod,

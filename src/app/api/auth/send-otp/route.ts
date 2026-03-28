@@ -90,7 +90,8 @@ async function sendSmsOtp(phoneNumber: string, code: string): Promise<boolean> {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, phoneNumber, method, type = 'LOGIN' } = body;
+    const { email: rawEmail, phoneNumber, method, type = 'LOGIN' } = body;
+    const email = rawEmail?.toLowerCase().trim();
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400, headers: corsHeaders });
