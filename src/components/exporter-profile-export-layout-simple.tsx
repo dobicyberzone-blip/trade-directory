@@ -256,7 +256,7 @@ export function ExporterProfileExportLayoutSimple({
         <div style={{ borderTop: '2px solid #111827', paddingTop: '8px', marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           <div>
             <div style={{ fontSize: '11px', fontWeight: 700, color: '#111827' }}>Kenya Export Promotion & Branding Agency</div>
-            <div style={{ fontSize: '10px', color: '#6b7280' }}>E-Trade Directory • www.keproba.go.ke</div>
+            <div style={{ fontSize: '10px', color: '#6b7280' }}>Kenya Trade Directory • www.makeitkenya.go.ke</div>
           </div>
           <div style={{ fontSize: '10px', color: '#6b7280' }}>
             Generated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
