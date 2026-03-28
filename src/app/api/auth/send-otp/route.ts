@@ -24,7 +24,7 @@ async function sendEmailOtp(email: string, code: string, type: string, userName:
 
   return sendMail({
     to: email,
-    subject: `Your KEPROBA Verification Code - ${code}`,
+    subject: `KEPROBA Verification Code`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -145,6 +145,10 @@ export async function POST(request: NextRequest) {
     let sent = false;
     if (method === 'EMAIL') {
       sent = await sendEmailOtp(email, code, type, userName);
+      if (!sent) {
+        // Log OTP to server console as fallback for debugging
+        console.warn(`[OTP FALLBACK] Email delivery failed. Code for ${email}: ${code}`);
+      }
     } else if (method === 'SMS') {
       sent = await sendSmsOtp(phoneNumber, code);
     }

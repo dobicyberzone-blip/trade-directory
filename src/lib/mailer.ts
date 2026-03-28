@@ -51,6 +51,11 @@ export async function sendMail(opts: MailOptions): Promise<boolean> {
     return true;
   } catch (error: unknown) {
     const recipient = typeof opts.to === 'string' ? opts.to : (opts.to as { email: string }).email;
+    // Log full SendGrid error response for debugging
+    if (error && typeof error === 'object' && 'response' in error) {
+      const sgError = error as { response: { body: unknown; status: number } };
+      console.error(`[Mailer] SendGrid error ${sgError.response?.status}:`, JSON.stringify(sgError.response?.body));
+    }
     console.error(`[Mailer] Failed to send "${opts.subject}" → ${recipient}:`, error);
     return false;
   }
