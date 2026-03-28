@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
-const ADMIN_EMAIL = 'enquiries@brand.go.ke';
+const ADMIN_EMAIL = 'enquiries@brand.ke';
 
 export async function POST(req: NextRequest) {
   try {
