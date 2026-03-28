@@ -141,7 +141,7 @@ export function SearchResults({ results, query, isLoading, onLoadMore }: SearchR
               <div className="flex-1">
                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate flex items-center gap-2">
                   {business.name}
-                  {business.featured && (
+                  {business.featured && business.verificationStatus === 'VERIFIED' && (
                     <Star className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 fill-amber-500" />
                   )}
                 </h3>

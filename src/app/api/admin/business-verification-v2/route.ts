@@ -299,6 +299,8 @@ export async function PATCH(request: NextRequest) {
           verificationStatus: status,
           needsVerification: status === 'PENDING',
           verificationNotes: notes || undefined,
+          // Unfeature if sent back to PENDING or REJECTED — must be re-verified first
+          ...((['PENDING', 'REJECTED'].includes(status)) && { featured: false, featuredAt: null, featuredBy: null }),
           updatedAt: new Date(),
         },
         include: {
@@ -400,6 +402,8 @@ export async function PATCH(request: NextRequest) {
     const updateData: any = {
       verificationStatus: newStatus,
       needsVerification: false,
+      // Unfeature on rejection — must be re-verified and re-featured by admin
+      ...(action === 'reject' && { featured: false, featuredAt: null, featuredBy: null }),
       updatedAt: new Date(),
     };
 

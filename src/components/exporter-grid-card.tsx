@@ -326,8 +326,8 @@ export function ExporterGridCard({ business, onViewProfileClick, hideActions }: 
     <>
       <Card ref={cardRef} className="flex flex-col h-full overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 relative group">
 
-        {/* Featured Star Badge - Left Top Corner */}
-        {business.featured && (
+        {/* Featured Star Badge - only show if also verified */}
+        {business.featured && business.verificationStatus === 'VERIFIED' && (
           <div className="absolute top-0 left-0 z-10">
             <div className="bg-amber-500 text-white p-1.5 rounded-br-lg">
               <Star className="h-4 w-4 fill-current" />
