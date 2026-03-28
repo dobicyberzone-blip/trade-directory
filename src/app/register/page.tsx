@@ -445,7 +445,7 @@ function RegisterPageContent({
         firstName: values.firstName,
         lastName: values.lastName,
         phoneNumber: values.phoneNumber?.trim() || undefined,
-        role: (values.role === 'partner' ? 'BUYER' : values.role.toUpperCase()) as 'ADMIN' | 'EXPORTER' | 'BUYER',
+        role: values.role.toUpperCase() as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER',
       };
 
       let registrationData: any;
