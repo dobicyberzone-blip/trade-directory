@@ -56,6 +56,8 @@ export async function PATCH(
       data: {
         verificationStatus: status,
         needsVerification: false,
+        // Unfeature on rejection — must be re-verified and re-featured by admin
+        ...(status === 'REJECTED' && { featured: false, featuredAt: null, featuredBy: null }),
         updatedAt: new Date(),
       },
       include: {

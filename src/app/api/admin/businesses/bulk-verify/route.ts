@@ -56,7 +56,11 @@ export const POST = requirePermission(
           try {
             const business = await prisma.business.update({
               where: { id: businessId },
-              data: { verificationStatus: status },
+              data: {
+                verificationStatus: status,
+                // Unfeature on rejection or pending — must be re-verified and re-featured
+                ...(['REJECTED', 'PENDING'].includes(status) && { featured: false, featuredAt: null, featuredBy: null }),
+              },
             });
             return { id: businessId, success: true, business };
           } catch (error) {

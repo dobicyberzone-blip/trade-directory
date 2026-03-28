@@ -75,7 +75,15 @@ export const PATCH = requirePermission(
       }
       if (validatedData.name) updateData.name = validatedData.name;
       if (validatedData.description) updateData.description = validatedData.description;
-      if (validatedData.verificationStatus) updateData.verificationStatus = validatedData.verificationStatus;
+      if (validatedData.verificationStatus) {
+        updateData.verificationStatus = validatedData.verificationStatus;
+        // Unfeature on rejection or pending — must be re-verified and re-featured by admin
+        if (['REJECTED', 'PENDING'].includes(validatedData.verificationStatus)) {
+          updateData.featured = false;
+          updateData.featuredAt = null;
+          updateData.featuredBy = null;
+        }
+      }
 
       // Update business
       const updatedBusiness = await prisma.business.update({
