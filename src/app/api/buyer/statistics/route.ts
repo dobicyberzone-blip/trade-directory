@@ -44,17 +44,17 @@ export async function GET(request: NextRequest) {
       where: { userId, createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } }
     });
     
-    // Fetch inquiries
-    const totalInquiries = await prisma.inquiry.count({
-      where: { buyerId: userId }
+    // Fetch inquiries — counted as chat conversations initiated by this user
+    const totalInquiries = await prisma.chatConversation.count({
+      where: { participants: { some: { userId, role: 'BUYER' } } }
     });
-    
-    const inquiriesLastMonth = await prisma.inquiry.count({
-      where: { buyerId: userId, createdAt: { gte: thirtyDaysAgo } }
+
+    const inquiriesLastMonth = await prisma.chatConversation.count({
+      where: { participants: { some: { userId, role: 'BUYER' } }, createdAt: { gte: thirtyDaysAgo } }
     });
-    
-    const inquiriesPreviousMonth = await prisma.inquiry.count({
-      where: { buyerId: userId, createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } }
+
+    const inquiriesPreviousMonth = await prisma.chatConversation.count({
+      where: { participants: { some: { userId, role: 'BUYER' } }, createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } }
     });
     
     // Fetch profile views
@@ -75,36 +75,23 @@ export async function GET(request: NextRequest) {
       return Math.round(((current - previous) / previous) * 100);
     };
     
-    const activeConversations = await prisma.inquiry.count({
-      where: { buyerId: userId, response: { not: null } }
+    const activeConversations = await prisma.chatConversation.count({
+      where: { participants: { some: { userId, role: 'BUYER' } }, status: 'ACTIVE' }
     });
-    
-    const inquiriesWithResponses = await prisma.inquiry.count({
-      where: { buyerId: userId, response: { not: null } }
+
+    const inquiriesWithResponses = await prisma.chatConversation.count({
+      where: {
+        participants: { some: { userId, role: 'BUYER' } },
+        messages: { some: { senderId: { not: userId } } }
+      }
     });
     
     const responseRate = totalInquiries > 0 
       ? Math.round((inquiriesWithResponses / totalInquiries) * 100) 
       : 0;
     
-    const inquiriesWithResponseTime = await prisma.inquiry.findMany({
-      where: { buyerId: userId, respondedAt: { not: null } },
-      select: { createdAt: true, respondedAt: true }
-    });
-    
-    let totalResponseTimeHours = 0;
-    let responseCount = 0;
-    
-    inquiriesWithResponseTime.forEach((inquiry) => {
-      if (inquiry.respondedAt) {
-        const timeDiff = inquiry.respondedAt.getTime() - inquiry.createdAt.getTime();
-        totalResponseTimeHours += timeDiff / (1000 * 60 * 60);
-        responseCount++;
-      }
-    });
-    
-    const avgHours = responseCount > 0 ? Math.round(totalResponseTimeHours / responseCount) : 0;
-    const avgResponseTime = avgHours + 'h';
+    // avg response time — not available from chat model, default to N/A
+    const avgResponseTime = 'N/A';
     
     // Monthly data
     const monthlyData = [];
@@ -112,8 +99,8 @@ export async function GET(request: NextRequest) {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59);
       
-      const inquiries = await prisma.inquiry.count({
-        where: { buyerId: userId, createdAt: { gte: monthStart, lte: monthEnd } }
+      const inquiries = await prisma.chatConversation.count({
+        where: { participants: { some: { userId, role: 'BUYER' } }, createdAt: { gte: monthStart, lte: monthEnd } }
       });
       
       const favorites = await prisma.favorite.count({
@@ -132,26 +119,15 @@ export async function GET(request: NextRequest) {
       });
     }
     
-    // Category data
+    // Category data from favorites only (inquiry businesses not available from chat model)
     const favoriteBusinesses = await prisma.favorite.findMany({
       where: { userId },
       include: { business: { select: { sector: true } } }
     });
-    
-    const inquiryBusinesses = await prisma.inquiry.findMany({
-      where: { buyerId: userId },
-      include: { business: { select: { sector: true } } }
-    });
-    
+
     const categoryMap = new Map<string, number>();
-    
     favoriteBusinesses.forEach((fav) => {
       const sector = fav.business.sector || 'Other';
-      categoryMap.set(sector, (categoryMap.get(sector) || 0) + 1);
-    });
-    
-    inquiryBusinesses.forEach((inq) => {
-      const sector = inq.business.sector || 'Other';
       categoryMap.set(sector, (categoryMap.get(sector) || 0) + 1);
     });
     

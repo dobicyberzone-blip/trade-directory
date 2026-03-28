@@ -23,6 +23,7 @@ export function OtpVerification({ email, method, phoneNumber, onSuccess, onBack 
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [fallbackMsg, setFallbackMsg] = useState('');
 
   // Countdown timer for resend
   useEffect(() => {
@@ -55,17 +56,33 @@ export function OtpVerification({ email, method, phoneNumber, onSuccess, onBack 
   };
 
   const handleResendOtp = async () => {
-    if (method === 'TOTP') {
-      // Can't resend TOTP codes
-      return;
-    }
-
+    if (method === 'TOTP') return;
     try {
       await requestOtp(email, method, phoneNumber);
       setCountdown(60);
       setCanResend(false);
+      setFallbackMsg('');
     } catch {
       // Error is handled by the auth context
+    }
+  };
+
+  const handleFallback = async () => {
+    try {
+      const res = await fetch('/api/auth/otp-fallback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, type: 'LOGIN' }),
+      });
+      const data = await res.json();
+      if (data.code) {
+        setOtpCode(data.code);
+        setFallbackMsg('Code retrieved — click Verify Code to continue.');
+      } else {
+        setFallbackMsg(data.error || 'No valid code found. Please resend.');
+      }
+    } catch {
+      setFallbackMsg('Could not retrieve code. Please resend.');
     }
   };
 
@@ -193,6 +210,21 @@ export function OtpVerification({ email, method, phoneNumber, onSuccess, onBack 
                 Resend available in {countdown}s
               </p>
             )
+          )}
+
+          {method === 'EMAIL' && (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleFallback}
+                className="text-xs text-gray-400 underline hover:text-gray-600"
+              >
+                Email not arriving? Click here
+              </button>
+              {fallbackMsg && (
+                <p className="text-xs mt-1 text-green-600">{fallbackMsg}</p>
+              )}
+            </div>
           )}
           
           {method === 'TOTP' && (
