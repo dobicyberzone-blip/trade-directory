@@ -9,12 +9,6 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'omar.ngenge@eiti.tech';
 const FROM_NAME = process.env.FROM_NAME || 'KEPROBA Trade Directory';
 const API_KEY = process.env.SENDGRID_API_KEY;
 
-if (!API_KEY) {
-  throw new Error('[Mailer] SENDGRID_API_KEY environment variable is not set');
-}
-
-sgMail.setApiKey(API_KEY);
-
 export interface MailOptions {
   to: string | { name: string; email: string };
   subject: string;
@@ -31,6 +25,11 @@ export interface MailOptions {
  */
 export async function sendMail(opts: MailOptions): Promise<boolean> {
   try {
+    if (!API_KEY) {
+      console.error('[Mailer] SENDGRID_API_KEY environment variable is not set');
+      return false;
+    }
+    sgMail.setApiKey(API_KEY);
     const toField = typeof opts.to === 'string'
       ? opts.to
       : { name: opts.to.name, email: opts.to.email };
