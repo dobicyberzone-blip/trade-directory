@@ -101,7 +101,7 @@ import jwt from 'jsonwebtoken';
 export interface TokenPayload {
   userId: string;
   email: string;
-  role: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN';
+  role: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN';
   isSuperAdmin?: boolean;
   iat?: number;
   exp?: number;

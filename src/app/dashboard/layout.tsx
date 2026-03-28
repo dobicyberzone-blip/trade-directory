@@ -65,7 +65,7 @@ export default function DashboardLayout({
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          role: (user.role === 'SUPER_ADMIN' ? 'ADMIN' : user.role) as 'ADMIN' | 'EXPORTER' | 'BUYER',
+          role: (user.role === 'SUPER_ADMIN' ? 'ADMIN' : user.role) as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER',
           isSuperAdmin: (user as any).isSuperAdmin || user.role === 'SUPER_ADMIN',
           partnerType: (user as any).partnerType,
           avatar: user.profileImage || user.avatar,

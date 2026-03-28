@@ -120,9 +120,8 @@ export default function MainLayout({ children, user, onLogout }: MainLayoutProps
         onDrawerToggle={handleDrawerToggle}
         onNavigate={handleNavigate}
         currentPath={pathname}
-        userRole={(user?.role || 'BUYER') as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN'}
+        userRole={(user?.role?.toUpperCase() || 'BUYER') as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN'}
         isSuperAdmin={user?.isSuperAdmin || user?.role === 'SUPER_ADMIN'}
-        isPartner={!!user?.partnerType}
         onLogout={onLogout}
       />
 

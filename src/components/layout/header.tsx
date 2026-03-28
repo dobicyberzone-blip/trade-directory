@@ -72,8 +72,6 @@ export function Header() {
     if (role === 'admin' || role === 'super_admin') return '/dashboard/admin';
     if (role === 'exporter') return '/dashboard/exporter';
     if (role === 'partner') return '/dashboard/partner';
-    // BUYER with a partnerType is a partner
-    if (role === 'buyer' && (user as any).partnerType) return '/dashboard/partner';
     return '/dashboard/buyer';
   })();
   const [hasGoogleTranslate, setHasGoogleTranslate] = useState(false);
@@ -406,7 +404,7 @@ export function Header() {
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-semibold leading-none text-gray-900 dark:text-white">{user.firstName} {user.lastName}</p>
                           <p className="text-xs leading-none text-gray-600 dark:text-gray-400">{user.email}</p>
-                          <p className="text-xs leading-none text-green-600 font-semibold uppercase tracking-wide">{user.role === 'BUYER' && (user as any).partnerType ? ((user as any).partnerType.startsWith('Other: ') ? (user as any).partnerType.replace('Other: ', '') : (user as any).partnerType) : user.role}</p>
+                          <p className="text-xs leading-none text-green-600 font-semibold uppercase tracking-wide">{user.role === 'PARTNER' && (user as any).partnerType ? ((user as any).partnerType.startsWith('Other: ') ? (user as any).partnerType.replace('Other: ', '') : (user as any).partnerType) : user.role}</p>
                         </div>
                       </div>
                     </DropdownMenuLabel>
@@ -530,7 +528,7 @@ export function Header() {
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user.firstName} {user.lastName}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
-                            <p className="text-xs text-green-600 font-semibold uppercase tracking-wide">{user.role === 'BUYER' && (user as any).partnerType ? ((user as any).partnerType.startsWith('Other: ') ? (user as any).partnerType.replace('Other: ', '') : (user as any).partnerType) : user.role}</p>
+                            <p className="text-xs text-green-600 font-semibold uppercase tracking-wide">{user.role === 'PARTNER' && (user as any).partnerType ? ((user as any).partnerType.startsWith('Other: ') ? (user as any).partnerType.replace('Other: ', '') : (user as any).partnerType) : user.role}</p>
                           </div>
                         </div>
                       </div>

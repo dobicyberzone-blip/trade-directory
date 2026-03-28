@@ -15,6 +15,7 @@ export type UserRole =
   | 'SUPER_ADMIN'
   | 'EXPORTER'
   | 'BUYER'
+  | 'PARTNER'
   | 'DEVELOPMENT_PARTNER'
   | 'TSI'
   | 'MDA'
@@ -34,6 +35,7 @@ export const ROLE_DISPLAY_NAMES: Record<UserRole, string> = {
   SUPER_ADMIN: 'Super Administrator',
   EXPORTER: 'Exporter',
   BUYER: 'Buyer',
+  PARTNER: 'Partner',
   DEVELOPMENT_PARTNER: 'Development Partner',
   TSI: 'Trade Support Institution',
   MDA: 'Kenya Government (MDA)',
@@ -46,6 +48,7 @@ export const ALL_ROLES: UserRole[] = [
   'SUPER_ADMIN',
   'EXPORTER',
   'BUYER',
+  'PARTNER',
   'DEVELOPMENT_PARTNER',
   'TSI',
   'MDA',
@@ -325,6 +328,17 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'INQUIRY:UPDATE_OWN',
     'INQUIRY:DELETE_OWN',
   ],
+
+  // PARTNER - Same as BUYER (Read-only), first-class role stored in DB
+  PARTNER: [
+    'DIRECTORY:READ',
+    'DIRECTORY:SEARCH',
+    'ENTRY:VIEW',
+    'INQUIRY:CREATE',
+    'INQUIRY:READ_OWN',
+    'INQUIRY:UPDATE_OWN',
+    'INQUIRY:DELETE_OWN',
+  ],
   
   // DEVELOPMENT_PARTNER - Same as BUYER (Read-only)
   DEVELOPMENT_PARTNER: [
@@ -402,9 +416,9 @@ export function isExporterRole(role: UserRole): boolean {
   return role === 'EXPORTER';
 }
 
-// Check if role is a read-only role (Buyer, Development Partner, TSI, MDA, Mission)
+// Check if role is a read-only role (Buyer, Partner, Development Partner, TSI, MDA, Mission)
 export function isReadOnlyRole(role: UserRole): boolean {
-  return ['BUYER', 'DEVELOPMENT_PARTNER', 'TSI', 'MDA', 'MISSION'].includes(role);
+  return ['BUYER', 'PARTNER', 'DEVELOPMENT_PARTNER', 'TSI', 'MDA', 'MISSION'].includes(role);
 }
 
 // Check if role can have sub-roles

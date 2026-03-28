@@ -97,7 +97,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN';
+  role: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN';
   partnerType?: string;
   avatar?: string;
   phoneNumber?: string;
@@ -472,7 +472,7 @@ class ApiClient {
     firstName: string;
     lastName: string;
     phoneNumber?: string;
-    role?: 'ADMIN' | 'EXPORTER' | 'BUYER';
+    role?: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER';
     businessName?: string;
     businessLocation?: string;
     productCategory?: string;

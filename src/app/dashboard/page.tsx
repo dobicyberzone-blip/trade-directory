@@ -23,13 +23,10 @@ export default function DashboardPage() {
       router.push('/dashboard/admin');
     } else if (role === 'exporter') {
       router.push('/dashboard/exporter');
+    } else if (role === 'partner') {
+      router.push('/dashboard/partner');
     } else if (role === 'buyer') {
-      // Partners are stored as BUYER with a partnerType set
-      if ((user as any).partnerType) {
-        router.push('/dashboard/partner');
-      } else {
-        router.push('/dashboard/buyer');
-      }
+      router.push('/dashboard/buyer');
     } else {
       router.push('/dashboard/buyer');
     }

@@ -9,7 +9,7 @@ export interface MenuItem {
   children?: MenuItem[];
 }
 
-type UserRole = 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN' | 'admin' | 'exporter' | 'buyer' | 'super_admin';
+type UserRole = 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN' | 'admin' | 'exporter' | 'buyer' | 'partner' | 'super_admin';
 
 // Super Admin Menu — full access including user deletion, logs, admin creation
 const superAdminMenuItems: MenuItem[] = [
@@ -329,7 +329,7 @@ const commonMenuItems: MenuItem[] = [];
 export function getMenuItemsForRole(role: UserRole, isSuperAdmin?: boolean, isPartner?: boolean): MenuItem[] {
   let roleMenuItems: MenuItem[] = [];
 
-  const normalizedRole = role.toUpperCase() as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN';
+  const normalizedRole = role.toUpperCase() as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN';
 
   switch (normalizedRole) {
     case 'ADMIN':
@@ -341,8 +341,11 @@ export function getMenuItemsForRole(role: UserRole, isSuperAdmin?: boolean, isPa
     case 'EXPORTER':
       roleMenuItems = exporterMenuItems;
       break;
+    case 'PARTNER':
+      roleMenuItems = partnerMenuItems;
+      break;
     case 'BUYER':
-      roleMenuItems = isPartner ? partnerMenuItems : buyerMenuItems;
+      roleMenuItems = buyerMenuItems;
       break;
     default:
       roleMenuItems = buyerMenuItems;

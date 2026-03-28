@@ -60,7 +60,7 @@ interface SidebarProps {
   onDrawerToggle: () => void;
   onNavigate: (url: string) => void;
   currentPath: string;
-  userRole: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN';
+  userRole: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN';
   isSuperAdmin?: boolean;
   isPartner?: boolean;
   onLogout?: () => void;

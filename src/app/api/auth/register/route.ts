@@ -25,7 +25,7 @@ const registerSchema = z.object({
   firstName: z.string().min(2),
   lastName: z.string().min(2),
   phoneNumber: z.string().optional(),
-  role: z.enum(['ADMIN', 'EXPORTER', 'BUYER']).default('BUYER'),
+  role: z.enum(['ADMIN', 'EXPORTER', 'BUYER', 'PARTNER']).default('BUYER'),
   partnerType: z.string().optional(),
 
   // Business info (exporter)
