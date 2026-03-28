@@ -27,7 +27,7 @@ export async function sendRegistrationEmail(
 
     return sendMail({
       to: email,
-      subject: 'Welcome to KEPROBA - Registration Successful',
+      subject: 'Welcome to the KEPROBA Trade Directory',
       html: `
         <!DOCTYPE html>
         <html>
@@ -109,7 +109,7 @@ export async function sendLoginEmail(
 
     return sendMail({
       to: email,
-      subject: 'New Login to Your KEPROBA Account',
+      subject: 'New Sign-In to Your KEPROBA Account',
       html: `
         <!DOCTYPE html>
         <html>
@@ -181,7 +181,7 @@ export async function sendProfileUpdateEmail(
 
     return sendMail({
       to: email,
-      subject: 'Profile Updated Successfully - KEPROBA',
+      subject: 'Your Profile Has Been Updated — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -245,7 +245,7 @@ export async function sendBusinessSubmittedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Business Verification Submitted - KEPROBA',
+      subject: 'Business Verification Request Received — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -312,7 +312,7 @@ export async function sendPasswordChangeEmail(
 
     return sendMail({
       to: email,
-      subject: 'Password Changed Successfully - KEPROBA',
+      subject: 'Your Password Has Been Changed — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -377,7 +377,7 @@ export async function sendProductSubmittedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Product Submitted for Review - KEPROBA',
+      subject: 'Product Submitted for Review — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -445,7 +445,7 @@ export async function sendInquiryReceivedEmail(
 
     return sendMail({
       to: email,
-      subject: 'New Inquiry Received - KEPROBA',
+      subject: 'You Have a New Buyer Inquiry — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -515,7 +515,7 @@ export async function sendInquiryResponseEmail(
 
     return sendMail({
       to: email,
-      subject: 'Response to Your Inquiry - KEPROBA',
+      subject: 'An Exporter Has Responded to Your Inquiry — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -578,7 +578,7 @@ export async function sendBusinessDetailsUpdatedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Business Details Updated Successfully - KEPROBA',
+      subject: 'Your Business Details Have Been Updated — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -643,7 +643,7 @@ export async function sendSuccessStorySubmittedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Success Story Submitted - KEPROBA',
+      subject: 'Your Success Story Has Been Submitted — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -711,7 +711,7 @@ export async function sendInquirySentEmail(
 
     return sendMail({
       to: email,
-      subject: 'Inquiry Sent Successfully - KEPROBA',
+      subject: 'Your Inquiry Has Been Sent — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -785,7 +785,7 @@ export async function sendBusinessVerificationApprovedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Business Verification Approved - KEPROBA',
+      subject: 'Your Business Has Been Verified — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -864,7 +864,7 @@ export async function sendProductApprovedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Product Approved - KEPROBA',
+      subject: 'Your Product Has Been Approved — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -941,7 +941,7 @@ export async function sendBusinessVerificationRejectedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Action Required: Business Verification Update - KEPROBA',
+      subject: 'Action Required: Please Update Your Business Profile — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -1052,7 +1052,7 @@ export async function sendAccountSuspendedEmail(
 
     return sendMail({
       to: email,
-      subject: 'Your KEPROBA Account Has Been Suspended',
+      subject: 'Important: Your KEPROBA Account Has Been Suspended',
       html: `
         <!DOCTYPE html>
         <html>
@@ -1190,7 +1190,7 @@ export async function sendBusinessSuspendedEmail(
 
     return sendMail({
       to: email,
-      subject: `Your Business "${businessName}" Has Been Suspended - KEPROBA`,
+      subject: `Important: Your Business "${businessName}" Has Been Suspended — KEPROBA`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -1277,7 +1277,7 @@ export async function sendRatingNotificationEmail(
 
     return sendMail({
       to: exporterEmail,
-      subject: `⭐ New Rating Received for ${businessName} – KEPROBA Trade Directory`,
+      subject: `New Rating Received for ${businessName} — KEPROBA`,
       html: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1419,7 +1419,7 @@ export async function sendAdminVerificationCompletedEmail(
 
     return sendMail({
       to: adminEmail,
-      subject: `✅ Exporter Verified: ${businessName} — KEPROBA Trade Directory`,
+      subject: `Business Verified: ${businessName} — KEPROBA`,
       html: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1541,7 +1541,7 @@ export async function sendLogoReminderEmail(
 
     return sendMail({
       to: email,
-      subject: 'Action Required: Upload Your Company Logo – KEPROBA Trade Directory',
+      subject: 'Action Required: Complete Your Business Profile — KEPROBA',
       html: `
         <!DOCTYPE html>
         <html>
