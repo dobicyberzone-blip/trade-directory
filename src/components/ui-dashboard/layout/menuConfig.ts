@@ -245,13 +245,7 @@ const buyerMenuItems: MenuItem[] = [
     title: 'Dashboard',
     type: 'group',
     children: [
-      {
-        id: 'buyer-overview',
-        title: 'Overview',
-        type: 'item',
-        icon: 'dashboard',
-        url: '/dashboard/buyer',
-      },
+      { id: 'buyer-overview', title: 'Overview', type: 'item', icon: 'dashboard', url: '/dashboard/buyer' },
     ],
   },
   {
@@ -259,20 +253,8 @@ const buyerMenuItems: MenuItem[] = [
     title: 'Sourcing',
     type: 'group',
     children: [
-      {
-        id: 'buyer-directory',
-        title: 'Browse Directory',
-        type: 'item',
-        icon: 'search',
-        url: '/directory',
-      },
-      {
-        id: 'buyer-favorites',
-        title: 'My Favorites',
-        type: 'item',
-        icon: 'heart',
-        url: '/dashboard/buyer/favorites',
-      },
+      { id: 'buyer-directory', title: 'Browse Directory', type: 'item', icon: 'search', url: '/directory' },
+      { id: 'buyer-favorites', title: 'My Favorites', type: 'item', icon: 'heart', url: '/dashboard/buyer/favorites' },
     ],
   },
   {
@@ -280,13 +262,7 @@ const buyerMenuItems: MenuItem[] = [
     title: 'Orders & Communication',
     type: 'group',
     children: [
-      {
-        id: 'buyer-chat',
-        title: 'Messages',
-        type: 'item',
-        icon: 'message-circle',
-        url: '/dashboard/chat',
-      },
+      { id: 'buyer-chat', title: 'Messages', type: 'item', icon: 'message-circle', url: '/dashboard/chat' },
     ],
   },
   {
@@ -294,13 +270,55 @@ const buyerMenuItems: MenuItem[] = [
     title: 'Content',
     type: 'group',
     children: [
-      {
-        id: 'buyer-success-stories',
-        title: 'Success Stories',
-        type: 'item',
-        icon: 'star',
-        url: '/dashboard/buyer/success-stories',
-      },
+      { id: 'buyer-success-stories', title: 'Success Stories', type: 'item', icon: 'star', url: '/dashboard/buyer/success-stories' },
+    ],
+  },
+];
+
+// Partner Menu Items
+const partnerMenuItems: MenuItem[] = [
+  {
+    id: 'partner-dashboard',
+    title: 'Dashboard',
+    type: 'group',
+    children: [
+      { id: 'partner-overview', title: 'Overview', type: 'item', icon: 'dashboard', url: '/dashboard/partner' },
+    ],
+  },
+  {
+    id: 'partner-sourcing',
+    title: 'Sourcing',
+    type: 'group',
+    children: [
+      { id: 'partner-directory', title: 'Browse Directory', type: 'item', icon: 'search', url: '/directory' },
+      { id: 'partner-favorites', title: 'My Favourites', type: 'item', icon: 'heart', url: '/dashboard/partner/favorites' },
+    ],
+  },
+  {
+    id: 'partner-communication',
+    title: 'Communication',
+    type: 'group',
+    children: [
+      { id: 'partner-inquiries', title: 'My Inquiries', type: 'item', icon: 'help-circle', url: '/dashboard/partner/inquiries' },
+      { id: 'partner-chat', title: 'Messages', type: 'item', icon: 'message-circle', url: '/dashboard/chat' },
+    ],
+  },
+  {
+    id: 'partner-content',
+    title: 'Content',
+    type: 'group',
+    children: [
+      { id: 'partner-success-stories', title: 'Success Stories', type: 'item', icon: 'star', url: '/dashboard/partner/success-stories' },
+      { id: 'partner-ratings', title: 'My Ratings', type: 'item', icon: 'star-half', url: '/dashboard/partner/ratings' },
+    ],
+  },
+  {
+    id: 'partner-account',
+    title: 'Account',
+    type: 'group',
+    children: [
+      { id: 'partner-analytics', title: 'Analytics', type: 'item', icon: 'bar-chart', url: '/dashboard/partner/analytics' },
+      { id: 'partner-activity', title: 'Activity', type: 'item', icon: 'activity', url: '/dashboard/partner/activity' },
     ],
   },
 ];
@@ -308,7 +326,7 @@ const buyerMenuItems: MenuItem[] = [
 // Common menu items for all roles (removed - no common items needed)
 const commonMenuItems: MenuItem[] = [];
 
-export function getMenuItemsForRole(role: UserRole, isSuperAdmin?: boolean): MenuItem[] {
+export function getMenuItemsForRole(role: UserRole, isSuperAdmin?: boolean, isPartner?: boolean): MenuItem[] {
   let roleMenuItems: MenuItem[] = [];
 
   const normalizedRole = role.toUpperCase() as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN';
@@ -324,7 +342,7 @@ export function getMenuItemsForRole(role: UserRole, isSuperAdmin?: boolean): Men
       roleMenuItems = exporterMenuItems;
       break;
     case 'BUYER':
-      roleMenuItems = buyerMenuItems;
+      roleMenuItems = isPartner ? partnerMenuItems : buyerMenuItems;
       break;
     default:
       roleMenuItems = buyerMenuItems;

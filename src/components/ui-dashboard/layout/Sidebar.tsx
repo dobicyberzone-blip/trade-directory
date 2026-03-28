@@ -62,6 +62,7 @@ interface SidebarProps {
   currentPath: string;
   userRole: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'SUPER_ADMIN';
   isSuperAdmin?: boolean;
+  isPartner?: boolean;
   onLogout?: () => void;
 }
 
@@ -101,12 +102,12 @@ const iconMap: Record<string, Icon> = {
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
-function Sidebar({ drawerOpen, onDrawerToggle, onNavigate, currentPath, userRole, isSuperAdmin, onLogout }: SidebarProps) {
+function Sidebar({ drawerOpen, onDrawerToggle, onNavigate, currentPath, userRole, isSuperAdmin, isPartner, onLogout }: SidebarProps) {
   const theme = useTheme();
   const downMD = useMediaQuery(theme.breakpoints.down('md'));
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
-  const menuItems = getMenuItemsForRole(userRole, isSuperAdmin);
+  const menuItems = getMenuItemsForRole(userRole, isSuperAdmin, isPartner);
 
   const handleItemClick = (item: MenuItem) => {
     if (item.type === 'collapse') {

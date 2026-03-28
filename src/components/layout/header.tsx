@@ -71,7 +71,10 @@ export function Header() {
     const role = user.role.toLowerCase();
     if (role === 'admin' || role === 'super_admin') return '/dashboard/admin';
     if (role === 'exporter') return '/dashboard/exporter';
-    return '/dashboard/buyer'; // buyer, partner, and any other role
+    if (role === 'partner') return '/dashboard/partner';
+    // BUYER with a partnerType is a partner
+    if (role === 'buyer' && (user as any).partnerType) return '/dashboard/partner';
+    return '/dashboard/buyer';
   })();
   const [hasGoogleTranslate, setHasGoogleTranslate] = useState(false);
   

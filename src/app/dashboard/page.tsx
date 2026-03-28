@@ -26,7 +26,7 @@ export default function DashboardPage() {
     } else if (role === 'buyer') {
       router.push('/dashboard/buyer');
     } else if (role === 'partner') {
-      router.push('/dashboard/buyer'); // partners use buyer dashboard
+      router.push('/dashboard/partner');
     } else {
       router.push('/dashboard/buyer');
     }
