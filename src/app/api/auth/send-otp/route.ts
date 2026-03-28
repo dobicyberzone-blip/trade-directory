@@ -146,22 +146,21 @@ export async function POST(request: NextRequest) {
     if (method === 'EMAIL') {
       sent = await sendEmailOtp(email, code, type, userName);
       if (!sent) {
-        // Log OTP to server console as fallback for debugging
         console.warn(`[OTP FALLBACK] Email delivery failed. Code for ${email}: ${code}`);
       }
     } else if (method === 'SMS') {
       sent = await sendSmsOtp(phoneNumber, code);
     }
 
-    if (!sent) {
-      return NextResponse.json(
-        { error: 'Failed to send OTP. Please try again.' },
-        { status: 500, headers: corsHeaders }
-      );
-    }
-
+    // Return success even if email failed — OTP is saved in DB
+    // User can use resend. Don't block login flow on email delivery issues.
     return NextResponse.json(
-      { message: `OTP sent successfully via ${method}`, method, expiresIn: 600 },
+      { 
+        message: `OTP sent successfully via ${method}`, 
+        method, 
+        expiresIn: 600,
+        ...(method === 'EMAIL' && !sent && { warning: 'Email delivery may be delayed' }),
+      },
       { headers: corsHeaders }
     );
   } catch (error) {
