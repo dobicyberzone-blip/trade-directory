@@ -53,6 +53,7 @@ export function ExporterGridCard({ business, onViewProfileClick, hideActions }: 
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showInquiryDialog, setShowInquiryDialog] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const [inquiryMessage, setInquiryMessage] = useState('');
   const [isSendingInquiry, setIsSendingInquiry] = useState(false);
   const [showImageGallery, setShowImageGallery] = useState(false);
@@ -337,16 +338,18 @@ export function ExporterGridCard({ business, onViewProfileClick, hideActions }: 
         <CardContent className="p-5 flex-grow flex flex-col">
           {/* Header with Logo and Actions */}
           <div className="flex justify-between items-start mb-3">
-            <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-md">
-              <AvatarImage 
-                src={business.logoUrl || undefined} 
-                alt={`${business.name} logo`}
-                className="object-cover"
-              />
-              <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-700 text-white font-bold text-lg">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <div className="h-16 w-16 rounded-full border-2 border-primary/20 shadow-md overflow-hidden flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700 flex-shrink-0">
+              {business.logoUrl && !logoError ? (
+                <img
+                  src={business.logoUrl}
+                  alt={`${business.name} logo`}
+                  className="w-full h-full object-cover"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <span className="text-white font-bold text-lg">{initials}</span>
+              )}
+            </div>
             <div className="flex items-center gap-1.5">
               {/* Favorite Button - Hidden for exporters */}
               {user?.role !== 'EXPORTER' && (
