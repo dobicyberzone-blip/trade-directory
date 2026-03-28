@@ -3,44 +3,7 @@
  * Sends emails for registration, login, profile updates, etc.
  */
 
-import nodemailer from 'nodemailer';
-
-// Load environment variables if not already loaded
-if (typeof process !== 'undefined' && !process.env.SMTP_HOST) {
-  try {
-    require('dotenv').config();
-  } catch (e) {
-    // dotenv not available or already loaded
-  }
-}
-
-// SMTP transporter with connection pooling
-let transporter: nodemailer.Transporter | null = null;
-
-function getTransporter() {
-  if (!transporter) {
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('[Email] SMTP not configured - missing credentials');
-      return null;
-    }
-    
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      pool: true,
-      maxConnections: 5,
-      maxMessages: 100,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-    
-    console.log('[Email] SMTP transporter initialized');
-  }
-  return transporter;
-}
+import { sendMail } from './mailer';
 
 const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -58,13 +21,11 @@ export async function sendRegistrationEmail(
   role: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
     const userName = `${firstName} ${lastName}`.trim();
     const roleText = role === 'EXPORTER' ? 'Exporter' : role === 'BUYER' ? 'Buyer' : role === 'PARTNER' ? 'Partner' : 'Admin';
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Welcome to KEPROBA - Registration Successful',
@@ -143,13 +104,11 @@ export async function sendLoginEmail(
   userAgent?: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
     const loginTime = new Date().toLocaleString();
     const location = ipAddress || 'Unknown location';
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'New Login to Your KEPROBA Account',
@@ -219,12 +178,10 @@ export async function sendProfileUpdateEmail(
   updatedFields: string[]
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
     const fieldsList = updatedFields.map(field => `<li>${field}</li>`).join('');
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Profile Updated Successfully - KEPROBA',
@@ -288,10 +245,8 @@ export async function sendBusinessSubmittedEmail(
   businessName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Business Verification Submitted - KEPROBA',
@@ -358,10 +313,8 @@ export async function sendPasswordChangeEmail(
   firstName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Password Changed Successfully - KEPROBA',
@@ -426,10 +379,8 @@ export async function sendProductSubmittedEmail(
   productName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Product Submitted for Review - KEPROBA',
@@ -497,10 +448,8 @@ export async function sendInquiryReceivedEmail(
   message: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'New Inquiry Received - KEPROBA',
@@ -570,10 +519,8 @@ export async function sendInquiryResponseEmail(
   productName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Response to Your Inquiry - KEPROBA',
@@ -634,12 +581,10 @@ export async function sendBusinessDetailsUpdatedEmail(
   updatedFields: string[]
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
     const fieldsList = updatedFields.map(field => `<li>${field}</li>`).join('');
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Business Details Updated Successfully - KEPROBA',
@@ -704,10 +649,8 @@ export async function sendSuccessStorySubmittedEmail(
   storyTitle: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Success Story Submitted - KEPROBA',
@@ -775,10 +718,8 @@ export async function sendInquirySentEmail(
   productName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Inquiry Sent Successfully - KEPROBA',
@@ -852,10 +793,8 @@ export async function sendBusinessVerificationApprovedEmail(
   businessName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Business Verification Approved - KEPROBA',
@@ -934,10 +873,8 @@ export async function sendProductApprovedEmail(
   productName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Product Approved - KEPROBA',
@@ -1012,12 +949,10 @@ export async function sendBusinessVerificationRejectedEmail(
   reason: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
     const profileUrl = `${dashboardUrl}/dashboard/exporter/business-profile`;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Action Required: Business Verification Update - KEPROBA',
@@ -1131,7 +1066,7 @@ export async function sendAccountSuspendedEmail(
     const t = getTransporter();
     if (!t) return false;
 
-    await t.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Your KEPROBA Account Has Been Suspended',
@@ -1202,7 +1137,7 @@ export async function sendAccountUnsuspendedEmail(
     const t = getTransporter();
     if (!t) return false;
 
-    await t.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Your KEPROBA Account Has Been Reinstated',
@@ -1275,7 +1210,7 @@ export async function sendBusinessSuspendedEmail(
     const t = getTransporter();
     if (!t) return false;
 
-    await t.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: `Your Business "${businessName}" Has Been Suspended - KEPROBA`,
@@ -1365,7 +1300,7 @@ export async function sendRatingNotificationEmail(
       timeZone: 'Africa/Nairobi',
     });
 
-    await transport.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA Trade Directory'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: exporterEmail,
       subject: `⭐ New Rating Received for ${businessName} – KEPROBA Trade Directory`,
@@ -1510,7 +1445,7 @@ export async function sendAdminVerificationCompletedEmail(
       timeZone: 'Africa/Nairobi',
     });
 
-    await transport.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: adminEmail,
       subject: `✅ Exporter Verified: ${businessName} — KEPROBA Trade Directory`,
@@ -1632,10 +1567,8 @@ export async function sendLogoReminderEmail(
   businessName: string
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    if (!transporter) return false;
 
-    await transporter.sendMail({
+    return sendMail({
       from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Action Required: Upload Your Company Logo – KEPROBA Trade Directory',

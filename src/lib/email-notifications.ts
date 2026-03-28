@@ -3,45 +3,8 @@
  * Sends email notifications to users when they receive in-app notifications
  */
 
-import nodemailer from 'nodemailer';
+import { sendMail } from './mailer';
 import { NotificationType, NotificationUrgency } from './notifications';
-
-// Load environment variables if not already loaded
-if (typeof process !== 'undefined' && !process.env.SMTP_HOST) {
-  try {
-    require('dotenv').config();
-  } catch (e) {
-    // dotenv not available or already loaded
-  }
-}
-
-// SMTP transporter with connection pooling
-let transporter: nodemailer.Transporter | null = null;
-
-function getTransporter() {
-  if (!transporter) {
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('[Email] SMTP not configured - missing credentials');
-      return null;
-    }
-    
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      pool: true,
-      maxConnections: 5,
-      maxMessages: 100,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-    
-    console.log('[Email] SMTP transporter initialized');
-  }
-  return transporter;
-}
 
 /**
  * Get urgency color for email styling
@@ -92,12 +55,6 @@ export async function sendEmailNotification(
   urgency: NotificationUrgency = 'LOW'
 ): Promise<boolean> {
   try {
-    const transporter = getTransporter();
-    
-    if (!transporter) {
-      console.error('[Email] Transporter not available');
-      return false;
-    }
 
     const icon = getNotificationIcon(type);
     const urgencyColor = getUrgencyColor(urgency);
@@ -110,8 +67,7 @@ export async function sendEmailNotification(
 
     console.log(`[Email] Sending ${urgency} notification to ${userEmail}: ${title}`);
 
-    await transporter.sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+    return await sendMail({
       to: userEmail,
       subject: `${title} - KEPROBA`,
       html: `

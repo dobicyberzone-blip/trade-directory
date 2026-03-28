@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { sendMail } from '@/lib/mailer';
 
 const ADMIN_EMAIL = 'enquiries@brand.ke';
 
@@ -11,21 +11,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      // SMTP not configured — still return success so UX isn't broken
-      console.warn('Contact form: SMTP not configured, email not sent');
-      return NextResponse.json({ success: true });
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    });
-
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://brand.go.ke';
-    const fromLabel = `"${process.env.FROM_NAME || 'KEPROBA Trade Directory'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`;
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -61,22 +47,18 @@ export async function POST(req: NextRequest) {
 </body>
 </html>`;
 
-    const text = `New contact form submission\n\nFrom: ${name} <${email}>\nSubject: ${subject}\n\nMessage:\n${message}\n\n---\nKEPROBA Trade Directory\n${appUrl}`;
-
-    // Send to admin inbox
-    await transporter.sendMail({
-      from: fromLabel,
+    // Send to admin inbox with reply-to set to the sender
+    await sendMail({
       to: ADMIN_EMAIL,
-      replyTo: `"${name}" <${email}>`,
       subject: `[Contact Form] ${subject}`,
       html,
-      text,
+      text: `New contact form submission\n\nFrom: ${name} <${email}>\nSubject: ${subject}\n\nMessage:\n${message}\n\n---\nKEPROBA Trade Directory\n${appUrl}`,
+      replyTo: `${name} <${email}>`,
     });
 
-    // Send auto-reply to the sender
-    await transporter.sendMail({
-      from: fromLabel,
-      to: `"${name}" <${email}>`,
+    // Auto-reply to the sender
+    await sendMail({
+      to: { name, email },
       subject: `Re: ${subject} — We've received your message`,
       html: `<!DOCTYPE html>
 <html lang="en">
@@ -114,7 +96,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Contact form error:', error);
     return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });
   }

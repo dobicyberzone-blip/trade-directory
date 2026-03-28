@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth-utils';
-import nodemailer from 'nodemailer';
+import { sendMail } from '@/lib/mailer';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -23,22 +23,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'to, subject and message are required' }, { status: 400, headers: cors });
   }
 
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    return NextResponse.json({ error: 'SMTP not configured' }, { status: 500, headers: cors });
-  }
-
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-  });
-
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
 
-  await transporter.sendMail({
-    from: `"${process.env.FROM_NAME || 'KEPROBA Admin'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
-    to: `"${toName}" <${to}>`,
+  await sendMail({
+    to: toName ? { name: toName, email: to } : to,
     subject,
     html: `<!DOCTYPE html>
 <html lang="en">

@@ -71,6 +71,7 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-google-maps/api": "^2.20.8",
+    "@sendgrid/mail": "^8.1.6",
     "@tabler/icons-react": "^3.36.1",
     "@tiptap/extension-image": "^3.19.0",
     "@tiptap/extension-link": "^3.19.0",
