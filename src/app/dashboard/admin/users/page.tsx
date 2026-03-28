@@ -95,16 +95,13 @@ export default function UserManagementPage() {
     }
   }, [user]);
 
-  const getRoleChipColor = (role: string): 'error' | 'info' | 'success' | 'default' => {
+  const getRoleChipColor = (role: string): 'error' | 'info' | 'success' | 'warning' | 'default' => {
     switch (role) {
-      case 'ADMIN':
-        return 'error';
-      case 'EXPORTER':
-        return 'info';
-      case 'BUYER':
-        return 'success';
-      default:
-        return 'default';
+      case 'ADMIN': return 'error';
+      case 'EXPORTER': return 'info';
+      case 'BUYER': return 'success';
+      case 'PARTNER': return 'warning';
+      default: return 'default';
     }
   };
 
@@ -606,7 +603,7 @@ export default function UserManagementPage() {
       <Paper elevation={0} sx={{ p: 2, mb: 3, border: '1px solid', borderColor: 'divider' }}>
         {/* Role Toggle Strip */}
         <Box sx={{ display: 'flex', gap: 0.5, mb: 2, flexWrap: 'wrap' }}>
-          {(['', ...(isSuperAdmin ? ['ADMIN'] : []), 'EXPORTER', 'BUYER'] as const).map((role) => {
+          {(['', ...(isSuperAdmin ? ['ADMIN'] : []), 'EXPORTER', 'BUYER', 'PARTNER'] as const).map((role) => {
             const label = role === '' ? 'All' : role.charAt(0) + role.slice(1).toLowerCase();
             const isActive = advancedFilters.role === role;
             return (
@@ -614,7 +611,7 @@ export default function UserManagementPage() {
                 key={role}
                 size="small"
                 variant={isActive ? 'contained' : 'outlined'}
-                color={isActive ? (role === 'ADMIN' ? 'error' : role === 'EXPORTER' ? 'info' : role === 'BUYER' ? 'success' : 'primary') : 'inherit'}
+                color={isActive ? (role === 'ADMIN' ? 'error' : role === 'EXPORTER' ? 'info' : role === 'BUYER' ? 'success' : role === 'PARTNER' ? 'warning' : 'primary') : 'inherit'}
                 onClick={() => setAdvancedFilters({ ...advancedFilters, role })}
                 sx={{ 
                   minWidth: 80, 
@@ -916,6 +913,7 @@ export default function UserManagementPage() {
                 {isSuperAdmin && <MenuItem value="ADMIN">Admin</MenuItem>}
                 <MenuItem value="EXPORTER">Exporter</MenuItem>
                 <MenuItem value="BUYER">Buyer</MenuItem>
+                <MenuItem value="PARTNER">Partner</MenuItem>
               </Select>
             </FormControl>
 
