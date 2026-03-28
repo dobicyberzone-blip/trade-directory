@@ -150,6 +150,8 @@ export async function PUT(
         ...body,
         documentsUploadedAt: hasDocuments ? new Date() : existingBusiness.documentsUploadedAt,
         verificationStatus: wasVerified ? 'PENDING' : existingBusiness.verificationStatus,
+        // Unfeature if sent back for re-verification — must be re-verified and re-featured by admin
+        ...(wasVerified && { featured: false, featuredAt: null, featuredBy: null }),
       },
       include: {
         owner: {

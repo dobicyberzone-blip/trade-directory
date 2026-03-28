@@ -423,6 +423,8 @@ export async function PUT(request: NextRequest) {
         profileComplete,
         verificationStatus: newVerificationStatus,
         needsVerification: needsVerification,
+        // Unfeature if sent back for re-verification — must be re-verified and re-featured by admin
+        ...(wasVerified && { featured: false, featuredAt: null, featuredBy: null }),
         
         // Create new certifications if we have any
         ...(certificationsToCreate.length > 0 && {
