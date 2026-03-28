@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { AuditLogger } from '@/lib/admin/audit';
+import { verifyToken } from '@/lib/auth-utils';
 
 export async function GET(request: NextRequest) {
+  const token = await verifyToken(request);
+  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '0');
@@ -37,6 +42,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const token = await verifyToken(request);
+  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const { email } = await request.json();
     const subscriber = await prisma.newsletterSubscriber.create({ data: { email } });
@@ -48,6 +57,10 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const token = await verifyToken(request);
+  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const { id, ...data } = await request.json();
     const current = await prisma.newsletterSubscriber.findUnique({ where: { id } });
@@ -62,6 +75,10 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const token = await verifyToken(request);
+  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const id = request.nextUrl.searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
