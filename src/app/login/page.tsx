@@ -200,9 +200,15 @@ export default function LoginPage() {
   // Redirect if already authenticated - with role-based destination
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Buyer users go to /directory
-      if (user.role === 'BUYER') {
-        router.push('/directory');
+      const role = user.role.toLowerCase();
+      if (role === 'buyer') {
+        router.push('/dashboard/buyer');
+      } else if (role === 'partner') {
+        router.push('/dashboard/partner');
+      } else if (role === 'exporter') {
+        router.push('/dashboard/exporter');
+      } else if (role === 'admin' || role === 'super_admin') {
+        router.push('/dashboard/admin');
       } else {
         router.push('/dashboard');
       }
@@ -242,12 +248,8 @@ export default function LoginPage() {
         
         setShowOtpVerification(true);
       } else {
-        // Redirect based on user role
-        if (user?.role === 'BUYER') {
-          router.push('/directory');
-        } else {
-          router.push('/dashboard');
-        }
+        // Redirect is handled by the useEffect that watches isAuthenticated + user
+        // No inline redirect needed — avoids race condition with stale user state
       }
     } catch (error) {
       // Error is already handled by the auth context with a toast message
@@ -256,13 +258,9 @@ export default function LoginPage() {
   }
 
   const handleOtpSuccess = () => {
-    // Show loading state and navigate immediately based on user role
+    // Show loading state — redirect is handled by the useEffect that watches isAuthenticated + user
+    // No inline redirect needed — avoids race condition with stale user state
     setIsVerifyingOtp(true);
-    if (user?.role === 'BUYER') {
-      router.push('/directory');
-    } else {
-      router.push('/dashboard');
-    }
   };
 
   const handleBackToLogin = () => {

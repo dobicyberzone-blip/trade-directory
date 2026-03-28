@@ -80,6 +80,30 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
+    // Auto-seed defaults if table is empty
+    const count = await prisma.passwordPolicy.count();
+    if (count === 0) {
+      await prisma.passwordPolicy.createMany({
+        data: DEFAULT_POLICIES.map(p => ({
+          role: p.role,
+          maxAgeDays: p.maxAgeDays,
+          minAgeDays: p.minAgeDays,
+          minLength: p.minLength,
+          requireUppercase: p.requireUppercase,
+          requireLowercase: p.requireLowercase,
+          requireNumbers: p.requireNumbers,
+          requireSpecialChars: p.requireSpecialChars,
+          historyCount: p.historyCount,
+          warnDays: p.warnDays,
+          lockoutMinutes: p.lockoutMinutes,
+          maxFailedAttempts: p.maxFailedAttempts,
+          isActive: true,
+        })),
+        skipDuplicates: true,
+      });
+    }
+    }
+
     const { searchParams } = new URL(request.url);
     const role = searchParams.get('role');
 

@@ -150,8 +150,15 @@ export function UnifiedAuthDialog({
   useEffect(() => {
     if (user && authStep === 'loading') {
       // Redirect based on user role
-      if (user.role === 'BUYER') {
-        router.push('/directory');
+      const role = user.role.toLowerCase();
+      if (role === 'buyer') {
+        router.push('/dashboard/buyer');
+      } else if (role === 'partner') {
+        router.push('/dashboard/partner');
+      } else if (role === 'exporter') {
+        router.push('/dashboard/exporter');
+      } else if (role === 'admin' || role === 'super_admin') {
+        router.push('/dashboard/admin');
       } else {
         router.push('/dashboard');
       }

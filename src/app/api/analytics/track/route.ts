@@ -31,6 +31,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, tracked: true, type: 'search' });
     }
 
+    if (type === 'profile_view') {
+      const { businessId, source } = data;
+      if (businessId) {
+        const viewerIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+        const viewerUserAgent = request.headers.get('user-agent') || 'unknown';
+        await prisma.profileView.create({
+          data: {
+            businessId,
+            viewerId: user.userId,
+            viewerIp,
+            viewerUserAgent,
+            source: source || 'directory',
+          },
+        });
+        return NextResponse.json({ success: true, tracked: true, type: 'profile_view' });
+      }
+    }
+
     // Add other tracking types here in the future (page views, clicks, etc.)
     
     return NextResponse.json({ success: true, tracked: false, message: 'Unknown tracking type' });
