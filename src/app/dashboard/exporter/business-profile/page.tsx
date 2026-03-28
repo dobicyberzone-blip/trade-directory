@@ -31,7 +31,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { openPdfInNewWindow } from '@/lib/pdf-viewer';
+import { openPdfInNewWindow, resolveFileUrl } from '@/lib/pdf-viewer';
 import { BusinessFormData, BusinessWithRelations } from '@/types/business';
 import { formatDate, formatVerificationStatus } from '@/lib/formatters';
 import { useAuth } from '@/contexts/auth-context';
