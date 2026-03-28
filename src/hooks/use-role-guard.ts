@@ -30,8 +30,7 @@ export function useRoleGuard(allowedRole: AllowedRole) {
     if (!allowed) {
       if (role === 'admin' || role === 'super_admin') { router.replace('/dashboard/admin'); return; }
       if (role === 'exporter') { router.replace('/dashboard/exporter'); return; }
-      if (role === 'partner')  { router.replace('/dashboard/partner'); return; }
-      // buyer — send to directory, not dashboard
+      // buyer and partner — send to directory
       router.replace('/directory');
     }
   }, [user, isLoading, allowedRole, router]);
