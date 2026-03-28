@@ -52,7 +52,10 @@ async function uploadToCloudinary(filePath, mimeType) {
   const buffer = readFileSync(filePath);
   const timestamp = Math.round(Date.now() / 1000);
   const folder = 'business-documents';
-  const paramString = `folder=${folder}&timestamp=${timestamp}`;
+  // Use correct resource_type — raw for PDFs, image for everything else
+  const resourceType = mimeType === 'application/pdf' ? 'raw' : 'image';
+  // resource_type must be included in signature params, sorted alphabetically
+  const paramString = `folder=${folder}&resource_type=${resourceType}&timestamp=${timestamp}`;
   const signature = createHash('sha1').update(paramString + API_SECRET).digest('hex');
 
   const formData = new FormData();
@@ -61,14 +64,18 @@ async function uploadToCloudinary(filePath, mimeType) {
   formData.append('api_key', API_KEY);
   formData.append('timestamp', String(timestamp));
   formData.append('folder', folder);
+  formData.append('resource_type', resourceType);
   formData.append('signature', signature);
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, {
     method: 'POST', body: formData,
   });
   if (!res.ok) throw new Error(`Cloudinary error: ${await res.text()}`);
   const data = await res.json();
-  return data.secure_url;
+  let url = data.secure_url;
+  // Ensure PDF URLs retain .pdf extension
+  if (resourceType === 'raw' && !url.endsWith('.pdf')) url = `${url}.pdf`;
+  return url;
 }
 
 function getMimeType(filePath) {
