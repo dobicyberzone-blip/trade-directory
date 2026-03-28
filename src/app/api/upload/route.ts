@@ -58,6 +58,14 @@ async function uploadToCloudinary(buffer: Buffer, filename: string, mimeType: st
 
 // Helper function to handle local upload (filesystem or base64)
 async function handleLocalUpload(buffer: Buffer, file: File): Promise<string> {
+  // For images, always fall back to base64 so they persist in the database
+  // and never disappear on server redeploy
+  const isImage = file.type.startsWith('image/');
+  if (isImage) {
+    const base64 = buffer.toString('base64');
+    return `data:${file.type};base64,${base64}`;
+  }
+
   try {
     // Prefer /data/uploads (Docker persistent volume) over /app/uploads (wiped on redeploy)
     const persistentDir = existsSync('/data') ? '/data/uploads/business-documents' : null;
@@ -153,6 +161,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(bytes);
     let publicUrl: string;
+    const isImageFile = file.type.startsWith('image/');
 
     if (USE_CLOUDINARY) {
       try {
@@ -160,19 +169,20 @@ export async function POST(request: NextRequest) {
         console.log(`[upload] Cloudinary OK: ${publicUrl}`);
       } catch (cloudinaryError) {
         console.error('[upload] Cloudinary attempt 1 failed, retrying once:', cloudinaryError);
-        // Retry once after a brief delay (Cloudinary may have transient issues)
         try {
           await new Promise(r => setTimeout(r, 1000));
           publicUrl = await uploadToCloudinary(buffer, file.name, file.type);
           console.log(`[upload] Cloudinary retry OK: ${publicUrl}`);
         } catch (cloudinaryRetryError) {
           console.error('[upload] Cloudinary retry also failed, falling back to local:', cloudinaryRetryError);
+          // For images: always use base64 so they persist in DB and never disappear on redeploy
           publicUrl = await handleLocalUpload(buffer, file);
-          console.log(`[upload] Local fallback: ${publicUrl}`);
+          console.log(`[upload] Fallback (${isImageFile ? 'base64' : 'local'}): ${publicUrl.substring(0, 60)}...`);
         }
       }
     } else {
-      console.warn('[upload] Cloudinary NOT configured — files will be stored locally and may not persist across redeploys. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in .env');
+      // Cloudinary not configured — images go to base64 (persists in DB), PDFs go to local filesystem
+      console.warn('[upload] Cloudinary NOT configured — images will be stored as base64 in DB. Set CLOUDINARY_* env vars for better performance.');
       publicUrl = await handleLocalUpload(buffer, file);
     }
 
