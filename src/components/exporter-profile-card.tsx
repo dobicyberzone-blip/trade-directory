@@ -46,6 +46,7 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [businessRating, setBusinessRating] = useState(business.rating);
+  const [logoError, setLogoError] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const downloadButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -376,21 +377,12 @@ function ExporterProfileCard({ business, onPinClick, hideBadgeOnMobile = false }
             <div className="flex items-start gap-2 sm:gap-4 md:gap-5 flex-1 min-w-0 w-full">
               <div className="relative flex-shrink-0 mt-1 sm:mt-0">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-gray-200 shadow-md bg-gray-100 overflow-hidden flex items-center justify-center">
-                  {business.logoUrl ? (
+                  {business.logoUrl && !logoError ? (
                     <img 
                       src={business.logoUrl} 
                       alt={`${business.name} logo`}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const parent = e.currentTarget.parentElement;
-                        if (parent) {
-                          const fallback = document.createElement('span');
-                          fallback.className = 'text-2xl font-black text-gray-600';
-                          fallback.textContent = business.name.charAt(0).toUpperCase();
-                          parent.appendChild(fallback);
-                        }
-                      }}
+                      onError={() => setLogoError(true)}
                     />
                   ) : (
                     <span className="text-2xl font-black text-gray-600">
