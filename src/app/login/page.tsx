@@ -201,10 +201,8 @@ export default function LoginPage() {
   useEffect(() => {
     if (isAuthenticated && user) {
       const role = user.role.toLowerCase();
-      if (role === 'buyer') {
-        router.push('/dashboard/buyer');
-      } else if (role === 'partner') {
-        router.push('/dashboard/partner');
+      if (role === 'buyer' || role === 'partner') {
+        router.push('/directory');
       } else if (role === 'exporter') {
         router.push('/dashboard/exporter');
       } else if (role === 'admin' || role === 'super_admin') {
