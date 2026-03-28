@@ -213,6 +213,7 @@ function RegisterPageContent({
 
   // Business name duplicate check state
   const [bizNameCheckState, setBizNameCheckState] = useState<'idle' | 'checking' | 'taken' | 'available'>('idle');
+  const [bizNameSimilarTo, setBizNameSimilarTo] = useState<string | null>(null);
 
   // Terms agreement state
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -225,6 +226,7 @@ function RegisterPageContent({
       const res = await fetch(`/api/auth/check-business-name?name=${encodeURIComponent(name.trim())}`);
       const data = await res.json();
       setBizNameCheckState(data.available ? 'available' : 'taken');
+      setBizNameSimilarTo(data.similarTo || null);
     } catch {
       setBizNameCheckState('idle');
     }
@@ -834,7 +836,10 @@ function RegisterPageContent({
                                   </svg>
                                   <div className="text-sm text-red-700 leading-snug">
                                     <span className="font-semibold">Business name already registered.</span>{' '}
-                                    A business with this name already exists in the Trade Directory. Please use a unique name.
+                                    {bizNameSimilarTo
+                                      ? <>Too similar to an existing business: <span className="font-semibold">&ldquo;{bizNameSimilarTo}&rdquo;</span>. Please use a unique name.</>
+                                      : <>A business with this name already exists in the Trade Directory. Please use a unique name.</>
+                                    }
                                   </div>
                                 </div>
                               )}
