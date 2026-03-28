@@ -5,7 +5,7 @@
 
 import sgMail from '@sendgrid/mail';
 
-const FROM_EMAIL = 'omar.ngenge@eiti.tech';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'omar.ngenge@eiti.tech';
 const FROM_NAME = process.env.FROM_NAME || 'KEPROBA Trade Directory';
 const API_KEY = process.env.SENDGRID_API_KEY;
 
