@@ -29,6 +29,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { apiClient } from '@/lib/api';
 import { MainCard } from '@/components/ui-dashboard';
 import { StatCard, ProgressCard, QuickActionCard } from '@/components/ui-dashboard';
+import { useRoleGuard } from '@/hooks/use-role-guard';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -61,7 +62,7 @@ ChartJS.register(
 
 export default function BuyerDashboard() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useRoleGuard('buyer');
   const { mode } = useThemeMode();
   const isDark = mode === 'dark';
   const tickColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
