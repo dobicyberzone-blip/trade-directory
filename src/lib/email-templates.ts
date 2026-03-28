@@ -1049,8 +1049,6 @@ export async function sendAccountSuspendedEmail(
   reason?: string
 ): Promise<boolean> {
   try {
-    const t = getTransporter();
-    if (!t) return false;
 
     return sendMail({
       to: email,
@@ -1119,8 +1117,6 @@ export async function sendAccountUnsuspendedEmail(
   firstName: string
 ): Promise<boolean> {
   try {
-    const t = getTransporter();
-    if (!t) return false;
 
     return sendMail({
       to: email,
@@ -1191,8 +1187,6 @@ export async function sendBusinessSuspendedEmail(
   reason?: string
 ): Promise<boolean> {
   try {
-    const t = getTransporter();
-    if (!t) return false;
 
     return sendMail({
       to: email,
@@ -1270,8 +1264,6 @@ export async function sendRatingNotificationEmail(
   isUpdate: boolean = false
 ): Promise<boolean> {
   try {
-    const transport = getTransporter();
-    if (!transport) return false;
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
     const dashboardLink = `${appUrl}/dashboard/exporter/business-profile`;
@@ -1416,8 +1408,6 @@ export async function sendAdminVerificationCompletedEmail(
   verifiedAt: Date
 ): Promise<boolean> {
   try {
-    const transport = getTransporter();
-    if (!transport) return false;
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
     const reviewUrl = `${appUrl}/dashboard/admin/business-verification`;
