@@ -26,7 +26,6 @@ export async function sendRegistrationEmail(
     const roleText = role === 'EXPORTER' ? 'Exporter' : role === 'BUYER' ? 'Buyer' : role === 'PARTNER' ? 'Partner' : 'Admin';
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Welcome to KEPROBA - Registration Successful',
       html: `
@@ -109,7 +108,6 @@ export async function sendLoginEmail(
     const location = ipAddress || 'Unknown location';
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'New Login to Your KEPROBA Account',
       html: `
@@ -182,7 +180,6 @@ export async function sendProfileUpdateEmail(
     const fieldsList = updatedFields.map(field => `<li>${field}</li>`).join('');
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Profile Updated Successfully - KEPROBA',
       html: `
@@ -247,7 +244,6 @@ export async function sendBusinessSubmittedEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Business Verification Submitted - KEPROBA',
       html: `
@@ -315,7 +311,6 @@ export async function sendPasswordChangeEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Password Changed Successfully - KEPROBA',
       html: `
@@ -381,7 +376,6 @@ export async function sendProductSubmittedEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Product Submitted for Review - KEPROBA',
       html: `
@@ -450,7 +444,6 @@ export async function sendInquiryReceivedEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'New Inquiry Received - KEPROBA',
       html: `
@@ -521,7 +514,6 @@ export async function sendInquiryResponseEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Response to Your Inquiry - KEPROBA',
       html: `
@@ -585,7 +577,6 @@ export async function sendBusinessDetailsUpdatedEmail(
     const fieldsList = updatedFields.map(field => `<li>${field}</li>`).join('');
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Business Details Updated Successfully - KEPROBA',
       html: `
@@ -651,7 +642,6 @@ export async function sendSuccessStorySubmittedEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Success Story Submitted - KEPROBA',
       html: `
@@ -720,7 +710,6 @@ export async function sendInquirySentEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Inquiry Sent Successfully - KEPROBA',
       html: `
@@ -795,7 +784,6 @@ export async function sendBusinessVerificationApprovedEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Business Verification Approved - KEPROBA',
       html: `
@@ -875,7 +863,6 @@ export async function sendProductApprovedEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Product Approved - KEPROBA',
       html: `
@@ -953,7 +940,6 @@ export async function sendBusinessVerificationRejectedEmail(
     const profileUrl = `${dashboardUrl}/dashboard/exporter/business-profile`;
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Action Required: Business Verification Update - KEPROBA',
       html: `
@@ -1067,7 +1053,6 @@ export async function sendAccountSuspendedEmail(
     if (!t) return false;
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Your KEPROBA Account Has Been Suspended',
       html: `
@@ -1138,7 +1123,6 @@ export async function sendAccountUnsuspendedEmail(
     if (!t) return false;
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Your KEPROBA Account Has Been Reinstated',
       html: `
@@ -1211,7 +1195,6 @@ export async function sendBusinessSuspendedEmail(
     if (!t) return false;
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: `Your Business "${businessName}" Has Been Suspended - KEPROBA`,
       html: `
@@ -1301,7 +1284,6 @@ export async function sendRatingNotificationEmail(
     });
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA Trade Directory'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: exporterEmail,
       subject: `⭐ New Rating Received for ${businessName} – KEPROBA Trade Directory`,
       html: `<!DOCTYPE html>
@@ -1446,7 +1428,6 @@ export async function sendAdminVerificationCompletedEmail(
     });
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: adminEmail,
       subject: `✅ Exporter Verified: ${businessName} — KEPROBA Trade Directory`,
       html: `<!DOCTYPE html>
@@ -1569,7 +1550,6 @@ export async function sendLogoReminderEmail(
   try {
 
     return sendMail({
-      from: `"${process.env.FROM_NAME || 'KEPROBA'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
       subject: 'Action Required: Upload Your Company Logo – KEPROBA Trade Directory',
       html: `
