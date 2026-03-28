@@ -77,8 +77,8 @@ export async function sendRegistrationEmail(
               <p><strong>Next Steps:</strong></p>
               <ul>
                 ${role === 'EXPORTER' ? '<li>Complete your business profile</li><li>Add your products to the directory</li><li>Start receiving inquiries from buyers</li>' : ''}
-                ${role === 'BUYER' ? '<li>Browse the exporter directory</li><li>Send inquiries to exporters</li><li>Connect with verified businesses</li>' : ''}
-                ${role === 'PARTNER' ? '<li>Explore partnership opportunities</li><li>Connect with exporters and buyers</li><li>Access the Trade Directory resources</li>' : ''}
+                ${role === 'BUYER' && !partnerType ? '<li>Browse the exporter directory</li><li>Send inquiries to exporters</li><li>Connect with verified businesses</li>' : ''}
+                ${partnerType ? '<li>Access your partner dashboard</li><li>Browse the exporter directory</li><li>Connect with exporters and buyers</li><li>Explore partnership opportunities</li>' : ''}
                 ${role === 'ADMIN' ? '<li>Access the admin dashboard</li><li>Manage users and businesses</li><li>Review verification requests</li>' : ''}
               </ul>
             </div>
