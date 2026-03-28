@@ -145,9 +145,9 @@ export function ExporterProfileExportLayoutSimple({
           {/* LEFT COLUMN */}
           <div style={colStyle}>
 
-            {/* Products & Services */}
+            {/* Goods & Services */}
             <div>
-              <SectionTitle>Products & Services</SectionTitle>
+              <SectionTitle>Goods &amp; Services</SectionTitle>
               {business.serviceOffering && (
                 <p style={{ fontSize: '11px', color: '#374151', fontStyle: 'italic', marginBottom: '6px' }}>
                   {truncate(business.serviceOffering, 25)}

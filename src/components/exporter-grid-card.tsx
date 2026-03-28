@@ -510,7 +510,7 @@ export function ExporterGridCard({ business, onViewProfileClick, hideActions }: 
 
             {/* Right Column: Key Products */}
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground">Products:</p>
+              <p className="text-xs font-semibold text-muted-foreground">Goods &amp; Services:</p>
               <div className="flex flex-wrap gap-1">
                 {keyProducts.length > 0 ? (
                   keyProducts.map((p: string, index: number) => (

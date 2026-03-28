@@ -412,7 +412,7 @@ function PublicBusinessCard({ biz }: { biz: PublicBusiness }) {
       <div className="px-5 py-4 flex-1 space-y-2.5 text-sm">
         {productList && (
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Products / Services</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Goods &amp; Services</p>
             <p className="text-gray-700 dark:text-gray-300 line-clamp-2">{productList}</p>
           </div>
         )}
