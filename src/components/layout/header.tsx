@@ -64,6 +64,15 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+
+  // Compute role-specific dashboard URL directly — avoids redirect page
+  const dashboardHref = (() => {
+    if (!user) return '/dashboard';
+    const role = user.role.toLowerCase();
+    if (role === 'admin' || role === 'super_admin') return '/dashboard/admin';
+    if (role === 'exporter') return '/dashboard/exporter';
+    return '/dashboard/buyer'; // buyer, partner, and any other role
+  })();
   const [hasGoogleTranslate, setHasGoogleTranslate] = useState(false);
   
   // Notification state
@@ -401,7 +410,7 @@ export function Header() {
                     <DropdownMenuSeparator />
                     <div className="p-1">
                       <DropdownMenuItem asChild className="cursor-pointer hover:bg-yellow-50 hover:text-green-800 transition-all duration-200 rounded-md">
-                        <Link href="/dashboard" className="flex items-center w-full">
+                        <Link href={dashboardHref} className="flex items-center w-full">
                           <User className="mr-3 h-4 w-4" />
                           <span className="font-medium">Dashboard</span>
                         </Link>
@@ -527,7 +536,7 @@ export function Header() {
                         asChild 
                         className="w-full justify-start text-base hover:bg-yellow-50 hover:text-green-800 transition-colors"
                       >
-                        <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                        <Link href={dashboardHref} onClick={() => setMobileMenuOpen(false)}>
                           <User className="mr-3 h-5 w-5" /> Dashboard
                         </Link>
                       </Button>
