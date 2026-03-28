@@ -160,7 +160,8 @@ export async function POST(request: NextRequest) {
       user.email,
       user.firstName,
       user.lastName,
-      user.role
+      user.role,
+      validatedData.partnerType ?? undefined
     ).catch(err => console.error('[Registration] Failed to send email:', err));
 
     return NextResponse.json({

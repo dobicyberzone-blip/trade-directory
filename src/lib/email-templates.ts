@@ -18,12 +18,19 @@ export async function sendRegistrationEmail(
   email: string,
   firstName: string,
   lastName: string,
-  role: string
+  role: string,
+  partnerType?: string
 ): Promise<boolean> {
   try {
 
     const userName = `${firstName} ${lastName}`.trim();
-    const roleText = role === 'EXPORTER' ? 'Exporter' : role === 'BUYER' ? 'Buyer' : role === 'PARTNER' ? 'Partner' : 'Admin';
+    // Partners are stored as BUYER role with a partnerType — show their specific partner type
+    const roleText = partnerType
+      ? partnerType
+      : role === 'EXPORTER' ? 'Exporter'
+      : role === 'BUYER' ? 'Buyer'
+      : role === 'PARTNER' ? 'Partner'
+      : 'Admin';
 
     return sendMail({
       to: email,
