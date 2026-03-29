@@ -52,14 +52,33 @@ export function AdminEmailDialog({ open, onClose, recipientEmail, recipientName 
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      sx={{
+        '& .MuiDialog-paper': {
+          m: { xs: 2, sm: 3 },
+          maxHeight: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 64px)' },
+          borderRadius: 2,
+          zIndex: 9999,
+        },
+        zIndex: 9998,
+      }}
+      slotProps={{
+        backdrop: { sx: { zIndex: 9998 } }
+      }}
+    >
+      <DialogTitle sx={{ pb: 1 }}>
         <Box display="flex" alignItems="center" gap={1}>
           <Mail size={20} />
-          Send Email to {recipientName}
+          <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+            Send Email to {recipientName}
+          </Typography>
         </Box>
       </DialogTitle>
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important', px: { xs: 2, sm: 3 } }}>
         <Typography variant="body2" color="text.secondary">
           To: <strong>{recipientEmail}</strong>
         </Typography>
@@ -73,17 +92,25 @@ export function AdminEmailDialog({ open, onClose, recipientEmail, recipientName 
           label="Message *"
           value={message}
           onChange={e => setMessage(e.target.value)}
-          fullWidth multiline rows={6} size="small"
+          fullWidth multiline rows={5} size="small"
           placeholder="Type your message here…"
         />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} disabled={sending}>Cancel</Button>
+      <DialogActions sx={{ px: { xs: 2, sm: 3 }, pb: { xs: 2, sm: 2 }, gap: 1 }}>
+        <Button
+          onClick={handleClose}
+          disabled={sending}
+          variant="outlined"
+          sx={{ flex: { xs: 1, sm: 'none' }, minHeight: 44 }}
+        >
+          Cancel
+        </Button>
         <Button
           variant="contained"
           onClick={handleSend}
           disabled={sending}
           startIcon={sending ? <CircularProgress size={14} /> : <Mail size={14} />}
+          sx={{ flex: { xs: 1, sm: 'none' }, minHeight: 44, bgcolor: 'success.main', '&:hover': { bgcolor: 'success.dark' } }}
         >
           {sending ? 'Sending…' : 'Send Email'}
         </Button>
