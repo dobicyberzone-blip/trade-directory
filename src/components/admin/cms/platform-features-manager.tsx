@@ -317,8 +317,14 @@ export function PlatformFeaturesManager({ onRefresh }: PlatformFeaturesManagerPr
         open={isDialogOpen} 
         onClose={handleCloseDialog}
         maxWidth="sm"
-        fullWidth
-      >
+        fullWidth      sx={{
+        '& .MuiDialog-paper': {
+          m: { xs: 2, sm: 3 },
+          maxHeight: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 64px)' },
+          zIndex: 9999,
+        },
+        zIndex: 9998,
+      }}>
         <DialogTitle>
           {editingFeature ? 'Edit Feature' : 'Add New Feature'}
         </DialogTitle>
@@ -386,3 +392,4 @@ export function PlatformFeaturesManager({ onRefresh }: PlatformFeaturesManagerPr
     </Box>
   );
 }
+

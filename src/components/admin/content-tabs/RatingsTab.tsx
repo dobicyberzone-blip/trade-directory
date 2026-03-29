@@ -317,7 +317,15 @@ export default function RatingsTab() {
       />
 
       {/* View Dialog */}
-      <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="sm" fullWidth
+      sx={{
+        "& .MuiDialog-paper": {
+          m: { xs: 2, sm: 3 },
+          maxHeight: { xs: "calc(100% - 32px)", sm: "calc(100% - 64px)" },
+          zIndex: 9999,
+        },
+        zIndex: 9998,
+      }}>
         <DialogTitle>Rating Details</DialogTitle>
         <DialogContent dividers>
           {viewRating && (
@@ -381,3 +389,4 @@ export default function RatingsTab() {
     </Box>
   );
 }
+

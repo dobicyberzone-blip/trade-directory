@@ -327,8 +327,14 @@ export function BenefitsSectionManager({ onRefresh }: BenefitsSectionManagerProp
         open={isDialogOpen} 
         onClose={handleCloseDialog}
         maxWidth="sm"
-        fullWidth
-      >
+        fullWidth      sx={{
+        '& .MuiDialog-paper': {
+          m: { xs: 2, sm: 3 },
+          maxHeight: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 64px)' },
+          zIndex: 9999,
+        },
+        zIndex: 9998,
+      }}>
         <DialogTitle>
           {editingBenefit ? 'Edit Benefit' : `Add Benefit for ${activeTab === 0 ? 'Exporters' : 'Buyers'}`}
         </DialogTitle>
@@ -378,3 +384,4 @@ export function BenefitsSectionManager({ onRefresh }: BenefitsSectionManagerProp
     </Box>
   );
 }
+

@@ -311,7 +311,15 @@ export default function SubcategoriesTab() {
       />
 
       {/* Add/Edit Dialog */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth
+      sx={{
+        "& .MuiDialog-paper": {
+          m: { xs: 2, sm: 3 },
+          maxHeight: { xs: "calc(100% - 32px)", sm: "calc(100% - 64px)" },
+          zIndex: 9999,
+        },
+        zIndex: 9998,
+      }}>
         <DialogTitle>{editingSubcategory ? 'Edit Subcategory' : 'Add Subcategory'}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
@@ -356,3 +364,4 @@ export default function SubcategoriesTab() {
     </Box>
   );
 }
+
