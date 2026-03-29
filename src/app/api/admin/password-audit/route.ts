@@ -6,7 +6,7 @@ import { verifyToken } from '@/lib/auth-utils';
 export async function GET(request: NextRequest) {
   try {
     const user = await verifyToken(request);
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || user.(role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -65,3 +65,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

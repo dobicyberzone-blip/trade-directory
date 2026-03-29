@@ -235,7 +235,7 @@ export default function AdminNotificationSettingsPage() {
     }
   };
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="error">
@@ -437,3 +437,4 @@ export default function AdminNotificationSettingsPage() {
     </Box>
   );
 }
+

@@ -50,7 +50,7 @@ export default function ExportSectorsPage() {
     }
   };
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     return (
       <Box sx={{ pt: { xs: 1, sm: 2 }, px: { xs: 1, sm: 0 }, maxWidth: '100%', overflow: 'hidden' }}>
         <Typography variant="h5" color="error">
@@ -107,3 +107,4 @@ export default function ExportSectorsPage() {
     </Box>
   );
 }
+

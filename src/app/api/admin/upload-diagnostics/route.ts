@@ -10,7 +10,7 @@ import { join } from 'path';
 
 export async function GET(req: NextRequest) {
   const token = await verifyToken(req);
-  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+  if (!token || (token.(role !== 'ADMIN' && role !== 'SUPER_ADMIN') && token.role !== 'SUPER_ADMIN')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -51,3 +51,4 @@ export async function GET(req: NextRequest) {
     uploadDir: process.env.UPLOAD_DIR || null,
   });
 }
+

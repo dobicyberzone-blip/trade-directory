@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/auth-utils';
 
 export async function GET(request: NextRequest) {
   const token = await verifyToken(request);
-  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+  if (!token || (token.(role !== 'ADMIN' && role !== 'SUPER_ADMIN') && token.role !== 'SUPER_ADMIN')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   try {
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const token = await verifyToken(request);
-  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+  if (!token || (token.(role !== 'ADMIN' && role !== 'SUPER_ADMIN') && token.role !== 'SUPER_ADMIN')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   try {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   const token = await verifyToken(request);
-  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+  if (!token || (token.(role !== 'ADMIN' && role !== 'SUPER_ADMIN') && token.role !== 'SUPER_ADMIN')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   try {
@@ -76,7 +76,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   const token = await verifyToken(request);
-  if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
+  if (!token || (token.(role !== 'ADMIN' && role !== 'SUPER_ADMIN') && token.role !== 'SUPER_ADMIN')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   try {
@@ -93,3 +93,4 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to delete subscriber' }, { status: 500 });
   }
 }
+

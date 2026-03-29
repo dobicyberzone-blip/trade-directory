@@ -14,7 +14,7 @@ export async function OPTIONS() {
 
 export async function POST(req: NextRequest) {
   const token = await verifyToken(req);
-  if (!token || token.role !== 'ADMIN') {
+  if (!token || token.(role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: cors });
   }
 
@@ -62,3 +62,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true }, { headers: cors });
 }
+

@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (decoded.role !== 'ADMIN') {
+    if (decoded.(role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
       return NextResponse.json(
         { error: 'Forbidden - Admin access required' },
         { status: 403, headers: corsHeaders }
@@ -207,3 +207,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

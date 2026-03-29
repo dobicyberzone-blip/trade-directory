@@ -90,7 +90,7 @@ export default function UserManagementPage() {
 
   // Redirect if not admin
   useEffect(() => {
-    if (user && user.role !== 'ADMIN') {
+    if (user && user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
       window.location.href = '/dashboard';
     }
   }, [user]);
@@ -573,7 +573,7 @@ export default function UserManagementPage() {
     }
   };
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
         <Shield sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />

@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await verifyToken(request);
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || user.(role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
       return NextResponse.json(
         { error: 'Unauthorized. Admin access required.' },
         { status: 401 }
@@ -62,3 +62,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

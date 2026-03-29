@@ -164,7 +164,7 @@ export default function FeaturedExportersPage() {
     return sort.dir === 'asc' ? cmp : -cmp;
   });
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     return (
       <Box sx={{ p: 3 }}>
         <Typography variant="h5" color="error">
@@ -413,4 +413,5 @@ export default function FeaturedExportersPage() {
     </Box>
   );
 }
+
 
