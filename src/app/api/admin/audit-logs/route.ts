@@ -21,7 +21,7 @@ export async function OPTIONS() {
 export async function GET(request: NextRequest) {
   try {
     const token = await verifyToken(request);
-    if (!token || (token.(role !== 'ADMIN' && role !== 'SUPER_ADMIN') && token.role !== 'SUPER_ADMIN')) {
+    if (!token || ((token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN') && token.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
     }
 
@@ -203,4 +203,6 @@ function buildActivityCsv(logs: any[]): string {
   ].map(esc).join(','));
   return [headers.join(','), ...rows].join('\n');
 }
+
+
 

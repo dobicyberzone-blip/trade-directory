@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const token = authHeader.replace('Bearer ', '');
     const decoded = verifyToken(token);
     
-    if (!decoded || decoded.(role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
+    if (!decoded || (decoded.role !== 'ADMIN' && decoded.role !== 'SUPER_ADMIN')) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
@@ -96,4 +96,6 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+
 
