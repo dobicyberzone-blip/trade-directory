@@ -69,7 +69,7 @@ export async function sendEmailNotification(
 
     return await sendMail({
       to: userEmail,
-      subject: `${title} - KEPROBA`,
+      subject: `${title} — KEPROBA`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -101,18 +101,6 @@ export async function sendEmailNotification(
               margin: 0;
               font-size: 24px;
               font-weight: 600;
-            }
-            .urgency-badge {
-              display: inline-block;
-              background: ${urgencyColor};
-              color: white;
-              padding: 4px 12px;
-              border-radius: 12px;
-              font-size: 11px;
-              font-weight: 600;
-              text-transform: uppercase;
-              margin-top: 10px;
-              letter-spacing: 0.5px;
             }
             .content { 
               padding: 40px 30px;
@@ -150,10 +138,6 @@ export async function sendEmailNotification(
               border-radius: 6px;
               font-weight: 600;
               margin: 25px 0;
-              transition: background 0.3s;
-            }
-            .cta-button:hover {
-              background: #15803d;
             }
             .footer { 
               background: #f8f9fa;
@@ -163,22 +147,14 @@ export async function sendEmailNotification(
               font-size: 13px;
               border-top: 1px solid #e9ecef;
             }
-            .footer a {
-              color: #16a34a;
-              text-decoration: none;
-            }
-            .divider {
-              height: 1px;
-              background: #e9ecef;
-              margin: 25px 0;
-            }
+            .footer a { color: #16a34a; text-decoration: none; }
+            .divider { height: 1px; background: #e9ecef; margin: 25px 0; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
               <h1>KEPROBA Notification</h1>
-              <span class="urgency-badge">${urgency} Priority</span>
             </div>
             
             <div class="content">

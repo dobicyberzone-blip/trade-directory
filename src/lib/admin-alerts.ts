@@ -175,7 +175,7 @@ async function sendAdminEmailAlerts(
       await sendEmailNotification(
         admin.email,
         adminName,
-        `[KEPROBA ${alert.priority}] ${alert.title}`,
+        `${alert.title} — KEPROBA`,
         formatAlertEmailMessage(alert),
         'ADMIN_ALERT',
         alert.priority === AlertPriority.CRITICAL ? 'HIGH' : alert.priority === AlertPriority.HIGH ? 'MEDIUM' : 'LOW'
