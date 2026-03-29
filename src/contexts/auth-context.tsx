@@ -35,14 +35,6 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Normalize SUPER_ADMIN role to ADMIN with isSuperAdmin flag
-function normalizeUser(user: User): User {
-  if ((user as any).role === 'SUPER_ADMIN') {
-    return { ...user, role: 'ADMIN', isSuperAdmin: true };
-  }
-  return user;
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Try to restore user from localStorage first for faster initial load
         const cachedUser = getUserData() as User | null;
         if (cachedUser) {
-          setUser(normalizeUser(cachedUser));
+          setUser(cachedUser);
           setIsLoading(false); // Set loading false immediately when we have cached user
         }
 
@@ -85,8 +77,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           apiClient.getCurrentUser()
             .then(response => {
               if (response) {
-                setUser(normalizeUser(response.user));
-                setUserData(normalizeUser(response.user));
+                setUser(response.user);
+                setUserData(response.user);
               }
             })
             .catch(error => {
@@ -118,8 +110,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           // Update user data in state and localStorage
-          setUser(normalizeUser(response.user));
-          setUserData(normalizeUser(response.user));
+          setUser(response.user);
+          setUserData(response.user);
         } catch (apiError) {
           const errorMsg = apiError instanceof Error ? apiError.message : '';
 
@@ -139,7 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // If we have a cached user, keep them logged in despite errors
         const cachedUser = getUserData() as User | null;
         if (cachedUser) {
-          setUser(normalizeUser(cachedUser));
+          setUser(cachedUser);
         } else {
           // Clear invalid token and user state only if no cached user
           clearAuthData();
@@ -162,8 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { requiresOtp: true, email: response.email, otpMethod: response.otpMethod, message: response.message, phoneNumber: response.phoneNumber };
       } else {
         // Set user immediately for faster UI response and persist to localStorage
-        setUser(normalizeUser(response.user));
-        setUserData(normalizeUser(response.user));
+        setUser(response.user);
+        setUserData(response.user);
         toast({
           title: 'Login Successful',
           description: `Welcome back, ${response.user.firstName}!`,
@@ -201,8 +193,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await apiClient.verifyOtp(email, otpCode, method);
 
       // Set user immediately for faster UI response and persist to localStorage
-      setUser(normalizeUser(response.user));
-      setUserData(normalizeUser(response.user));
+      setUser(response.user);
+      setUserData(response.user);
       
       // Refresh user data to ensure we have the latest emailVerified status
       await refreshUser();
@@ -284,8 +276,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setUser(normalizeUser(response.user));
-      setUserData(normalizeUser(response.user));
+      setUser(response.user);
+      setUserData(response.user);
     } catch (error) {
 
       // Check if it's specifically a token error
@@ -304,7 +296,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const cachedUser = getUserData();
         if (cachedUser && !user) {
-          setUser(normalizeUser(cachedUser as User));
+          setUser(cachedUser as User);
         }
       }
     }

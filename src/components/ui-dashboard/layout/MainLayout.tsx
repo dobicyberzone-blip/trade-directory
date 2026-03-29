@@ -121,7 +121,7 @@ export default function MainLayout({ children, user, onLogout }: MainLayoutProps
         onNavigate={handleNavigate}
         currentPath={pathname}
         userRole={(user?.role?.toUpperCase() || 'BUYER') as 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN'}
-        isSuperAdmin={user?.isSuperAdmin || user?.role === 'SUPER_ADMIN'}
+        isSuperAdmin={user?.role === 'SUPER_ADMIN'}
         onLogout={onLogout}
       />
 

@@ -51,7 +51,7 @@ import { toast } from '@/hooks/use-toast';
 
 export default function UserManagementPage() {
   const { user } = useAuth();
-  const isSuperAdmin = (user as any)?.isSuperAdmin === true;
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
@@ -523,7 +523,7 @@ export default function UserManagementPage() {
         u.lastName || '',
         u.email || '',
         u.role || '',
-        (u as any).isSuperAdmin ? 'Yes' : 'No',
+        u.role === 'SUPER_ADMIN' ? 'Yes' : 'No',
         (u as any).suspended ? 'Yes' : 'No',
         u.emailVerified ? 'Yes' : 'No',
         u.phoneNumber || 'N/A',

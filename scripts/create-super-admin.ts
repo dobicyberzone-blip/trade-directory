@@ -29,11 +29,11 @@ async function createSuperAdmin() {
       const updated = await prisma.user.update({
         where: { email },
         data: { 
-          role: 'ADMIN',
+          role: 'SUPER_ADMIN',
         },
       });
       
-      console.log('✅ Updated existing user to ADMIN');
+      console.log('✅ Updated existing user to SUPER_ADMIN');
       console.log(`   Email: ${updated.email}`);
       console.log(`   Role: ${updated.role}`);
       return;
@@ -42,27 +42,24 @@ async function createSuperAdmin() {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create super admin (using existing schema fields)
+    // Create super admin
     const superAdmin = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         firstName,
         lastName,
-        role: 'ADMIN',
+        role: 'SUPER_ADMIN',
         isVerified: true,
       },
     });
 
-    console.log('✅ Admin created successfully!');
+    console.log('✅ Super Admin created successfully!');
     console.log('\n📋 Login Credentials:');
     console.log(`   Email: ${email}`);
     console.log(`   Password: ${password}`);
     console.log('\n⚠️  IMPORTANT: Change this password after first login!');
     console.log('\n🔗 Login URL: http://localhost:3000/login');
-    console.log('\n📝 Note: To enable SUPER_ADMIN role, run database migration first:');
-    console.log('   npx prisma generate');
-    console.log('   npx prisma db push');
     
   } catch (error) {
     console.error('❌ Error creating super admin:', error);

@@ -21,7 +21,7 @@ export async function OPTIONS() {
 }
 
 const changeRoleSchema = z.object({
-  role: z.enum(['SUPER_ADMIN', 'CONTENT_MANAGER', 'MODERATOR', 'VIEWER', 'ADMIN', 'EXPORTER', 'BUYER']),
+  role: z.enum(['SUPER_ADMIN', 'ADMIN', 'EXPORTER', 'BUYER', 'PARTNER', 'DEVELOPMENT_PARTNER', 'TSI', 'MDA', 'MISSION']),
 });
 
 // PUT /api/admin/users/[id]/role - Change user role

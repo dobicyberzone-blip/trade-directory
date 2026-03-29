@@ -12,13 +12,13 @@ const RUSTFS_BUCKET     = process.env.RUSTFS_BUCKET || 'trade-directory';
 const RUSTFS_PUBLIC_URL = process.env.RUSTFS_PUBLIC_URL || RUSTFS_ENDPOINT;
 
 export const rustfsClient = new S3Client({
-  region: 'us-east-1', // RustFS ignores region but S3Client requires it
+  region: 'cn-east-1', // RustFS default region
   credentials: {
     accessKeyId: RUSTFS_ACCESS_KEY,
     secretAccessKey: RUSTFS_SECRET_KEY,
   },
   endpoint: RUSTFS_ENDPOINT,
-  forcePathStyle: true, // Required for S3-compatible stores (MinIO/RustFS)
+  forcePathStyle: true, // Required for S3-compatible stores
 });
 
 export const BUCKET = RUSTFS_BUCKET;

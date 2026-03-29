@@ -37,7 +37,7 @@ import { ALL_SECTORS, COUNTIES, RATING_FILTERS } from '@/lib/constants';
 
 export default function BusinessVerificationPage() {
   const { user } = useAuth();
-  const isSuperAdmin = (user as any)?.isSuperAdmin === true;
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));

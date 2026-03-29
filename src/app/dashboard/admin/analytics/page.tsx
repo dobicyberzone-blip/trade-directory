@@ -33,7 +33,7 @@ export default function AnalyticsPage() {
   const theme = useTheme();
   const { mode } = useThemeMode();
   const isDark = mode === 'dark';
-  const isSuperAdmin = (user as any)?.isSuperAdmin === true;
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
 
   const [metrics, setMetrics] = useState<OverviewMetrics | null>(null);
   const [period, setPeriod] = useState<'week' | 'month'>('month');

@@ -45,7 +45,7 @@ const ACTION_COLORS: Record<string, 'default' | 'primary' | 'secondary' | 'error
 export default function SystemLogsPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const isSuperAdmin = (user as any)?.isSuperAdmin === true;
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
 
   // Super Admin: tab 0 = Audit, tab 1 = Activity. Normal Admin: only tab 0 = Activity.
   const [tab, setTab] = useState(0);
