@@ -398,6 +398,12 @@ export async function POST(request: NextRequest) {
       (userWithoutPassword as any).role = 'PARTNER';
     }
 
+    // Record last login timestamp (fire-and-forget)
+    void prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    }).catch(() => {});
+
     // Send login notification email (async, don't wait)
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'Unknown';
     const userAgent = request.headers.get('user-agent') || undefined;

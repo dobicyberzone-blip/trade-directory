@@ -180,7 +180,8 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.update({
       where: { email },
       data: {
-        emailVerified: true, // Mark email as verified after successful OTP
+        emailVerified: true,
+        lastLoginAt: new Date(),
       },
       include: {
         business: true,

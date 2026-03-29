@@ -138,6 +138,13 @@ export async function GET(request: NextRequest) {
         position: true,
         createdAt: true,
         updatedAt: true,
+        lastLoginAt: true,
+        business: {
+          select: {
+            name: true,
+            verificationStatus: true,
+          },
+        },
       },
     });
 
@@ -150,13 +157,15 @@ export async function GET(request: NextRequest) {
       Role: user.role,
       'Is Verified': user.isVerified ? 'Yes' : 'No',
       'Email Verified': user.emailVerified ? 'Yes' : 'No',
-      'Phone Number': user.phoneNumber || '',
+      'Phone Number': user.phoneNumber || 'N/A',
       'Phone Verified': user.phoneVerified ? 'Yes' : 'No',
-      Location: user.location || '',
-      Company: user.company || '',
-      Position: user.position || '',
-      'Created At': new Date(user.createdAt).toISOString(),
-      'Updated At': new Date(user.updatedAt).toISOString(),
+      Location: user.location || 'N/A',
+      Company: user.company || 'N/A',
+      Position: user.position || 'N/A',
+      'Business Name': (user as any).business?.name || 'N/A',
+      'Business Status': (user as any).business?.verificationStatus || 'N/A',
+      'Joined Date': new Date(user.createdAt).toLocaleDateString(),
+      'Last Login': (user as any).lastLoginAt ? new Date((user as any).lastLoginAt).toLocaleString() : 'N/A',
     }));
 
     if (format === 'csv') {
