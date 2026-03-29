@@ -802,7 +802,7 @@ export default function BusinessProfilePage() {
                 <div key={label} className="flex items-center justify-between">
                   <span className="text-sm">{label}</span>
                   {url ? (
-                    <Button size="sm" variant="outline" onClick={() => openPdfInNewWindow(url, label)}>
+                    <Button size="sm" variant="outline" onClick={() => void openPdfInNewWindow(url, label)}>
                       <Eye className="w-3 h-3 mr-1" /> View
                     </Button>
                   ) : (
@@ -827,7 +827,7 @@ export default function BusinessProfilePage() {
                         <div key={i} className="flex items-center justify-between py-1">
                           <span className="text-sm truncate max-w-[60%]">{doc.label || `Document ${i + 1}`}</span>
                           {doc.url ? (
-                            <Button size="sm" variant="outline" onClick={() => openPdfInNewWindow(doc.url, doc.label || `Document ${i + 1}`)}>
+                            <Button size="sm" variant="outline" onClick={() => void openPdfInNewWindow(doc.url, doc.label || `Document ${i + 1}`)}>
                               <Eye className="w-3 h-3 mr-1" /> View
                             </Button>
                           ) : (
