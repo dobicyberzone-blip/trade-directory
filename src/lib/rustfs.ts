@@ -12,7 +12,7 @@ const RUSTFS_BUCKET     = process.env.RUSTFS_BUCKET || 'trade-directory';
 const RUSTFS_PUBLIC_URL = process.env.RUSTFS_PUBLIC_URL || RUSTFS_ENDPOINT;
 
 export const rustfsClient = new S3Client({
-  region: 'cn-east-1', // RustFS default region
+  region: 'us-east-1', // RustFS ignores region but S3Client requires it
   credentials: {
     accessKeyId: RUSTFS_ACCESS_KEY,
     secretAccessKey: RUSTFS_SECRET_KEY,
@@ -25,6 +25,7 @@ export const BUCKET = RUSTFS_BUCKET;
 
 /**
  * Upload a buffer to RustFS and return the public URL.
+ * Sets public-read ACL so files are directly accessible via URL.
  */
 export async function uploadToRustFS(
   buffer: Buffer,
@@ -36,6 +37,7 @@ export async function uploadToRustFS(
     Key: key,
     Body: buffer,
     ContentType: mimeType,
+    ACL: 'public-read',
   }));
 
   // Return the public URL: endpoint/bucket/key

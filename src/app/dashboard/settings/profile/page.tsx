@@ -111,46 +111,33 @@ export default function ProfilePage() {
     }
 
     try {
-      // Convert to base64 for immediate preview and storage
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const base64String = event.target?.result as string;
-        
-        // Check if the base64 string is too large (> 8MB when encoded)
-        if (base64String.length > 8 * 1024 * 1024) {
-          toast({
-            variant: 'destructive',
-            title: 'Image Too Large',
-            description: 'The processed image is too large. Please try a smaller image or compress it.',
-          });
-          return;
-        }
-        
-        // Update profile state immediately for instant UI feedback
-        setProfile(prev => ({ ...prev, profileImage: base64String }));
-        
-        // Show success message
-        toast({
-          title: 'Image Uploaded',
-          description: 'Your profile image has been updated. Click "Update Profile" to save changes.',
-        });
-      };
-      
-      reader.onerror = () => {
-        toast({
-          variant: 'destructive',
-          title: 'Upload Failed',
-          description: 'Failed to process the image. Please try again.',
-        });
-      };
-      
-      reader.readAsDataURL(file);
-    } catch (error) {
+      // Upload to server via /api/upload for persistent server-side storage
+      const formData = new FormData();
+      formData.append('file', file);
 
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed');
+      }
+
+      // Update profile state with the server-returned URL
+      setProfile(prev => ({ ...prev, profileImage: result.url }));
+
+      toast({
+        title: 'Image Uploaded',
+        description: 'Your profile image has been uploaded. Click "Update Profile" to save changes.',
+      });
+    } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Upload Failed',
-        description: 'Failed to upload image. Please try again.',
+        description: error instanceof Error ? error.message : 'Failed to upload image. Please try again.',
       });
     }
   };

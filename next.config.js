@@ -169,6 +169,22 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.vercel.app',
       },
+      // RustFS S3-compatible object storage
+      {
+        protocol: 'http',
+        hostname: '161.97.178.128',
+        port: '9101',
+      },
+      {
+        protocol: 'https',
+        hostname: '161.97.178.128',
+        port: '9101',
+      },
+      // Self-referencing for the app domain
+      {
+        protocol: 'https',
+        hostname: 'trade-directory-161.97.178.128.sslip.io',
+      },
     ],
   },
   // Generate ETags for caching

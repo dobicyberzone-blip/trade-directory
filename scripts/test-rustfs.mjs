@@ -2,7 +2,7 @@ import { S3Client, PutObjectCommand, HeadBucketCommand, ListObjectsV2Command, Li
 
 // RustFS instance — S3-compatible, same SDK as MinIO
 const client = new S3Client({
-  region: 'cn-east-1',
+  region: 'us-east-1',
   credentials: {
     accessKeyId: 'uh32IdeOj0ZT8DtX6lMm',
     secretAccessKey: 'aIK3s6U4PlYuVrvGTAR5fXHZiq2SNJMEgykwtpx1',

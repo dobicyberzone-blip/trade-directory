@@ -38,8 +38,13 @@ export function ProductInquiryDetails({ productId, businessId, variant = 'defaul
   return (
     <div className="flex items-center gap-2">
         <div className="relative h-8 w-8 rounded-sm overflow-hidden flex-shrink-0">
-            {/* @ts-ignore */}
-            <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+            {product.imageUrl?.startsWith('data:') || product.imageUrl?.startsWith('blob:') ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+            ) : (
+              /* @ts-ignore */
+              <Image src={product.imageUrl} alt={product.name} fill className="object-cover" unoptimized />
+            )}
         </div>
         {/* @ts-ignore */}
         <span>{product.name}</span>
