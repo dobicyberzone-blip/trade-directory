@@ -25,7 +25,7 @@ export async function DELETE(
 ) {
   try {
     const token = await verifyToken(request);
-    if (!token || token.role !== 'ADMIN') {
+    if (!token || (token.role !== 'ADMIN' && token.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
     }
 
