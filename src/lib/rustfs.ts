@@ -3,7 +3,8 @@
  * Replaces Cloudinary for all file uploads
  */
 
-import { S3Client, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const RUSTFS_ENDPOINT   = process.env.RUSTFS_ENDPOINT_URL!;
 const RUSTFS_ACCESS_KEY = process.env.RUSTFS_ACCESS_KEY_ID!;
@@ -88,4 +89,23 @@ export function isRustFSUrl(url: string): boolean {
   if (!url) return false;
   const endpoint = RUSTFS_PUBLIC_URL || RUSTFS_ENDPOINT;
   return url.startsWith(endpoint) || url.includes(BUCKET);
+}
+
+/**
+ * Get a direct public URL for a RustFS object.
+ * Works because the bucket has public-read policy set.
+ * Use this for images and documents that should be directly accessible.
+ */
+export function getPublicUrl(key: string): string {
+  const base = RUSTFS_PUBLIC_URL.replace(/\/$/, '');
+  return `${base}/${BUCKET}/${key}`;
+}
+
+/**
+ * Get a presigned URL for temporary secure access (expires in 1 hour by default).
+ * Use this for sensitive documents that should not be permanently public.
+ */
+export async function getPresignedUrl(key: string, expiresInSeconds = 3600): Promise<string> {
+  const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
+  return getSignedUrl(rustfsClient, command, { expiresIn: expiresInSeconds });
 }

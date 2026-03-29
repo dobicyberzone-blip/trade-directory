@@ -1,5 +1,7 @@
 /**
- * Utility function to open PDFs and documents in a new tab
+ * Utility function to open PDFs and documents in a new tab.
+ * RustFS files are served directly via public URL.
+ * Local /api/files/ paths are served by the app server.
  */
 
 export function resolveFileUrl(url: string): string {
