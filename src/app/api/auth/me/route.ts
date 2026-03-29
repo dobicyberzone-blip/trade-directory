@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
         totpEnabled: true,
         emailVerified: true,
         phoneVerified: true,
-        isSuperAdmin: true,
         isVerified: true,
         suspended: true,
         createdAt: true,

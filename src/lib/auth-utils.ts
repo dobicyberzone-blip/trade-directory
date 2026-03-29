@@ -102,7 +102,6 @@ export interface TokenPayload {
   userId: string;
   email: string;
   role: 'ADMIN' | 'EXPORTER' | 'BUYER' | 'PARTNER' | 'SUPER_ADMIN';
-  isSuperAdmin?: boolean;
   iat?: number;
   exp?: number;
 }
@@ -145,15 +144,6 @@ export async function verifyToken(request: NextRequest): Promise<TokenPayload | 
     }
 
     const decoded = jwt.verify(token, jwtSecret) as TokenPayload;
-
-    // Normalize SUPER_ADMIN role to ADMIN with isSuperAdmin flag
-    if (decoded.role === 'SUPER_ADMIN') {
-      return {
-        ...decoded,
-        role: 'ADMIN',
-        isSuperAdmin: true,
-      };
-    }
 
     return decoded;
   } catch (error) {

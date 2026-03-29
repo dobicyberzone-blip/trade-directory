@@ -36,8 +36,10 @@ export async function GET(req: NextRequest) {
     process.env.UPLOAD_DIR,
     '/data/uploads/business-documents',
     '/app/uploads/business-documents',
+    '/app/assets/business-documents',
     join(process.cwd(), 'uploads', 'business-documents'),
     join(process.cwd(), 'public', 'uploads', 'business-documents'),
+    join(process.cwd(), 'assets', 'business-documents'),
   ].filter(Boolean) as string[];
 
   const localPaths = paths.map(p => ({ path: p, exists: existsSync(p) }));

@@ -8,6 +8,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+  EXPORTER
+  BUYER
+  PARTNER
+  DEVELOPMENT_PARTNER
+  TSI
+  MDA
+  MISSION
+}
+
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model User {
   id                       String            @id @default(cuid())
@@ -15,7 +27,7 @@ model User {
   password                 String
   firstName                String
   lastName                 String
-  role                     String            @default("BUYER")
+  role                     Role              @default(BUYER)
   partnerType              String?
   avatar                   String?
   isVerified               Boolean           @default(false)
@@ -54,7 +66,6 @@ model User {
   restoredAt               DateTime?
   restoredBy               String?
   country                  String?
-  isSuperAdmin            Boolean           @default(false)
   adminPermissions         String?           // JSON string of custom permissions
   lastLoginAt             DateTime?
   lastLoginIp             String?

@@ -121,11 +121,10 @@ export async function POST(request: NextRequest) {
         throw new Error('JWT_SECRET is not configured');
       }
 
-      const payload = { 
-        userId: user.id, 
-        email: user.email, 
+      const payload = {
+        userId: user.id,
+        email: user.email,
         role: user.role,
-        isSuperAdmin: user.isSuperAdmin || false
       };
       
       const token = jwt.sign(payload, jwtSecret, {
@@ -201,13 +200,12 @@ export async function POST(request: NextRequest) {
       throw new Error('JWT_SECRET is not configured');
     }
 
-    const payload = { 
-      userId: user.id, 
-      email: user.email, 
+    const payload = {
+      userId: user.id,
+      email: user.email,
       role: user.role,
-      isSuperAdmin: user.isSuperAdmin || false
     };
-    
+
     const token = jwt.sign(payload, jwtSecret, {
       expiresIn: '7d'
     });

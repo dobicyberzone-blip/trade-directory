@@ -30,12 +30,7 @@ export async function DELETE(
     }
 
     // Only super admins can delete businesses
-    const adminUser = await prisma.user.findUnique({
-      where: { id: token.userId },
-      select: { isSuperAdmin: true },
-    });
-
-    if (!adminUser?.isSuperAdmin) {
+    if (token.role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: 'Forbidden - Super admin access required' }, { status: 403, headers: corsHeaders });
     }
 

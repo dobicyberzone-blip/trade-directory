@@ -34,8 +34,10 @@ function getUploadRoots(): string[] {
   roots.push(
     join(process.cwd(), 'uploads'),            // persistent location (preferred)
     join(process.cwd(), 'public', 'uploads'),  // legacy location
+    join(process.cwd(), 'assets'),             // assets directory (common in production)
     '/app/uploads',
     '/app/public/uploads',
+    '/app/assets',                             // production assets directory
     '/data/uploads',                           // Docker volume mount (survives redeploys)
     '/var/uploads',
   );
@@ -98,6 +100,14 @@ export async function GET(
 
     console.error(`[files] Not found: ${relativePath} (cwd: ${process.cwd()}, tried: ${candidates.slice(0, 4).join(', ')})`);
 
+    // Try MinIO redirect — file may have been uploaded there
+    const minioEndpoint = process.env.RUSTFS_PUBLIC_URL || process.env.RUSTFS_ENDPOINT_URL;
+    const minioBucket = process.env.RUSTFS_BUCKET || 'trade-directory';
+    if (minioEndpoint) {
+      const minioUrl = `${minioEndpoint.replace(/\/$/, '')}/${minioBucket}/${relativePath}`;
+      return NextResponse.redirect(minioUrl, { status: 302 });
+    }
+
     // For image requests, return a placeholder SVG instead of JSON to avoid broken image icons
     const ext = filename.split('.').pop()?.toLowerCase() || '';
     if (IMAGE_EXTENSIONS.has(ext)) {
@@ -105,15 +115,20 @@ export async function GET(
         status: 200,
         headers: {
           'Content-Type': 'image/svg+xml',
-          'Cache-Control': 'public, max-age=300', // Short cache so real file can be served once available
+          'Cache-Control': 'public, max-age=300',
           'X-File-Status': 'not-found',
         },
       });
     }
 
-    return NextResponse.json(
-      { error: 'File not found', path: relativePath, cwd: process.cwd() },
-      { status: 404 }
+    // For PDFs and other files — return a user-friendly HTML page instead of raw JSON
+    return new NextResponse(
+      `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:40px">
+        <h2>File Unavailable</h2>
+        <p>This file was stored on the previous server and is no longer available.</p>
+        <p>Please re-upload the document.</p>
+      </body></html>`,
+      { status: 404, headers: { 'Content-Type': 'text/html' } }
     );
   } catch (error) {
     return NextResponse.json({ error: 'Failed to serve file' }, { status: 500 });

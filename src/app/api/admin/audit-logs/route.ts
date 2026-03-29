@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
     }
 
-    const isSuperAdmin = token.isSuperAdmin === true;
+    const isSuperAdmin = token.role === 'SUPER_ADMIN';
 
     const sp = request.nextUrl.searchParams;
     const page     = Math.max(1, parseInt(sp.get('page')  || '1'));

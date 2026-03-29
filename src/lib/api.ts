@@ -107,7 +107,6 @@ export interface User {
   preferredOtpMethod?: 'EMAIL' | 'SMS' | 'TOTP';
   emailVerified?: boolean;
   suspended?: boolean;
-  isSuperAdmin?: boolean;
   location?: string;
   bio?: string;
   company?: string;

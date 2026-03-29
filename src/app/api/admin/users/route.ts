@@ -96,7 +96,6 @@ export const GET = requirePermission(
             firstName: true,
             lastName: true,
             role: true,
-            isSuperAdmin: true,
             isVerified: true,
             emailVerified: true,
             suspended: true,
@@ -164,7 +163,7 @@ export const POST = requirePermission(
 
       // Normal Admin cannot create Super Admin or Admin accounts
       const token = await verifyToken(request);
-      const isSuperAdmin = token?.isSuperAdmin === true;
+      const isSuperAdmin = token?.role === 'SUPER_ADMIN';
       if (!isSuperAdmin && (role === 'SUPER_ADMIN' || role === 'ADMIN')) {
         return NextResponse.json(
           { error: 'Forbidden — cannot assign admin roles' },
@@ -257,17 +256,16 @@ export const PUT = requirePermission(
         );
       }
 
-      // Normal Admin cannot change roles or isSuperAdmin flag
+      // Normal Admin cannot change roles
       const token = await verifyToken(request);
-      const isSuperAdmin = token?.isSuperAdmin === true;
+      const isSuperAdmin = token?.role === 'SUPER_ADMIN';
       if (!isSuperAdmin) {
         delete updates.role;
-        delete updates.isSuperAdmin;
       }
 
       // Normal Admin cannot edit Super Admin accounts
-      const targetUser = await prisma.user.findUnique({ where: { id }, select: { isSuperAdmin: true } });
-      if (!isSuperAdmin && targetUser?.isSuperAdmin) {
+      const targetUser = await prisma.user.findUnique({ where: { id }, select: { role: true } });
+      if (!isSuperAdmin && targetUser?.role === 'SUPER_ADMIN') {
         return NextResponse.json(
           { error: 'Forbidden — cannot modify Super Admin accounts' },
           { status: 403 }
@@ -364,7 +362,7 @@ export const DELETE = requireSuperAdmin(
       }
 
       // Cannot delete another Super Admin
-      if (userToDelete.isSuperAdmin) {
+      if (userToDelete.role === 'SUPER_ADMIN') {
         return NextResponse.json(
           { error: 'Forbidden — cannot delete Super Admin accounts' },
           { status: 403 }

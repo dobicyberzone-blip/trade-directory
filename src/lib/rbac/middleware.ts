@@ -79,7 +79,7 @@ export function requirePermission(
       const userRole = tokenPayload.role as UserRole;
 
       // Super admins bypass all permission checks
-      if (!tokenPayload.isSuperAdmin && !hasPermission(userRole, permission)) {
+      if (userRole !== 'SUPER_ADMIN' && !hasPermission(userRole, permission)) {
         return NextResponse.json(
           { error: `Forbidden - Required permission: ${permission}` },
           { status: 403 }
@@ -142,7 +142,7 @@ export function withRBAC(
         ? requiredPermissions 
         : [requiredPermissions];
 
-      if (!tokenPayload.isSuperAdmin) {
+      if (userRole !== 'SUPER_ADMIN') {
         for (const permission of permissions) {
           if (!hasPermission(userRole, permission)) {
             return NextResponse.json(
@@ -176,7 +176,7 @@ export function withAdminAccess(
 }
 
 /**
- * requireSuperAdmin — blocks Normal Admin, allows only isSuperAdmin users.
+ * requireSuperAdmin — blocks Normal Admin, allows only SUPER_ADMIN role users.
  * Use for destructive or system-level operations.
  */
 export function requireSuperAdmin(
@@ -191,7 +191,7 @@ export function requireSuperAdmin(
       if (!tokenPayload) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
-      if (!tokenPayload.isSuperAdmin) {
+      if (tokenPayload.role !== 'SUPER_ADMIN') {
         return NextResponse.json(
           { error: 'Forbidden — Super Admin only' },
           { status: 403 }

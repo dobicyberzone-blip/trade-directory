@@ -65,7 +65,6 @@ export async function GET(request: NextRequest) {
           firstName: true,
           lastName: true,
           role: true,
-          isSuperAdmin: true,
           suspended: true,
           phoneNumber: true,
           avatar: true,
